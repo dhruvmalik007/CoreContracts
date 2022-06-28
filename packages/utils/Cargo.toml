@@ -1,0 +1,14 @@
+[package]
+name = "utils"
+version = "0.1.0"
+edition = "2021"
+
+[package.metadata.partisiablockchain]
+cargo-partisia = "0.2.9"
+
+[dependencies]
+pbc_traits = { path = "../../sdk/pbc_traits" }
+pbc_contract_common = { path = "../../sdk/pbc_contract_common" }
+read_write_rpc_derive = { path = "../../sdk/read_write_rpc_derive" }
+read_write_state_derive = { path = "../../sdk/read_write_state_derive" }
+create_type_spec_derive = { path = "../../sdk/create_type_spec_derive" }
