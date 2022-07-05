@@ -93,6 +93,6 @@ impl<T: Read> ReadInt for T {
     read_int!(i8, 1, read_i8, from_ne_bytes);
 }
 
-#[cfg(test)]
-#[path = "../unit_tests/read_ints.rs"]
-mod write_ints;
+// #[cfg(test)]
+// #[path = "../unit_tests/read_ints.rs"]
+// mod write_ints;

@@ -136,6 +136,6 @@ impl EventGroup {
     }
 }
 
-#[cfg(test)]
-#[path = "../unit_tests/event_serialization.rs"]
-mod event_serialization;
+// #[cfg(test)]
+// #[path = "../unit_tests/event_serialization.rs"]
+// mod event_serialization;

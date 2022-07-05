@@ -91,6 +91,6 @@ impl<T: Write> WriteInt for T {
     write_int!(i8, write_i8, to_ne_bytes);
 }
 
-#[cfg(test)]
-#[path = "../unit_tests/write_ints.rs"]
-mod write_ints;
+// #[cfg(test)]
+// #[path = "../unit_tests/write_ints.rs"]
+// mod write_ints;

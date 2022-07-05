@@ -101,7 +101,39 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "349d5a591cd28b49e1d1037471617a32ddcda5731b99419008085f72d5a53836"
 
 [[package]]
+name = "mpc1155"
+version = "0.0.1"
+dependencies = [
+ "create_type_spec_derive",
+ "pbc_contract_codegen",
+ "pbc_contract_common",
+ "pbc_lib",
+ "pbc_traits",
+ "read_write_rpc_derive",
+ "read_write_state_derive",
+ "serde_json",
+ "thiserror",
+ "utils",
+]
+
+[[package]]
 name = "mpc20"
+version = "0.0.1"
+dependencies = [
+ "create_type_spec_derive",
+ "pbc_contract_codegen",
+ "pbc_contract_common",
+ "pbc_lib",
+ "pbc_traits",
+ "read_write_rpc_derive",
+ "read_write_state_derive",
+ "serde_json",
+ "thiserror",
+ "utils",
+]
+
+[[package]]
+name = "mpc721"
 version = "0.0.1"
 dependencies = [
  "create_type_spec_derive",

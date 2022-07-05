@@ -1,0 +1,26 @@
+[package]
+name = "mpc721"
+version = "0.0.1"
+edition = "2021"
+
+[lib]
+crate-type = ['cdylib']
+
+[package.metadata.partisiablockchain]
+cargo-partisia = "0.2.9"
+
+[dependencies]
+pbc_contract_common = { path = "../../sdk/pbc_contract_common" }
+pbc_contract_codegen = { path = "../../sdk/pbc_contract_codegen" }
+pbc_traits = { path = "../../sdk/pbc_traits" }
+pbc_lib = { path = "../../sdk/pbc_lib" }
+read_write_rpc_derive = { path = "../../sdk/read_write_rpc_derive" }
+read_write_state_derive = { path = "../../sdk/read_write_state_derive" }
+create_type_spec_derive = { path = "../../sdk/create_type_spec_derive" }
+utils = { path = "../../packages/utils" }
+
+serde_json = "1.0"
+thiserror = "1.0.31"
+
+[features]
+abi = ["pbc_contract_common/abi", "pbc_contract_codegen/abi", "pbc_traits/abi", "create_type_spec_derive/abi"]
