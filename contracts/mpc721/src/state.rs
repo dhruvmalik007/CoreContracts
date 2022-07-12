@@ -142,6 +142,18 @@ impl MPC721ContractState {
         self.tokens.get(&token_id)
     }
 
+    pub fn balance_of(&self, owner: &Address) -> u128 {
+        self.tokens
+            .values()
+            .into_iter()
+            .filter(|ti| ti.owner == *owner)
+            .count() as u128
+    }
+
+    pub fn owner_of(&self, token_id: u128) -> Address {
+        self.tokens.get(&token_id).unwrap().owner
+    }
+
     fn allowed_to_transfer(
         account: &Address,
         token: &TokenInfo,

@@ -122,7 +122,7 @@ fn sender_is_not_owner_on_set_base_uri() {
     let alice = 10u8;
 
     let msg = InitMsg {
-        owner: None,
+        owner: Some(mock_address(owner)),
         name: "Cool Token".to_string(),
         symbol: "CTC".to_string(),
         base_uri: Some("ipfs://some.some".to_string()),
