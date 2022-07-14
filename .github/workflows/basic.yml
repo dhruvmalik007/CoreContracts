@@ -50,5 +50,5 @@ jobs:
         uses: actions-rs/cargo@v1
         with:
           command: fmt
-          args: --package utils --package mpc20 -- --check
+          args: --package utils --package mpc20 --package mpc721 --package mpc1155 -- --check
       
