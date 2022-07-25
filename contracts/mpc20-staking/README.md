@@ -33,7 +33,8 @@ ClaimMsg {
 ```
 
 ## compound
-Compound earned rewards(e.g. stake them)
+Compound earned rewards(e.g. stake them).
+Only works when deposit token is reward token.
 
 Pararms: 
 ```json
