@@ -3,7 +3,8 @@ use pbc_contract_common::{context::ContractContext, events::EventGroup};
 use crate::{
     actions::{
         execute_approve, execute_burn, execute_burn_from, execute_decrease_allowance,
-        execute_increase_allowance, execute_mint, execute_transfer, execute_transfer_from,
+        execute_increase_allowance, execute_init, execute_mint, execute_transfer,
+        execute_transfer_from,
     },
     msg::{
         ApproveMsg, BurnFromMsg, BurnMsg, DecreaseAllowanceMsg, IncreaseAllowanceMsg, InitMsg,
@@ -13,20 +14,8 @@ use crate::{
 };
 
 #[init]
-pub fn initialize(_ctx: ContractContext, msg: InitMsg) -> (MPC20ContractState, Vec<EventGroup>) {
-    msg.validate();
-
-    let mut state = MPC20ContractState::new(&msg.info, &msg.minter);
-
-    let total_supply = state.init_balances(&msg.initial_balances);
-    if let Some(limit) = msg.capacity() {
-        assert!(
-            total_supply <= limit,
-            "Initial supply is greater than capacity"
-        );
-    }
-
-    (state, vec![])
+pub fn initialize(ctx: ContractContext, msg: InitMsg) -> (MPC20ContractState, Vec<EventGroup>) {
+    execute_init(ctx, msg)
 }
 
 #[action]

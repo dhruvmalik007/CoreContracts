@@ -23,7 +23,7 @@ pub(crate) fn handle_state_macro(input: TokenStream) -> TokenStream {
         use create_type_spec_derive::CreateTypeSpec as InternalDeriveCreateType;
         use read_write_state_derive::ReadWriteState as InternalDeriveReadWriteState;
 
-        #stamped_versions
+        // #stamped_versions
 
         #[repr(C)]
         #[derive(Clone, InternalDeriveCreateType, InternalDeriveReadWriteState)]

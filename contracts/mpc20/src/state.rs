@@ -52,6 +52,19 @@ impl MPC20ContractState {
         total_supply
     }
 
+    pub fn mint_to(&mut self, to: &Address, amount: u128) {
+        self.increase_total_supply(amount);
+        if let Some(limit) = self.get_capacity() {
+            assert!(
+                self.total_supply <= limit,
+                "{}",
+                ContractError::CapacityExceeded
+            );
+        }
+
+        self.increase_balance(to, amount);
+    }
+
     pub fn increase_balance(&mut self, address: &Address, amount: u128) {
         Self::increase_or_set(&mut self.balances, address, amount);
     }

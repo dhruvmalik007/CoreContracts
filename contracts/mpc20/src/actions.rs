@@ -2,12 +2,28 @@ use pbc_contract_common::{context::ContractContext, events::EventGroup};
 
 use crate::{
     msg::{
-        ApproveMsg, BurnFromMsg, BurnMsg, DecreaseAllowanceMsg, IncreaseAllowanceMsg, MintMsg,
-        TransferFromMsg, TransferMsg,
+        ApproveMsg, BurnFromMsg, BurnMsg, DecreaseAllowanceMsg, IncreaseAllowanceMsg, InitMsg,
+        MintMsg, TransferFromMsg, TransferMsg,
     },
     state::MPC20ContractState,
     ContractError,
 };
+
+pub fn execute_init(_ctx: ContractContext, msg: InitMsg) -> (MPC20ContractState, Vec<EventGroup>) {
+    msg.validate();
+
+    let mut state = MPC20ContractState::new(&msg.info, &msg.minter);
+
+    let total_supply = state.init_balances(&msg.initial_balances);
+    if let Some(limit) = msg.capacity() {
+        assert!(
+            total_supply <= limit,
+            "Initial supply is greater than capacity"
+        );
+    }
+
+    (state, vec![])
+}
 
 pub fn execute_mint(
     ctx: ContractContext,
@@ -19,8 +35,6 @@ pub fn execute_mint(
         "{}",
         ContractError::AmountMustBeHigherThenZero,
     );
-
-    let mut state = state;
     assert!(
         state.minter.is_some(),
         "{}",
@@ -32,16 +46,8 @@ pub fn execute_mint(
         ContractError::Unauthorized
     );
 
-    state.increase_total_supply(msg.amount);
-    if let Some(limit) = state.get_capacity() {
-        assert!(
-            state.total_supply <= limit,
-            "{}",
-            ContractError::CapacityExceeded
-        );
-    }
-
-    state.increase_balance(&msg.recipient, msg.amount);
+    let mut state = state;
+    state.mint_to(&msg.recipient, msg.amount);
 
     (state, vec![])
 }

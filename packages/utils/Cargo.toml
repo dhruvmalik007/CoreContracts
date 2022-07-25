@@ -3,6 +3,9 @@ name = "utils"
 version = "0.1.0"
 edition = "2021"
 
+[lib]
+crate-type = ["cdylib", "rlib"]
+
 [package.metadata.partisiablockchain]
 cargo-partisia = "0.2.9"
 
@@ -12,3 +15,5 @@ pbc_contract_common = { path = "../../sdk/pbc_contract_common" }
 read_write_rpc_derive = { path = "../../sdk/read_write_rpc_derive" }
 read_write_state_derive = { path = "../../sdk/read_write_state_derive" }
 create_type_spec_derive = { path = "../../sdk/create_type_spec_derive" }
+
+rust_decimal = "1.21.0"

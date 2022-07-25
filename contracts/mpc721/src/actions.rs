@@ -1,13 +1,30 @@
+use std::collections::BTreeMap;
+
 use pbc_contract_common::{context::ContractContext, events::EventGroup};
 
 use crate::{
     msg::{
-        ApproveForAllMsg, ApproveMsg, BurnMsg, MintMsg, RevokeForAllMsg, RevokeMsg, SetBaseUriMsg,
-        TransferFromMsg, TransferMsg,
+        ApproveForAllMsg, ApproveMsg, BurnMsg, InitMsg, MintMsg, RevokeForAllMsg, RevokeMsg,
+        SetBaseUriMsg, TransferFromMsg, TransferMsg,
     },
     state::MPC721ContractState,
     ContractError,
 };
+
+pub fn execute_init(_ctx: ContractContext, msg: InitMsg) -> (MPC721ContractState, Vec<EventGroup>) {
+    let state = MPC721ContractState {
+        owner: msg.owner,
+        name: msg.name,
+        symbol: msg.symbol,
+        base_uri: msg.base_uri,
+        minter: msg.minter,
+        supply: 0,
+        tokens: BTreeMap::new(),
+        operator_approvals: BTreeMap::new(),
+    };
+
+    (state, vec![])
+}
 
 pub fn execute_set_base_uri(
     ctx: ContractContext,

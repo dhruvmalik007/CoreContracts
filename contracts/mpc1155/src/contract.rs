@@ -1,12 +1,10 @@
-use std::collections::BTreeMap;
-
 use pbc_contract_common::{context::ContractContext, events::EventGroup};
 
 use crate::{
     actions::{
         execute_approve_for_all, execute_batch_burn, execute_batch_mint,
-        execute_batch_transfer_from, execute_burn, execute_mint, execute_revoke_for_all,
-        execute_set_uri, execute_transfer_from,
+        execute_batch_transfer_from, execute_burn, execute_init, execute_mint,
+        execute_revoke_for_all, execute_set_uri, execute_transfer_from,
     },
     msg::{
         ApproveForAllMsg, BatchBurnMsg, BatchMintMsg, BatchTransferFromMsg, BurnMsg, InitMsg,
@@ -16,17 +14,8 @@ use crate::{
 };
 
 #[init]
-pub fn initialize(_ctx: ContractContext, msg: InitMsg) -> (MPC1155ContractState, Vec<EventGroup>) {
-    let state = MPC1155ContractState {
-        owner: msg.owner,
-        uri: msg.uri,
-        minter: msg.minter,
-        balances: BTreeMap::new(),
-        operator_approvals: BTreeMap::new(),
-        tokens: BTreeMap::new(),
-    };
-
-    (state, vec![])
+pub fn initialize(ctx: ContractContext, msg: InitMsg) -> (MPC1155ContractState, Vec<EventGroup>) {
+    execute_init(ctx, msg)
 }
 
 #[action]
