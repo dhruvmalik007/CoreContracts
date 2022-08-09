@@ -6,7 +6,7 @@ pub trait NamedRPCEvent {
 }
 
 #[inline]
-pub fn into_rpc_call<T>(msg: T) -> Vec<u8>
+pub fn into_rpc_call<T>(msg: &T) -> Vec<u8>
 where
     T: NamedRPCEvent + ReadWriteRPC,
 {
@@ -22,7 +22,7 @@ pub trait ShortnamedRPCEvent {
 }
 
 #[inline]
-pub fn into_shortname_rpc_call<T>(msg: T) -> Vec<u8>
+pub fn into_shortname_rpc_call<T>(msg: &T) -> Vec<u8>
 where
     T: ShortnamedRPCEvent + ReadWriteRPC,
 {
@@ -30,4 +30,13 @@ where
     msg.rpc_write_to(&mut event_payload).unwrap();
 
     event_payload
+}
+
+#[inline]
+pub fn decode_base64_into_rpc_call(method_name: &str, payload: &str) -> Vec<u8> {
+    let fn_name = FunctionName::create_from_str(method_name, None);
+    let event_name: Vec<u8> = to_leb128_bytes(fn_name.shortname().as_u32());
+    let event_payload = base64::decode(payload).unwrap();
+
+    [event_name, event_payload].concat()
 }

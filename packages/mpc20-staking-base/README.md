@@ -1,8 +1,8 @@
-# MPC20-Staking Contract
+# MPC20-Staking-Base Contract
 
 # Actions
 
-## stake
+## execute_stake
 Stake specified amount of tokens to earn rewards.
 
 Pararms: 
@@ -12,7 +12,7 @@ StakeMsg {
 }
 ```
 
-## unstake
+## execute_unstake
 Withdraw staked tokens.
 
 Pararms: 
@@ -22,7 +22,7 @@ UnstakeMsg {
 }
 ```
 
-## claim
+## execute_claim
 Claim earned rewards.
 
 Pararms: 
@@ -32,7 +32,7 @@ ClaimMsg {
 }
 ```
 
-## compound
+## execute_compound
 Compound earned rewards(e.g. stake them).
 Only works when deposit token is reward token.
 
@@ -43,4 +43,4 @@ CompoundMsg {
 }
 ```
 
-## [MPC20 Base actions](https://github.com/partisiablockchainapplications/CoreContracts/blob/master/contracts/mpc20/README.md)
+## [MPC20 Base actions](https://github.com/partisiablockchainapplications/CoreContracts/blob/master/packages/mpc20-base/README.md)

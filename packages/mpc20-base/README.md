@@ -1,8 +1,8 @@
-# MPC20 Contract
+# MPC20-Base
 
 # Actions
 
-## mint
+## execute_mint
 Mint specified amount of tokens to provided address.
 Only works when minter option is enabled
 
@@ -14,7 +14,7 @@ MintMsg {
 }
 ```
 
-## transfer
+## execute_transfer
 Moves amount tokens from the msg sender account to specified `to` account.
 
 Params:
@@ -25,7 +25,7 @@ TransferMsg {
 }
 ```
 
-## transfer_from
+## execute_transfer_from
 Only with approval extension. Transfers amount tokens from owner -> recipient if sender has sufficient pre-approval.
 
 Params:
@@ -37,7 +37,7 @@ TransferFromMsg {
 }
 ```
 
-## burn
+## execute_burn
 Burn is a method to destroy your tokens forever.
 
 Params:
@@ -47,7 +47,7 @@ BurnMsg {
 }
 ```
 
-## burn_from
+## execute_burn_from
 Only with approval extension. Destroys your tokens forever.
 
 Params:
@@ -58,7 +58,7 @@ BurnFromMsg {
 }
 ```
 
-## approve
+## execute_approve
 Sets amount as the allowance of spender over the caller's tokens.
 
 Params:
@@ -69,7 +69,7 @@ ApproveMsg {
 }
 ```
 
-## increase_allowance
+## execute_increase_allowance
 Allows spender to access an additional amount tokens from the owner's account.
 
 Params:
@@ -80,7 +80,7 @@ IncreaseAllowanceMsg {
 }
 ```
 
-## decrease_allowance
+## execute_decrease_allowance
 Lowers the spender's access of tokens from the owner's account by amount.
 
 Params:

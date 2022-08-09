@@ -6,13 +6,14 @@ use pbc_contract_common::{
 };
 
 use crate::{
-    contract::{
-        approve, burn, burn_from, decrease_allowance, increase_allowance, initialize, mint,
-        transfer, transfer_from,
+    actions::{
+        execute_approve, execute_burn, execute_burn_from, execute_decrease_allowance,
+        execute_increase_allowance, execute_init, execute_mint, execute_transfer,
+        execute_transfer_from,
     },
     msg::{
-        ApproveMsg, BurnFromMsg, BurnMsg, DecreaseAllowanceMsg, IncreaseAllowanceMsg, InitMsg,
-        InitialBalance, MintMsg, TransferFromMsg, TransferMsg,
+        ApproveMsg, BurnFromMsg, BurnMsg, DecreaseAllowanceMsg, IncreaseAllowanceMsg,
+        InitialBalance, MintMsg, Mpc20InitMsg, TransferFromMsg, TransferMsg,
     },
     state::{MPC20ContractState, Minter, TokenInfo},
 };
@@ -45,8 +46,8 @@ fn mock_contract_context(sender: u8) -> ContractContext {
 }
 
 #[test]
-fn proper_initialize() {
-    let msg = InitMsg {
+fn proper_execute_init() {
+    let msg = Mpc20InitMsg {
         info: TokenInfo {
             name: "Token".to_string(),
             symbol: "TKN".to_string(),
@@ -62,7 +63,7 @@ fn proper_initialize() {
         }),
     };
 
-    let (state, events) = initialize(mock_contract_context(2u8), msg);
+    let (state, events) = execute_init(&mock_contract_context(2u8), &msg);
     assert_eq!(events.len(), 0);
     assert_eq!(
         state,
@@ -94,7 +95,7 @@ fn mock_token_info() -> TokenInfo {
 #[test]
 #[should_panic(expected = "Name is not in the expected length. Must be 3-50")]
 fn invalid_token_name_on_init() {
-    let msg = InitMsg {
+    let msg = Mpc20InitMsg {
         info: TokenInfo {
             name: "TO".to_string(),
             symbol: "TKN".to_string(),
@@ -110,13 +111,13 @@ fn invalid_token_name_on_init() {
         }),
     };
 
-    let (_, _) = initialize(mock_contract_context(2u8), msg);
+    let (_, _) = execute_init(&mock_contract_context(2u8), &msg);
 }
 
 #[test]
 #[should_panic(expected = "Ticker symbol is not in expected length. Must be 3-12")]
 fn invalid_symbol_on_init() {
-    let msg = InitMsg {
+    let msg = Mpc20InitMsg {
         info: TokenInfo {
             name: "Token".to_string(),
             symbol: "TKKTKKTKKTKKR".to_string(),
@@ -132,13 +133,13 @@ fn invalid_symbol_on_init() {
         }),
     };
 
-    let (_, _) = initialize(mock_contract_context(2u8), msg);
+    let (_, _) = execute_init(&mock_contract_context(2u8), &msg);
 }
 
 #[test]
 #[should_panic(expected = "Ticker symbol is not in expected format. Must be [a-zA-Z\\-]")]
 fn invalid_symbol_character_on_init() {
-    let msg = InitMsg {
+    let msg = Mpc20InitMsg {
         info: TokenInfo {
             name: "Token".to_string(),
             symbol: "!@#TKN".to_string(),
@@ -154,13 +155,13 @@ fn invalid_symbol_character_on_init() {
         }),
     };
 
-    let (_, _) = initialize(mock_contract_context(2u8), msg);
+    let (_, _) = execute_init(&mock_contract_context(2u8), &msg);
 }
 
 #[test]
 #[should_panic(expected = "")]
 fn invalid_decimals_on_init() {
-    let msg = InitMsg {
+    let msg = Mpc20InitMsg {
         info: TokenInfo {
             name: "Token".to_string(),
             symbol: "TKN".to_string(),
@@ -176,13 +177,13 @@ fn invalid_decimals_on_init() {
         }),
     };
 
-    let (_, _) = initialize(mock_contract_context(2u8), msg);
+    let (_, _) = execute_init(&mock_contract_context(2u8), &msg);
 }
 
 #[test]
 #[should_panic(expected = "Duplicate addresses in initial balances list")]
 fn invalid_initial_balances_on_init() {
-    let msg = InitMsg {
+    let msg = Mpc20InitMsg {
         info: mock_token_info(),
         initial_balances: vec![
             InitialBalance {
@@ -200,13 +201,13 @@ fn invalid_initial_balances_on_init() {
         }),
     };
 
-    let (_, _) = initialize(mock_contract_context(2u8), msg);
+    let (_, _) = execute_init(&mock_contract_context(2u8), &msg);
 }
 
 #[test]
 #[should_panic(expected = "Initial supply is greater than capacity")]
 fn exceed_total_supply_on_init() {
-    let msg = InitMsg {
+    let msg = Mpc20InitMsg {
         info: mock_token_info(),
         initial_balances: vec![InitialBalance {
             address: mock_address(10u8),
@@ -218,12 +219,12 @@ fn exceed_total_supply_on_init() {
         }),
     };
 
-    let (_, _) = initialize(mock_contract_context(2u8), msg);
+    let (_, _) = execute_init(&mock_contract_context(2u8), &msg);
 }
 
 #[test]
 fn proper_mint() {
-    let msg = InitMsg {
+    let msg = Mpc20InitMsg {
         info: mock_token_info(),
         initial_balances: vec![],
         minter: Some(Minter {
@@ -232,24 +233,24 @@ fn proper_mint() {
         }),
     };
 
-    let (state, _) = initialize(mock_contract_context(2u8), msg);
+    let (mut state, _) = execute_init(&mock_contract_context(2u8), &msg);
 
     let mint_msg = MintMsg {
         recipient: mock_address(10u8),
         amount: 400,
     };
 
-    let (state, _) = mint(mock_contract_context(2u8), state, mint_msg.clone());
+    let _ = execute_mint(&mock_contract_context(2u8), &mut state, &mint_msg.clone());
     assert_eq!(state.balances, BTreeMap::from([(mock_address(10u8), 400)]));
 
-    let (state, _) = mint(mock_contract_context(2u8), state, mint_msg);
+    let _ = execute_mint(&mock_contract_context(2u8), &mut state, &mint_msg);
     assert_eq!(state.balances, BTreeMap::from([(mock_address(10u8), 800)]));
 }
 
 #[test]
 #[should_panic(expected = "Amount must be higher then zero")]
 fn zero_amount_on_mint() {
-    let msg = InitMsg {
+    let msg = Mpc20InitMsg {
         info: mock_token_info(),
         initial_balances: vec![],
         minter: Some(Minter {
@@ -258,39 +259,39 @@ fn zero_amount_on_mint() {
         }),
     };
 
-    let (state, _) = initialize(mock_contract_context(2u8), msg);
+    let (mut state, _) = execute_init(&mock_contract_context(2u8), &msg);
 
     let mint_msg = MintMsg {
         recipient: mock_address(10u8),
         amount: 0,
     };
 
-    let (_, _) = mint(mock_contract_context(2u8), state, mint_msg.clone());
+    let _ = execute_mint(&mock_contract_context(2u8), &mut state, &mint_msg.clone());
 }
 
 #[test]
 #[should_panic(expected = "Minting is disabled")]
 fn minting_is_disabled_on_mint() {
-    let msg = InitMsg {
+    let msg = Mpc20InitMsg {
         info: mock_token_info(),
         initial_balances: vec![],
         minter: None,
     };
 
-    let (state, _) = initialize(mock_contract_context(2u8), msg);
+    let (mut state, _) = execute_init(&mock_contract_context(2u8), &msg);
 
     let mint_msg = MintMsg {
         recipient: mock_address(10u8),
         amount: 100,
     };
 
-    let (_, _) = mint(mock_contract_context(2u8), state, mint_msg.clone());
+    let _ = execute_mint(&mock_contract_context(2u8), &mut state, &mint_msg.clone());
 }
 
 #[test]
 #[should_panic(expected = "Unauthorized")]
 fn mint_from_different_address_on_mint() {
-    let msg = InitMsg {
+    let msg = Mpc20InitMsg {
         info: mock_token_info(),
         initial_balances: vec![],
         minter: Some(Minter {
@@ -299,20 +300,20 @@ fn mint_from_different_address_on_mint() {
         }),
     };
 
-    let (state, _) = initialize(mock_contract_context(2u8), msg);
+    let (mut state, _) = execute_init(&mock_contract_context(2u8), &msg);
 
     let mint_msg = MintMsg {
         recipient: mock_address(10u8),
         amount: 100,
     };
 
-    let (_, _) = mint(mock_contract_context(2u8), state, mint_msg.clone());
+    let _ = execute_mint(&mock_contract_context(2u8), &mut state, &mint_msg.clone());
 }
 
 #[test]
 #[should_panic(expected = "Capacity exceeded")]
 fn exceed_total_supply_on_mint() {
-    let msg = InitMsg {
+    let msg = Mpc20InitMsg {
         info: mock_token_info(),
         initial_balances: vec![],
         minter: Some(Minter {
@@ -321,14 +322,14 @@ fn exceed_total_supply_on_mint() {
         }),
     };
 
-    let (state, _) = initialize(mock_contract_context(2u8), msg);
+    let (mut state, _) = execute_init(&mock_contract_context(2u8), &msg);
 
     let mint_msg = MintMsg {
         recipient: mock_address(10u8),
         amount: 1_001,
     };
 
-    let (_, _) = mint(mock_contract_context(2u8), state, mint_msg.clone());
+    let _ = execute_mint(&mock_contract_context(2u8), &mut state, &mint_msg.clone());
 }
 
 #[test]
@@ -336,7 +337,7 @@ fn proper_transfer() {
     let alice = 10u8;
     let bob = 11u8;
 
-    let msg = InitMsg {
+    let msg = Mpc20InitMsg {
         info: mock_token_info(),
         initial_balances: vec![InitialBalance {
             address: mock_address(alice),
@@ -345,14 +346,14 @@ fn proper_transfer() {
         minter: None,
     };
 
-    let (state, _) = initialize(mock_contract_context(2u8), msg);
+    let (mut state, _) = execute_init(&mock_contract_context(2u8), &msg);
 
     let transfer_msg = TransferMsg {
         to: mock_address(bob),
         amount: 100,
     };
 
-    let (state, _) = transfer(mock_contract_context(alice), state, transfer_msg);
+    let _ = execute_transfer(&mock_contract_context(alice), &mut state, &transfer_msg);
     assert_eq!(
         state.balances,
         BTreeMap::from([(mock_address(alice), 900), (mock_address(bob), 100)])
@@ -363,7 +364,7 @@ fn proper_transfer() {
         amount: 900,
     };
 
-    let (state, _) = transfer(mock_contract_context(alice), state, transfer_msg);
+    let _ = execute_transfer(&mock_contract_context(alice), &mut state, &transfer_msg);
     assert_eq!(state.balances, BTreeMap::from([(mock_address(bob), 1000)]));
     assert_eq!(state.balance_of(&mock_address(alice)), 0);
     assert_eq!(state.balance_of(&mock_address(bob)), 1000);
@@ -375,20 +376,20 @@ fn transfer_zero_amount() {
     let alice = 10u8;
     let bob = 11u8;
 
-    let msg = InitMsg {
+    let msg = Mpc20InitMsg {
         info: mock_token_info(),
         initial_balances: vec![],
         minter: None,
     };
 
-    let (state, _) = initialize(mock_contract_context(2u8), msg);
+    let (mut state, _) = execute_init(&mock_contract_context(2u8), &msg);
 
     let transfer_msg = TransferMsg {
         to: mock_address(bob),
         amount: 0,
     };
 
-    let (state, _) = transfer(mock_contract_context(alice), state, transfer_msg);
+    let _ = execute_transfer(&mock_contract_context(alice), &mut state, &transfer_msg);
 }
 
 #[test]
@@ -397,20 +398,20 @@ fn transfer_with_zero_balance() {
     let alice = 10u8;
     let bob = 11u8;
 
-    let msg = InitMsg {
+    let msg = Mpc20InitMsg {
         info: mock_token_info(),
         initial_balances: vec![],
         minter: None,
     };
 
-    let (state, _) = initialize(mock_contract_context(2u8), msg);
+    let (mut state, _) = execute_init(&mock_contract_context(2u8), &msg);
 
     let transfer_msg = TransferMsg {
         to: mock_address(bob),
         amount: 100,
     };
 
-    let (state, _) = transfer(mock_contract_context(alice), state, transfer_msg);
+    let _ = execute_transfer(&mock_contract_context(alice), &mut state, &transfer_msg);
 }
 
 #[test]
@@ -419,7 +420,7 @@ fn insufficient_funds_on_transfer() {
     let alice = 10u8;
     let bob = 11u8;
 
-    let msg = InitMsg {
+    let msg = Mpc20InitMsg {
         info: mock_token_info(),
         initial_balances: vec![InitialBalance {
             address: mock_address(alice),
@@ -428,14 +429,14 @@ fn insufficient_funds_on_transfer() {
         minter: None,
     };
 
-    let (state, _) = initialize(mock_contract_context(2u8), msg);
+    let (mut state, _) = execute_init(&mock_contract_context(2u8), &msg);
 
     let transfer_msg = TransferMsg {
         to: mock_address(bob),
         amount: 100,
     };
 
-    let (state, _) = transfer(mock_contract_context(alice), state, transfer_msg);
+    let _ = execute_transfer(&mock_contract_context(alice), &mut state, &transfer_msg);
 }
 
 #[test]
@@ -443,7 +444,7 @@ fn proper_transfer_from() {
     let alice = 10u8;
     let bob = 11u8;
 
-    let msg = InitMsg {
+    let msg = Mpc20InitMsg {
         info: mock_token_info(),
         initial_balances: vec![InitialBalance {
             address: mock_address(alice),
@@ -452,15 +453,18 @@ fn proper_transfer_from() {
         minter: None,
     };
 
-    let (state, _) = initialize(mock_contract_context(2u8), msg);
+    let (mut state, _) = execute_init(&mock_contract_context(2u8), &msg);
 
     let increase_allowance_msg = IncreaseAllowanceMsg {
         spender: mock_address(bob),
         amount: 100,
     };
 
-    let (state, _) =
-        increase_allowance(mock_contract_context(alice), state, increase_allowance_msg);
+    let _ = execute_increase_allowance(
+        &mock_contract_context(alice),
+        &mut state,
+        &increase_allowance_msg,
+    );
 
     let transfer_from_msg = TransferFromMsg {
         owner: mock_address(alice),
@@ -468,7 +472,7 @@ fn proper_transfer_from() {
         amount: 100,
     };
 
-    let (state, _) = transfer_from(mock_contract_context(20u8), state, transfer_from_msg);
+    let _ = execute_transfer_from(&mock_contract_context(20u8), &mut state, &transfer_from_msg);
     assert_eq!(
         state.balances,
         BTreeMap::from([(mock_address(alice), 900), (mock_address(bob), 100)])
@@ -481,7 +485,7 @@ fn zero_amount_on_transfer_from() {
     let alice = 10u8;
     let bob = 11u8;
 
-    let msg = InitMsg {
+    let msg = Mpc20InitMsg {
         info: mock_token_info(),
         initial_balances: vec![InitialBalance {
             address: mock_address(alice),
@@ -490,7 +494,7 @@ fn zero_amount_on_transfer_from() {
         minter: None,
     };
 
-    let (state, _) = initialize(mock_contract_context(2u8), msg);
+    let (mut state, _) = execute_init(&mock_contract_context(2u8), &msg);
 
     let transfer_from_msg = TransferFromMsg {
         owner: mock_address(alice),
@@ -498,14 +502,14 @@ fn zero_amount_on_transfer_from() {
         amount: 0,
     };
 
-    let (_, _) = transfer_from(mock_contract_context(20u8), state, transfer_from_msg);
+    let _ = execute_transfer_from(&mock_contract_context(20u8), &mut state, &transfer_from_msg);
 }
 
 #[test]
 fn proper_burn() {
     let alice = 10u8;
 
-    let msg = InitMsg {
+    let msg = Mpc20InitMsg {
         info: mock_token_info(),
         initial_balances: vec![InitialBalance {
             address: mock_address(alice),
@@ -514,10 +518,10 @@ fn proper_burn() {
         minter: None,
     };
 
-    let (state, _) = initialize(mock_contract_context(2u8), msg);
+    let (mut state, _) = execute_init(&mock_contract_context(2u8), &msg);
 
     let burn_msg = BurnMsg { amount: 100 };
-    let (state, _) = burn(mock_contract_context(alice), state, burn_msg);
+    let _ = execute_burn(&mock_contract_context(alice), &mut state, &burn_msg);
     assert_eq!(state.total_supply, 900);
     assert_eq!(state.balances, BTreeMap::from([(mock_address(alice), 900)]));
 }
@@ -527,7 +531,7 @@ fn proper_burn() {
 fn burn_zero_amount() {
     let alice = 10u8;
 
-    let msg = InitMsg {
+    let msg = Mpc20InitMsg {
         info: mock_token_info(),
         initial_balances: vec![InitialBalance {
             address: mock_address(alice),
@@ -536,10 +540,10 @@ fn burn_zero_amount() {
         minter: None,
     };
 
-    let (state, _) = initialize(mock_contract_context(2u8), msg);
+    let (mut state, _) = execute_init(&mock_contract_context(2u8), &msg);
 
     let burn_msg = BurnMsg { amount: 0 };
-    let (_, _) = burn(mock_contract_context(alice), state, burn_msg);
+    let _ = execute_burn(&mock_contract_context(alice), &mut state, &burn_msg);
 }
 
 #[test]
@@ -547,16 +551,16 @@ fn burn_zero_amount() {
 fn burn_with_zero_balance() {
     let alice = 10u8;
 
-    let msg = InitMsg {
+    let msg = Mpc20InitMsg {
         info: mock_token_info(),
         initial_balances: vec![],
         minter: None,
     };
 
-    let (state, _) = initialize(mock_contract_context(2u8), msg);
+    let (mut state, _) = execute_init(&mock_contract_context(2u8), &msg);
 
     let burn_msg = BurnMsg { amount: 100 };
-    let (_, _) = burn(mock_contract_context(alice), state, burn_msg);
+    let _ = execute_burn(&mock_contract_context(alice), &mut state, &burn_msg);
 }
 
 #[test]
@@ -564,7 +568,7 @@ fn burn_with_zero_balance() {
 fn insufficient_funds_on_burn() {
     let alice = 10u8;
 
-    let msg = InitMsg {
+    let msg = Mpc20InitMsg {
         info: mock_token_info(),
         initial_balances: vec![InitialBalance {
             address: mock_address(alice),
@@ -573,10 +577,10 @@ fn insufficient_funds_on_burn() {
         minter: None,
     };
 
-    let (state, _) = initialize(mock_contract_context(2u8), msg);
+    let (mut state, _) = execute_init(&mock_contract_context(2u8), &msg);
 
     let burn_msg = BurnMsg { amount: 101 };
-    let (_, _) = burn(mock_contract_context(alice), state, burn_msg);
+    let _ = execute_burn(&mock_contract_context(alice), &mut state, &burn_msg);
 }
 
 #[test]
@@ -584,7 +588,7 @@ fn proper_burn_from() {
     let alice = 10u8;
     let bob = 11u8;
 
-    let msg = InitMsg {
+    let msg = Mpc20InitMsg {
         info: mock_token_info(),
         initial_balances: vec![InitialBalance {
             address: mock_address(alice),
@@ -593,22 +597,25 @@ fn proper_burn_from() {
         minter: None,
     };
 
-    let (state, _) = initialize(mock_contract_context(2u8), msg);
+    let (mut state, _) = execute_init(&mock_contract_context(2u8), &msg);
 
     let increase_allowance_msg = IncreaseAllowanceMsg {
         spender: mock_address(bob),
         amount: 100,
     };
 
-    let (state, _) =
-        increase_allowance(mock_contract_context(alice), state, increase_allowance_msg);
+    let _ = execute_increase_allowance(
+        &mock_contract_context(alice),
+        &mut state,
+        &increase_allowance_msg,
+    );
 
     let burn_from_msg = BurnFromMsg {
         owner: mock_address(alice),
         amount: 100,
     };
 
-    let (state, _) = burn_from(mock_contract_context(bob), state, burn_from_msg);
+    let _ = execute_burn_from(&mock_contract_context(bob), &mut state, &burn_from_msg);
     assert_eq!(state.total_supply, 900);
     assert_eq!(state.balances, BTreeMap::from([(mock_address(alice), 900)]));
 }
@@ -619,7 +626,7 @@ fn zero_amount_on_burn_from() {
     let alice = 10u8;
     let bob = 11u8;
 
-    let msg = InitMsg {
+    let msg = Mpc20InitMsg {
         info: mock_token_info(),
         initial_balances: vec![InitialBalance {
             address: mock_address(alice),
@@ -628,14 +635,14 @@ fn zero_amount_on_burn_from() {
         minter: None,
     };
 
-    let (state, _) = initialize(mock_contract_context(2u8), msg);
+    let (mut state, _) = execute_init(&mock_contract_context(2u8), &msg);
 
     let burn_from_msg = BurnFromMsg {
         owner: mock_address(alice),
         amount: 0,
     };
 
-    let (state, _) = burn_from(mock_contract_context(bob), state, burn_from_msg);
+    let _ = execute_burn_from(&mock_contract_context(bob), &mut state, &burn_from_msg);
 }
 
 #[test]
@@ -643,19 +650,19 @@ fn proper_approve() {
     let alice = 10u8;
     let bob = 11u8;
 
-    let msg = InitMsg {
+    let msg = Mpc20InitMsg {
         info: mock_token_info(),
         initial_balances: vec![],
         minter: None,
     };
 
-    let (state, _) = initialize(mock_contract_context(2u8), msg);
+    let (mut state, _) = execute_init(&mock_contract_context(2u8), &msg);
 
     let approve_msg = ApproveMsg {
         spender: mock_address(bob),
         amount: 100,
     };
-    let (state, _) = approve(mock_contract_context(alice), state, approve_msg);
+    let _ = execute_approve(&mock_contract_context(alice), &mut state, &approve_msg);
     assert_eq!(
         state.allowances,
         BTreeMap::from([(
@@ -675,19 +682,19 @@ fn proper_approve() {
 fn approve_to_yourself() {
     let alice = 10u8;
 
-    let msg = InitMsg {
+    let msg = Mpc20InitMsg {
         info: mock_token_info(),
         initial_balances: vec![],
         minter: None,
     };
 
-    let (state, _) = initialize(mock_contract_context(2u8), msg);
+    let (mut state, _) = execute_init(&mock_contract_context(2u8), &msg);
 
     let approve_msg = ApproveMsg {
         spender: mock_address(alice),
         amount: 100,
     };
-    let (_, _) = approve(mock_contract_context(alice), state, approve_msg);
+    let _ = execute_approve(&mock_contract_context(alice), &mut state, &approve_msg);
 }
 
 #[test]
@@ -696,19 +703,19 @@ pub fn zero_amount_on_approve() {
     let alice = 10u8;
     let bob = 11u8;
 
-    let msg = InitMsg {
+    let msg = Mpc20InitMsg {
         info: mock_token_info(),
         initial_balances: vec![],
         minter: None,
     };
 
-    let (state, _) = initialize(mock_contract_context(2u8), msg);
+    let (mut state, _) = execute_init(&mock_contract_context(2u8), &msg);
 
     let approve_msg = ApproveMsg {
         spender: mock_address(bob),
         amount: 0,
     };
-    let (_, _) = approve(mock_contract_context(alice), state, approve_msg);
+    let _ = execute_approve(&mock_contract_context(alice), &mut state, &approve_msg);
 }
 
 #[test]
@@ -717,21 +724,24 @@ fn proper_increase_allowance() {
     let bob = 11u8;
     let joe = 12u8;
 
-    let msg = InitMsg {
+    let msg = Mpc20InitMsg {
         info: mock_token_info(),
         initial_balances: vec![],
         minter: None,
     };
 
-    let (state, _) = initialize(mock_contract_context(2u8), msg);
+    let (mut state, _) = execute_init(&mock_contract_context(2u8), &msg);
 
     let increase_allowance_msg = IncreaseAllowanceMsg {
         spender: mock_address(bob),
         amount: 100,
     };
 
-    let (state, _) =
-        increase_allowance(mock_contract_context(alice), state, increase_allowance_msg);
+    let _ = execute_increase_allowance(
+        &mock_contract_context(alice),
+        &mut state,
+        &increase_allowance_msg,
+    );
 
     assert_eq!(
         state.allowances,
@@ -746,7 +756,11 @@ fn proper_increase_allowance() {
         amount: 500,
     };
 
-    let (state, _) = increase_allowance(mock_contract_context(bob), state, increase_allowance_msg);
+    let _ = execute_increase_allowance(
+        &mock_contract_context(bob),
+        &mut state,
+        &increase_allowance_msg,
+    );
     assert_eq!(
         state.allowances,
         BTreeMap::from([
@@ -767,20 +781,24 @@ fn proper_increase_allowance() {
 fn increase_allowance_to_yourself() {
     let alice = 10u8;
 
-    let msg = InitMsg {
+    let msg = Mpc20InitMsg {
         info: mock_token_info(),
         initial_balances: vec![],
         minter: None,
     };
 
-    let (state, _) = initialize(mock_contract_context(2u8), msg);
+    let (mut state, _) = execute_init(&mock_contract_context(2u8), &msg);
 
     let increase_allowance_msg = IncreaseAllowanceMsg {
         spender: mock_address(alice),
         amount: 100,
     };
 
-    let (_, _) = increase_allowance(mock_contract_context(alice), state, increase_allowance_msg);
+    let _ = execute_increase_allowance(
+        &mock_contract_context(alice),
+        &mut state,
+        &increase_allowance_msg,
+    );
 }
 
 #[test]
@@ -789,20 +807,24 @@ fn zero_amount_on_increase_allowance() {
     let alice = 10u8;
     let bob = 11u8;
 
-    let msg = InitMsg {
+    let msg = Mpc20InitMsg {
         info: mock_token_info(),
         initial_balances: vec![],
         minter: None,
     };
 
-    let (state, _) = initialize(mock_contract_context(2u8), msg);
+    let (mut state, _) = execute_init(&mock_contract_context(2u8), &msg);
 
     let increase_allowance_msg = IncreaseAllowanceMsg {
         spender: mock_address(bob),
         amount: 0,
     };
 
-    let (_, _) = increase_allowance(mock_contract_context(alice), state, increase_allowance_msg);
+    let _ = execute_increase_allowance(
+        &mock_contract_context(alice),
+        &mut state,
+        &increase_allowance_msg,
+    );
 }
 
 #[test]
@@ -810,29 +832,35 @@ fn proper_decrease_allowance() {
     let alice = 10u8;
     let bob = 11u8;
 
-    let msg = InitMsg {
+    let msg = Mpc20InitMsg {
         info: mock_token_info(),
         initial_balances: vec![],
         minter: None,
     };
 
-    let (state, _) = initialize(mock_contract_context(2u8), msg);
+    let (mut state, _) = execute_init(&mock_contract_context(2u8), &msg);
 
     let increase_allowance_msg = IncreaseAllowanceMsg {
         spender: mock_address(bob),
         amount: 1_000,
     };
 
-    let (state, _) =
-        increase_allowance(mock_contract_context(alice), state, increase_allowance_msg);
+    let _ = execute_increase_allowance(
+        &mock_contract_context(alice),
+        &mut state,
+        &increase_allowance_msg,
+    );
 
     let decrease_allowance_msg = DecreaseAllowanceMsg {
         spender: mock_address(bob),
         amount: 450,
     };
 
-    let (state, _) =
-        decrease_allowance(mock_contract_context(alice), state, decrease_allowance_msg);
+    let _ = execute_decrease_allowance(
+        &mock_contract_context(alice),
+        &mut state,
+        &decrease_allowance_msg,
+    );
 
     assert_eq!(
         state.allowances,
@@ -849,21 +877,24 @@ fn decrease_allowance_to_yourself() {
     let alice = 10u8;
     let bob = 11u8;
 
-    let msg = InitMsg {
+    let msg = Mpc20InitMsg {
         info: mock_token_info(),
         initial_balances: vec![],
         minter: None,
     };
 
-    let (state, _) = initialize(mock_contract_context(2u8), msg);
+    let (mut state, _) = execute_init(&mock_contract_context(2u8), &msg);
 
     let decrease_allowance_msg = DecreaseAllowanceMsg {
         spender: mock_address(alice),
         amount: 450,
     };
 
-    let (state, _) =
-        decrease_allowance(mock_contract_context(alice), state, decrease_allowance_msg);
+    let _ = execute_decrease_allowance(
+        &mock_contract_context(alice),
+        &mut state,
+        &decrease_allowance_msg,
+    );
 }
 
 #[test]
@@ -872,21 +903,24 @@ fn zero_amount_on_decrease_allowance() {
     let alice = 10u8;
     let bob = 11u8;
 
-    let msg = InitMsg {
+    let msg = Mpc20InitMsg {
         info: mock_token_info(),
         initial_balances: vec![],
         minter: None,
     };
 
-    let (state, _) = initialize(mock_contract_context(2u8), msg);
+    let (mut state, _) = execute_init(&mock_contract_context(2u8), &msg);
 
     let decrease_allowance_msg = DecreaseAllowanceMsg {
         spender: mock_address(bob),
         amount: 0,
     };
 
-    let (state, _) =
-        decrease_allowance(mock_contract_context(alice), state, decrease_allowance_msg);
+    let _ = execute_decrease_allowance(
+        &mock_contract_context(alice),
+        &mut state,
+        &decrease_allowance_msg,
+    );
 }
 
 #[test]
@@ -895,21 +929,24 @@ fn decrease_with_zero_approved() {
     let alice = 10u8;
     let bob = 11u8;
 
-    let msg = InitMsg {
+    let msg = Mpc20InitMsg {
         info: mock_token_info(),
         initial_balances: vec![],
         minter: None,
     };
 
-    let (state, _) = initialize(mock_contract_context(2u8), msg);
+    let (mut state, _) = execute_init(&mock_contract_context(2u8), &msg);
 
     let decrease_allowance_msg = DecreaseAllowanceMsg {
         spender: mock_address(bob),
         amount: 450,
     };
 
-    let (state, _) =
-        decrease_allowance(mock_contract_context(alice), state, decrease_allowance_msg);
+    let _ = execute_decrease_allowance(
+        &mock_contract_context(alice),
+        &mut state,
+        &decrease_allowance_msg,
+    );
 }
 
 #[test]
@@ -918,27 +955,33 @@ fn decrease_more_than_approved() {
     let alice = 10u8;
     let bob = 11u8;
 
-    let msg = InitMsg {
+    let msg = Mpc20InitMsg {
         info: mock_token_info(),
         initial_balances: vec![],
         minter: None,
     };
 
-    let (state, _) = initialize(mock_contract_context(2u8), msg);
+    let (mut state, _) = execute_init(&mock_contract_context(2u8), &msg);
 
     let increase_allowance_msg = IncreaseAllowanceMsg {
         spender: mock_address(bob),
         amount: 1_000,
     };
 
-    let (state, _) =
-        increase_allowance(mock_contract_context(alice), state, increase_allowance_msg);
+    let _ = execute_increase_allowance(
+        &mock_contract_context(alice),
+        &mut state,
+        &increase_allowance_msg,
+    );
 
     let decrease_allowance_msg = DecreaseAllowanceMsg {
         spender: mock_address(bob),
         amount: 1_001,
     };
 
-    let (state, _) =
-        decrease_allowance(mock_contract_context(alice), state, decrease_allowance_msg);
+    let _ = execute_decrease_allowance(
+        &mock_contract_context(alice),
+        &mut state,
+        &decrease_allowance_msg,
+    );
 }

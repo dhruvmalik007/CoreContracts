@@ -1,8 +1,8 @@
-# MPC721 Contract
+# MPC721-Base Contract
 
 # Actions
 
-## set_base_uri
+## execute_set_base_uri
 Set base uri for the tokens.
 
 Params:
@@ -12,7 +12,7 @@ SetBaseUriMsg {
 }
 ```
 
-## mint
+## execute_mint
 Mint a new token. Can only be executed by minter account.
 
 Params:
@@ -24,7 +24,7 @@ MintMsg {
 }
 ```
 
-## transfer
+## execute_transfer
 Transfer token to another account.
 
 Params:
@@ -35,7 +35,7 @@ TransferMsg {
 }
 ```
 
-## transfer_from
+## execute_transfer_from
 Only with approval extension. Transfer token from owner to spender.
 
 Params:
@@ -47,7 +47,7 @@ TransferFromMsg {
 }
 ```
 
-## approve
+## execute_approve
 Allows spender to transfer token from the owner account.
 
 Params:
@@ -58,7 +58,7 @@ ApproveMsg {
 }
 ```
 
-## approve_for_all
+## execute_approve_for_all
 Allows operator to transfer any owner tokens from his account.
 
 Params:
@@ -68,7 +68,7 @@ ApproveForAllMsg {
 }
 ```
 
-## revoke
+## execute_revoke
 Remove approval.
 
 Params:
@@ -79,7 +79,7 @@ RevokeMsg {
 }
 ```
 
-## revoke_for_all
+## execute_revoke_for_all
 Remove operator.
 
 Params:
@@ -89,7 +89,7 @@ RevokeForAllMsg {
 }
 ```
 
-## burn
+## execute_burn
 Destroy your token forever.
 
 Params:

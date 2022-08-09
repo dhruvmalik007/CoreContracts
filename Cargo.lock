@@ -15,6 +15,12 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "d468802bab17cbc0cc575e9b053f41e72aa36bfa6b7f55e3529ffa43161b97fa"
 
 [[package]]
+name = "base64"
+version = "0.13.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "904dfeac50f3cdaba28fc6f57fdcddb75f49ed61346676a78c4ffe55877802fd"
+
+[[package]]
 name = "block-buffer"
 version = "0.9.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -113,7 +119,53 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "349d5a591cd28b49e1d1037471617a32ddcda5731b99419008085f72d5a53836"
 
 [[package]]
+name = "mpc1-multisig"
+version = "0.0.1"
+dependencies = [
+ "create_type_spec_derive",
+ "mpc1-multisig-base",
+ "pbc_contract_codegen",
+ "pbc_contract_common",
+ "pbc_lib",
+ "pbc_traits",
+ "read_write_rpc_derive",
+ "read_write_state_derive",
+ "serde_json",
+]
+
+[[package]]
+name = "mpc1-multisig-base"
+version = "0.0.1"
+dependencies = [
+ "create_type_spec_derive",
+ "pbc_contract_codegen",
+ "pbc_contract_common",
+ "pbc_lib",
+ "pbc_traits",
+ "read_write_rpc_derive",
+ "read_write_state_derive",
+ "serde_json",
+ "thiserror",
+ "utils",
+]
+
+[[package]]
 name = "mpc1155"
+version = "0.0.1"
+dependencies = [
+ "create_type_spec_derive",
+ "mpc1155-base",
+ "pbc_contract_codegen",
+ "pbc_contract_common",
+ "pbc_lib",
+ "pbc_traits",
+ "read_write_rpc_derive",
+ "read_write_state_derive",
+ "serde_json",
+]
+
+[[package]]
+name = "mpc1155-base"
 version = "0.0.1"
 dependencies = [
  "create_type_spec_derive",
@@ -133,6 +185,21 @@ name = "mpc20"
 version = "0.0.1"
 dependencies = [
  "create_type_spec_derive",
+ "mpc20-base",
+ "pbc_contract_codegen",
+ "pbc_contract_common",
+ "pbc_lib",
+ "pbc_traits",
+ "read_write_rpc_derive",
+ "read_write_state_derive",
+ "serde_json",
+]
+
+[[package]]
+name = "mpc20-base"
+version = "0.0.1"
+dependencies = [
+ "create_type_spec_derive",
  "pbc_contract_codegen",
  "pbc_contract_common",
  "pbc_lib",
@@ -149,7 +216,23 @@ name = "mpc20-staking"
 version = "0.0.1"
 dependencies = [
  "create_type_spec_derive",
- "mpc20",
+ "mpc20-base",
+ "mpc20-staking-base",
+ "pbc_contract_codegen",
+ "pbc_contract_common",
+ "pbc_lib",
+ "pbc_traits",
+ "read_write_rpc_derive",
+ "read_write_state_derive",
+ "serde_json",
+]
+
+[[package]]
+name = "mpc20-staking-base"
+version = "0.0.1"
+dependencies = [
+ "create_type_spec_derive",
+ "mpc20-base",
  "pbc_contract_codegen",
  "pbc_contract_common",
  "pbc_lib",
@@ -164,6 +247,21 @@ dependencies = [
 
 [[package]]
 name = "mpc721"
+version = "0.0.1"
+dependencies = [
+ "create_type_spec_derive",
+ "mpc721-base",
+ "pbc_contract_codegen",
+ "pbc_contract_common",
+ "pbc_lib",
+ "pbc_traits",
+ "read_write_rpc_derive",
+ "read_write_state_derive",
+ "serde_json",
+]
+
+[[package]]
+name = "mpc721-base"
 version = "0.0.1"
 dependencies = [
  "create_type_spec_derive",
@@ -421,10 +519,13 @@ checksum = "5bd2fe26506023ed7b5e1e315add59d6f584c621d037f9368fea9cfb988f368c"
 
 [[package]]
 name = "utils"
-version = "0.1.0"
+version = "0.0.1"
 dependencies = [
+ "base64",
  "create_type_spec_derive",
+ "pbc_contract_codegen",
  "pbc_contract_common",
+ "pbc_lib",
  "pbc_traits",
  "read_write_rpc_derive",
  "read_write_state_derive",

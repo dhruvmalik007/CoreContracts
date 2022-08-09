@@ -1,8 +1,8 @@
-# MPC1155 Contract
+# MPC1155-Base Contract
 
 # Actions
 
-## set_uri
+## execute_set_uri
 Set uri for the tokens.
 
 Params:
@@ -12,7 +12,7 @@ SetUriMsg {
 }
 ```
 
-## mint
+## execute_mint
 Mint a new token. Can only be executed by minter account.
 
 Params:
@@ -27,7 +27,7 @@ MintMsg {
 }
 ```
 
-## batch_mint
+## execute_batch_mint
 Batch mint a new token. Can only be executed by minter account.
 
 Params:
@@ -44,7 +44,7 @@ BatchMintMsg {
 }
 ```
 
-## transfer_from
+## execute_transfer_from
 Only with approval extension. Transfer token from owner to spender.
 
 Params:
@@ -59,7 +59,7 @@ TransferFromMsg {
 }
 ```
 
-## batch_transfer_from 
+## execute_batch_transfer_from 
 Only with approval extension. Batch transfer token from owner to spender.
 
 Params:
@@ -76,7 +76,7 @@ BatchTransferFromMsg {
 }
 ```
 
-## burn
+## execute_burn
 Destroy your token forever.
 
 Params:
@@ -90,7 +90,7 @@ BurnMsg {
 }
 ```
 
-## batch_burn
+## execute_batch_burn
 Batch destroy your token forever.
 
 Params:
@@ -106,7 +106,7 @@ BatchBurnMsg {
 }
 ```
 
-## approve_for_all
+## execute_approve_for_all
 Allows operator to transfer any owner tokens from his account.
 
 Params:
@@ -116,7 +116,7 @@ ApproveForAllMsg {
 }
 ```
 
-## revoke_for_all
+## execute_revoke_for_all
 Remove operator.
 
 Params:

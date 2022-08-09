@@ -1,12 +1,13 @@
+use crate::state::ContractState;
+
 use pbc_contract_common::{context::ContractContext, events::EventGroup};
 
-use crate::{
+use mpc20_staking_base::{
     actions::{execute_claim, execute_compound, execute_init, execute_stake, execute_unstake},
-    msg::{ClaimMsg, CompoundMsg, InitMsg, StakeMsg, UnstakeMsg},
-    state::MPC20StakingContractState,
+    msg::{ClaimMsg, CompoundMsg, Mpc20StakingInitMsg, StakeMsg, UnstakeMsg},
 };
 
-use mpc20::{
+use mpc20_base::{
     actions::{
         execute_approve as mpc20_execute_approve, execute_burn as mpc20_execute_burn,
         execute_burn_from as mpc20_execute_burn_from,
@@ -26,148 +27,155 @@ use mpc20::{
 #[init]
 pub fn initialize(
     ctx: ContractContext,
-    msg: InitMsg,
-) -> (MPC20StakingContractState, Vec<EventGroup>) {
-    execute_init(ctx, msg)
+    msg: Mpc20StakingInitMsg,
+) -> (ContractState, Vec<EventGroup>) {
+    let (mpc20_staking, events) = execute_init(&ctx, &msg);
+    let state = ContractState { mpc20_staking };
+
+    (state, events)
 }
 
 #[action]
 pub fn stake(
     ctx: ContractContext,
-    state: MPC20StakingContractState,
+    state: ContractState,
     msg: StakeMsg,
-) -> (MPC20StakingContractState, Vec<EventGroup>) {
-    execute_stake(ctx, state, msg)
+) -> (ContractState, Vec<EventGroup>) {
+    let mut state = state;
+    let events = execute_stake(&ctx, &mut state.mpc20_staking, &msg);
+
+    (state, events)
 }
 
 #[action]
 pub fn unstake(
     ctx: ContractContext,
-    state: MPC20StakingContractState,
+    state: ContractState,
     msg: UnstakeMsg,
-) -> (MPC20StakingContractState, Vec<EventGroup>) {
-    execute_unstake(ctx, state, msg)
+) -> (ContractState, Vec<EventGroup>) {
+    let mut state = state;
+    let events = execute_unstake(&ctx, &mut state.mpc20_staking, &msg);
+
+    (state, events)
 }
 
 #[action]
 pub fn claim(
     ctx: ContractContext,
-    state: MPC20StakingContractState,
+    state: ContractState,
     msg: ClaimMsg,
-) -> (MPC20StakingContractState, Vec<EventGroup>) {
-    execute_claim(ctx, state, msg)
+) -> (ContractState, Vec<EventGroup>) {
+    let mut state = state;
+    let events = execute_claim(&ctx, &mut state.mpc20_staking, &msg);
+
+    (state, events)
 }
 
 #[action]
 pub fn compound(
     ctx: ContractContext,
-    state: MPC20StakingContractState,
+    state: ContractState,
     msg: CompoundMsg,
-) -> (MPC20StakingContractState, Vec<EventGroup>) {
-    execute_compound(ctx, state, msg)
+) -> (ContractState, Vec<EventGroup>) {
+    let mut state = state;
+    let events = execute_compound(&ctx, &mut state.mpc20_staking, &msg);
+
+    (state, events)
 }
 
 // ----- MPC20 Base Methods -----
 #[action]
 pub fn mint(
     ctx: ContractContext,
-    state: MPC20StakingContractState,
+    state: ContractState,
     msg: Mpc20MintMsg,
-) -> (MPC20StakingContractState, Vec<EventGroup>) {
+) -> (ContractState, Vec<EventGroup>) {
     let mut state = state;
-    let (mpc20_state, _) = mpc20_execute_mint(ctx, state.mpc20_base_state, msg);
-    state.mpc20_base_state = mpc20_state;
+    let events = mpc20_execute_mint(&ctx, &mut state.mpc20_staking.mpc20, &msg);
 
-    (state, vec![])
+    (state, events)
 }
 
 #[action]
 pub fn transfer(
     ctx: ContractContext,
-    state: MPC20StakingContractState,
+    state: ContractState,
     msg: Mpc20TransferMsg,
-) -> (MPC20StakingContractState, Vec<EventGroup>) {
+) -> (ContractState, Vec<EventGroup>) {
     let mut state = state;
-    let (mpc20_state, _) = mpc20_execute_transfer(ctx, state.mpc20_base_state, msg);
-    state.mpc20_base_state = mpc20_state;
+    let events = mpc20_execute_transfer(&ctx, &mut state.mpc20_staking.mpc20, &msg);
 
-    (state, vec![])
+    (state, events)
 }
 
 #[action]
 pub fn transfer_from(
     ctx: ContractContext,
-    state: MPC20StakingContractState,
+    state: ContractState,
     msg: Mpc20TransferFromMsg,
-) -> (MPC20StakingContractState, Vec<EventGroup>) {
+) -> (ContractState, Vec<EventGroup>) {
     let mut state = state;
-    let (mpc20_state, _) = mpc20_execute_transfer_from(ctx, state.mpc20_base_state, msg);
-    state.mpc20_base_state = mpc20_state;
+    let events = mpc20_execute_transfer_from(&ctx, &mut state.mpc20_staking.mpc20, &msg);
 
-    (state, vec![])
+    (state, events)
 }
 
 #[action]
 pub fn burn(
     ctx: ContractContext,
-    state: MPC20StakingContractState,
+    state: ContractState,
     msg: Mpc20BurnMsg,
-) -> (MPC20StakingContractState, Vec<EventGroup>) {
+) -> (ContractState, Vec<EventGroup>) {
     let mut state = state;
-    let (mpc20_state, _) = mpc20_execute_burn(ctx, state.mpc20_base_state, msg);
-    state.mpc20_base_state = mpc20_state;
+    let events = mpc20_execute_burn(&ctx, &mut state.mpc20_staking.mpc20, &msg);
 
-    (state, vec![])
+    (state, events)
 }
 
 #[action]
 pub fn burn_from(
     ctx: ContractContext,
-    state: MPC20StakingContractState,
+    state: ContractState,
     msg: Mpc20BurnFromMsg,
-) -> (MPC20StakingContractState, Vec<EventGroup>) {
+) -> (ContractState, Vec<EventGroup>) {
     let mut state = state;
-    let (mpc20_state, _) = mpc20_execute_burn_from(ctx, state.mpc20_base_state, msg);
-    state.mpc20_base_state = mpc20_state;
+    let events = mpc20_execute_burn_from(&ctx, &mut state.mpc20_staking.mpc20, &msg);
 
-    (state, vec![])
+    (state, events)
 }
 
 #[action]
 pub fn approve(
     ctx: ContractContext,
-    state: MPC20StakingContractState,
+    state: ContractState,
     msg: Mpc20ApproveMsg,
-) -> (MPC20StakingContractState, Vec<EventGroup>) {
+) -> (ContractState, Vec<EventGroup>) {
     let mut state = state;
-    let (mpc20_state, _) = mpc20_execute_approve(ctx, state.mpc20_base_state, msg);
-    state.mpc20_base_state = mpc20_state;
+    let events = mpc20_execute_approve(&ctx, &mut state.mpc20_staking.mpc20, &msg);
 
-    (state, vec![])
+    (state, events)
 }
 
 #[action]
 pub fn increase_allowance(
     ctx: ContractContext,
-    state: MPC20StakingContractState,
+    state: ContractState,
     msg: Mpc20IncreaseAllowanceMsg,
-) -> (MPC20StakingContractState, Vec<EventGroup>) {
+) -> (ContractState, Vec<EventGroup>) {
     let mut state = state;
-    let (mpc20_state, _) = mpc20_execute_increase_allowance(ctx, state.mpc20_base_state, msg);
-    state.mpc20_base_state = mpc20_state;
+    let events = mpc20_execute_increase_allowance(&ctx, &mut state.mpc20_staking.mpc20, &msg);
 
-    (state, vec![])
+    (state, events)
 }
 
 #[action]
 pub fn decrease_allowance(
     ctx: ContractContext,
-    state: MPC20StakingContractState,
+    state: ContractState,
     msg: Mpc20DecreaseAllowanceMsg,
-) -> (MPC20StakingContractState, Vec<EventGroup>) {
+) -> (ContractState, Vec<EventGroup>) {
     let mut state = state;
-    let (mpc20_state, _) = mpc20_execute_decrease_allowance(ctx, state.mpc20_base_state, msg);
-    state.mpc20_base_state = mpc20_state;
+    let events = mpc20_execute_decrease_allowance(&ctx, &mut state.mpc20_staking.mpc20, &msg);
 
-    (state, vec![])
+    (state, events)
 }

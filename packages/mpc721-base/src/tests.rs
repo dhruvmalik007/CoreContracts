@@ -6,9 +6,10 @@ use pbc_contract_common::{
 };
 
 use crate::{
-    contract::{
-        approve, approve_for_all, burn, initialize, mint, revoke, revoke_for_all, set_base_uri,
-        transfer, transfer_from,
+    actions::{
+        execute_approve, execute_approve_for_all, execute_burn, execute_init, execute_mint,
+        execute_revoke, execute_revoke_for_all, execute_set_base_uri, execute_transfer,
+        execute_transfer_from,
     },
     msg::{
         ApproveForAllMsg, ApproveMsg, BurnMsg, InitMsg, MintMsg, RevokeForAllMsg, RevokeMsg,
@@ -45,7 +46,7 @@ fn mock_contract_context(sender: u8) -> ContractContext {
 }
 
 #[test]
-fn proper_initialize() {
+fn proper_execute_init() {
     let msg = InitMsg {
         owner: None,
         name: "Cool Token".to_string(),
@@ -54,7 +55,7 @@ fn proper_initialize() {
         minter: mock_address(1),
     };
 
-    let (state, events) = initialize(mock_contract_context(2), msg);
+    let (state, events) = execute_init(&mock_contract_context(2), &msg);
     assert_eq!(events.len(), 0);
     assert_eq!(
         state,
@@ -83,13 +84,13 @@ fn proper_set_base_uri() {
         minter: mock_address(1),
     };
 
-    let (state, _) = initialize(mock_contract_context(2), msg);
+    let (mut state, _) = execute_init(&mock_contract_context(2), &msg);
 
     let set_base_uri_msg = SetBaseUriMsg {
         new_base_uri: "ipfs://new.new".to_string(),
     };
 
-    let (state, _) = set_base_uri(mock_contract_context(owner), state, set_base_uri_msg);
+    let _ = execute_set_base_uri(&mock_contract_context(owner), &mut state, &set_base_uri_msg);
     assert_eq!(state.base_uri, Some("ipfs://new.new".to_string()));
 }
 
@@ -106,13 +107,13 @@ fn owner_is_not_set_on_set_base_uri() {
         minter: mock_address(1),
     };
 
-    let (state, _) = initialize(mock_contract_context(2), msg);
+    let (mut state, _) = execute_init(&mock_contract_context(2), &msg);
 
     let set_base_uri_msg = SetBaseUriMsg {
         new_base_uri: "ipfs://new.new".to_string(),
     };
 
-    let (_, _) = set_base_uri(mock_contract_context(owner), state, set_base_uri_msg);
+    let _ = execute_set_base_uri(&mock_contract_context(owner), &mut state, &set_base_uri_msg);
 }
 
 #[test]
@@ -129,13 +130,13 @@ fn sender_is_not_owner_on_set_base_uri() {
         minter: mock_address(1),
     };
 
-    let (state, _) = initialize(mock_contract_context(2), msg);
+    let (mut state, _) = execute_init(&mock_contract_context(2), &msg);
 
     let set_base_uri_msg = SetBaseUriMsg {
         new_base_uri: "ipfs://new.new".to_string(),
     };
 
-    let (_, _) = set_base_uri(mock_contract_context(alice), state, set_base_uri_msg);
+    let _ = execute_set_base_uri(&mock_contract_context(alice), &mut state, &set_base_uri_msg);
 }
 
 #[test]
@@ -151,7 +152,7 @@ fn proper_mint() {
         minter: mock_address(minter),
     };
 
-    let (state, events) = initialize(mock_contract_context(2), msg);
+    let (mut state, events) = execute_init(&mock_contract_context(2), &msg);
 
     let mint_msg = MintMsg {
         token_id: 1,
@@ -159,7 +160,7 @@ fn proper_mint() {
         token_uri: None,
     };
 
-    let (state, _) = mint(mock_contract_context(minter), state, mint_msg);
+    let _ = execute_mint(&mock_contract_context(minter), &mut state, &mint_msg);
     assert_eq!(state.supply, 1);
 
     let token = state.token_info(1).unwrap();
@@ -187,7 +188,7 @@ fn sender_is_not_minter_on_mint() {
         minter: mock_address(minter),
     };
 
-    let (state, events) = initialize(mock_contract_context(2), msg);
+    let (mut state, events) = execute_init(&mock_contract_context(2), &msg);
 
     let mint_msg = MintMsg {
         token_id: 1,
@@ -195,7 +196,7 @@ fn sender_is_not_minter_on_mint() {
         token_uri: None,
     };
 
-    let (_, _) = mint(mock_contract_context(alice), state, mint_msg);
+    let _ = execute_mint(&mock_contract_context(alice), &mut state, &mint_msg);
 }
 
 #[test]
@@ -212,7 +213,7 @@ fn token_already_minted_on_mint() {
         minter: mock_address(minter),
     };
 
-    let (state, events) = initialize(mock_contract_context(2), msg);
+    let (mut state, events) = execute_init(&mock_contract_context(2), &msg);
 
     let mint_msg = MintMsg {
         token_id: 1,
@@ -220,7 +221,7 @@ fn token_already_minted_on_mint() {
         token_uri: None,
     };
 
-    let (state, _) = mint(mock_contract_context(minter), state, mint_msg);
+    let _ = execute_mint(&mock_contract_context(minter), &mut state, &mint_msg);
 
     let mint_msg = MintMsg {
         token_id: 1,
@@ -228,7 +229,7 @@ fn token_already_minted_on_mint() {
         token_uri: None,
     };
 
-    let (_, _) = mint(mock_contract_context(minter), state, mint_msg);
+    let _ = execute_mint(&mock_contract_context(minter), &mut state, &mint_msg);
 }
 
 #[test]
@@ -245,12 +246,12 @@ fn proper_approve_for_all() {
         minter: mock_address(1),
     };
 
-    let (state, _) = initialize(mock_contract_context(2), msg);
+    let (mut state, _) = execute_init(&mock_contract_context(2), &msg);
 
     let approve_all_msg = ApproveForAllMsg {
         operator: mock_address(bob),
     };
-    let (state, _) = approve_for_all(mock_contract_context(alice), state, approve_all_msg);
+    let _ = execute_approve_for_all(&mock_contract_context(alice), &mut state, &approve_all_msg);
     assert_eq!(
         state.operator_approvals,
         BTreeMap::from([(
@@ -262,7 +263,7 @@ fn proper_approve_for_all() {
     let approve_all_msg = ApproveForAllMsg {
         operator: mock_address(alice),
     };
-    let (state, _) = approve_for_all(mock_contract_context(bob), state, approve_all_msg);
+    let _ = execute_approve_for_all(&mock_contract_context(bob), &mut state, &approve_all_msg);
     assert_eq!(
         state.operator_approvals,
         BTreeMap::from([
@@ -293,21 +294,21 @@ fn proper_revoke_for_all() {
         minter: mock_address(1),
     };
 
-    let (state, _) = initialize(mock_contract_context(2), msg);
+    let (mut state, _) = execute_init(&mock_contract_context(2), &msg);
 
     let approve_all_msg = ApproveForAllMsg {
         operator: mock_address(bob),
     };
-    let (state, _) = approve_for_all(mock_contract_context(alice), state, approve_all_msg);
+    let _ = execute_approve_for_all(&mock_contract_context(alice), &mut state, &approve_all_msg);
     let approve_all_msg = ApproveForAllMsg {
         operator: mock_address(jack),
     };
-    let (state, _) = approve_for_all(mock_contract_context(alice), state, approve_all_msg);
+    let _ = execute_approve_for_all(&mock_contract_context(alice), &mut state, &approve_all_msg);
 
     let revoke_all_msg = RevokeForAllMsg {
         operator: mock_address(bob),
     };
-    let (state, _) = revoke_for_all(mock_contract_context(alice), state, revoke_all_msg);
+    let _ = execute_revoke_for_all(&mock_contract_context(alice), &mut state, &revoke_all_msg);
     assert_eq!(
         state.operator_approvals,
         BTreeMap::from([(
@@ -319,7 +320,7 @@ fn proper_revoke_for_all() {
     let revoke_all_msg = RevokeForAllMsg {
         operator: mock_address(jack),
     };
-    let (state, _) = revoke_for_all(mock_contract_context(alice), state, revoke_all_msg);
+    let _ = execute_revoke_for_all(&mock_contract_context(alice), &mut state, &revoke_all_msg);
     assert_eq!(state.operator_approvals, BTreeMap::new());
 }
 
@@ -338,12 +339,12 @@ fn revoke_not_existing_operator() {
         minter: mock_address(1),
     };
 
-    let (state, _) = initialize(mock_contract_context(2), msg);
+    let (mut state, _) = execute_init(&mock_contract_context(2), &msg);
 
     let revoke_all_msg = RevokeForAllMsg {
         operator: mock_address(bob),
     };
-    let (_, _) = revoke_for_all(mock_contract_context(alice), state, revoke_all_msg);
+    let _ = execute_revoke_for_all(&mock_contract_context(alice), &mut state, &revoke_all_msg);
 }
 
 #[test]
@@ -360,7 +361,7 @@ fn proper_token_owner_approve() {
         minter: mock_address(minter),
     };
 
-    let (state, events) = initialize(mock_contract_context(2), msg);
+    let (mut state, events) = execute_init(&mock_contract_context(2), &msg);
 
     let mint_msg = MintMsg {
         token_id: 1,
@@ -368,14 +369,14 @@ fn proper_token_owner_approve() {
         token_uri: None,
     };
 
-    let (state, _) = mint(mock_contract_context(minter), state, mint_msg);
+    let _ = execute_mint(&mock_contract_context(minter), &mut state, &mint_msg);
 
     let approve_msg = ApproveMsg {
         spender: mock_address(bob),
         token_id: 1,
     };
 
-    let (state, _) = approve(mock_contract_context(alice), state, approve_msg);
+    let _ = execute_approve(&mock_contract_context(alice), &mut state, &approve_msg);
     assert_eq!(
         *state.token_info(1).unwrap(),
         TokenInfo {
@@ -401,7 +402,7 @@ fn proper_token_operator_approve() {
         minter: mock_address(minter),
     };
 
-    let (state, events) = initialize(mock_contract_context(2), msg);
+    let (mut state, events) = execute_init(&mock_contract_context(2), &msg);
 
     let mint_msg = MintMsg {
         token_id: 1,
@@ -409,19 +410,19 @@ fn proper_token_operator_approve() {
         token_uri: None,
     };
 
-    let (state, _) = mint(mock_contract_context(minter), state, mint_msg);
+    let _ = execute_mint(&mock_contract_context(minter), &mut state, &mint_msg);
 
     let approve_all_msg = ApproveForAllMsg {
         operator: mock_address(bob),
     };
-    let (state, _) = approve_for_all(mock_contract_context(alice), state, approve_all_msg);
+    let _ = execute_approve_for_all(&mock_contract_context(alice), &mut state, &approve_all_msg);
 
     let approve_msg = ApproveMsg {
         spender: mock_address(jack),
         token_id: 1,
     };
 
-    let (state, _) = approve(mock_contract_context(bob), state, approve_msg);
+    let _ = execute_approve(&mock_contract_context(bob), &mut state, &approve_msg);
     assert_eq!(
         *state.token_info(1).unwrap(),
         TokenInfo {
@@ -448,14 +449,14 @@ fn approve_not_minted_token() {
         minter: mock_address(minter),
     };
 
-    let (state, events) = initialize(mock_contract_context(2), msg);
+    let (mut state, events) = execute_init(&mock_contract_context(2), &msg);
 
     let approve_msg = ApproveMsg {
         spender: mock_address(jack),
         token_id: 1,
     };
 
-    let (_, _) = approve(mock_contract_context(bob), state, approve_msg);
+    let _ = execute_approve(&mock_contract_context(bob), &mut state, &approve_msg);
 }
 
 #[test]
@@ -473,7 +474,7 @@ fn not_owner_or_operator_approve() {
         minter: mock_address(minter),
     };
 
-    let (state, events) = initialize(mock_contract_context(2), msg);
+    let (mut state, events) = execute_init(&mock_contract_context(2), &msg);
 
     let mint_msg = MintMsg {
         token_id: 1,
@@ -481,14 +482,14 @@ fn not_owner_or_operator_approve() {
         token_uri: None,
     };
 
-    let (state, _) = mint(mock_contract_context(minter), state, mint_msg);
+    let _ = execute_mint(&mock_contract_context(minter), &mut state, &mint_msg);
 
     let approve_msg = ApproveMsg {
         spender: mock_address(bob),
         token_id: 1,
     };
 
-    let (_, _) = approve(mock_contract_context(bob), state, approve_msg);
+    let _ = execute_approve(&mock_contract_context(bob), &mut state, &approve_msg);
 }
 
 #[test]
@@ -505,7 +506,7 @@ fn proper_revoke() {
         minter: mock_address(minter),
     };
 
-    let (state, events) = initialize(mock_contract_context(2), msg);
+    let (mut state, events) = execute_init(&mock_contract_context(2), &msg);
 
     let mint_msg = MintMsg {
         token_id: 1,
@@ -513,21 +514,21 @@ fn proper_revoke() {
         token_uri: None,
     };
 
-    let (state, _) = mint(mock_contract_context(minter), state, mint_msg);
+    let _ = execute_mint(&mock_contract_context(minter), &mut state, &mint_msg);
 
     let approve_msg = ApproveMsg {
         spender: mock_address(bob),
         token_id: 1,
     };
 
-    let (state, _) = approve(mock_contract_context(alice), state, approve_msg);
+    let _ = execute_approve(&mock_contract_context(alice), &mut state, &approve_msg);
 
     let revoke_msg = RevokeMsg {
         spender: mock_address(bob),
         token_id: 1,
     };
 
-    let (state, _) = revoke(mock_contract_context(alice), state, revoke_msg);
+    let _ = execute_revoke(&mock_contract_context(alice), &mut state, &revoke_msg);
     assert_eq!(
         *state.token_info(1).unwrap(),
         TokenInfo {
@@ -553,14 +554,14 @@ fn revoke_not_minted_token() {
         minter: mock_address(minter),
     };
 
-    let (state, events) = initialize(mock_contract_context(2), msg);
+    let (mut state, events) = execute_init(&mock_contract_context(2), &msg);
 
     let revoke_msg = RevokeMsg {
         spender: mock_address(bob),
         token_id: 1,
     };
 
-    let (_, _) = revoke(mock_contract_context(alice), state, revoke_msg);
+    let _ = execute_revoke(&mock_contract_context(alice), &mut state, &revoke_msg);
 }
 
 #[test]
@@ -577,7 +578,7 @@ fn proper_owner_transfer() {
         minter: mock_address(minter),
     };
 
-    let (state, events) = initialize(mock_contract_context(2), msg);
+    let (mut state, events) = execute_init(&mock_contract_context(2), &msg);
 
     let mint_msg = MintMsg {
         token_id: 1,
@@ -585,14 +586,14 @@ fn proper_owner_transfer() {
         token_uri: None,
     };
 
-    let (state, _) = mint(mock_contract_context(minter), state, mint_msg);
+    let _ = execute_mint(&mock_contract_context(minter), &mut state, &mint_msg);
 
     let transfer_msg = TransferMsg {
         to: mock_address(bob),
         token_id: 1,
     };
 
-    let (state, _) = transfer(mock_contract_context(alice), state, transfer_msg);
+    let _ = execute_transfer(&mock_contract_context(alice), &mut state, &transfer_msg);
     assert_eq!(
         *state.token_info(1).unwrap(),
         TokenInfo {
@@ -617,7 +618,7 @@ fn proper_approved_transfer() {
         minter: mock_address(minter),
     };
 
-    let (state, events) = initialize(mock_contract_context(2), msg);
+    let (mut state, events) = execute_init(&mock_contract_context(2), &msg);
 
     let mint_msg = MintMsg {
         token_id: 1,
@@ -625,21 +626,21 @@ fn proper_approved_transfer() {
         token_uri: None,
     };
 
-    let (state, _) = mint(mock_contract_context(minter), state, mint_msg);
+    let _ = execute_mint(&mock_contract_context(minter), &mut state, &mint_msg);
 
     let approve_msg = ApproveMsg {
         spender: mock_address(bob),
         token_id: 1,
     };
 
-    let (state, _) = approve(mock_contract_context(alice), state, approve_msg);
+    let _ = execute_approve(&mock_contract_context(alice), &mut state, &approve_msg);
 
     let transfer_msg = TransferMsg {
         to: mock_address(bob),
         token_id: 1,
     };
 
-    let (state, _) = transfer(mock_contract_context(bob), state, transfer_msg);
+    let _ = execute_transfer(&mock_contract_context(bob), &mut state, &transfer_msg);
     assert_eq!(
         *state.token_info(1).unwrap(),
         TokenInfo {
@@ -664,7 +665,7 @@ fn proper_operator_transfer() {
         minter: mock_address(minter),
     };
 
-    let (state, events) = initialize(mock_contract_context(2), msg);
+    let (mut state, events) = execute_init(&mock_contract_context(2), &msg);
 
     let mint_msg = MintMsg {
         token_id: 1,
@@ -672,19 +673,19 @@ fn proper_operator_transfer() {
         token_uri: None,
     };
 
-    let (state, _) = mint(mock_contract_context(minter), state, mint_msg);
+    let _ = execute_mint(&mock_contract_context(minter), &mut state, &mint_msg);
 
     let approve_all_msg = ApproveForAllMsg {
         operator: mock_address(bob),
     };
-    let (state, _) = approve_for_all(mock_contract_context(alice), state, approve_all_msg);
+    let _ = execute_approve_for_all(&mock_contract_context(alice), &mut state, &approve_all_msg);
 
     let transfer_msg = TransferMsg {
         to: mock_address(bob),
         token_id: 1,
     };
 
-    let (state, _) = transfer(mock_contract_context(bob), state, transfer_msg);
+    let _ = execute_transfer(&mock_contract_context(bob), &mut state, &transfer_msg);
     assert_eq!(
         *state.token_info(1).unwrap(),
         TokenInfo {
@@ -710,14 +711,14 @@ fn transfer_not_minted_token() {
         minter: mock_address(minter),
     };
 
-    let (state, events) = initialize(mock_contract_context(2), msg);
+    let (mut state, events) = execute_init(&mock_contract_context(2), &msg);
 
     let transfer_msg = TransferMsg {
         to: mock_address(bob),
         token_id: 1,
     };
 
-    let (_, _) = transfer(mock_contract_context(bob), state, transfer_msg);
+    let _ = execute_transfer(&mock_contract_context(bob), &mut state, &transfer_msg);
 }
 
 #[test]
@@ -736,7 +737,7 @@ fn transfer_not_owner_or_approved_token() {
         minter: mock_address(minter),
     };
 
-    let (state, events) = initialize(mock_contract_context(2), msg);
+    let (mut state, events) = execute_init(&mock_contract_context(2), &msg);
 
     let mint_msg = MintMsg {
         token_id: 1,
@@ -744,14 +745,14 @@ fn transfer_not_owner_or_approved_token() {
         token_uri: None,
     };
 
-    let (state, _) = mint(mock_contract_context(minter), state, mint_msg);
+    let _ = execute_mint(&mock_contract_context(minter), &mut state, &mint_msg);
 
     let transfer_msg = TransferMsg {
         to: mock_address(jack),
         token_id: 1,
     };
 
-    let (_, _) = transfer(mock_contract_context(jack), state, transfer_msg);
+    let _ = execute_transfer(&mock_contract_context(jack), &mut state, &transfer_msg);
 }
 
 #[test]
@@ -768,7 +769,7 @@ fn proper_transfer_from() {
         minter: mock_address(minter),
     };
 
-    let (state, events) = initialize(mock_contract_context(2), msg);
+    let (mut state, events) = execute_init(&mock_contract_context(2), &msg);
 
     let mint_msg = MintMsg {
         token_id: 1,
@@ -776,7 +777,7 @@ fn proper_transfer_from() {
         token_uri: None,
     };
 
-    let (state, _) = mint(mock_contract_context(minter), state, mint_msg);
+    let _ = execute_mint(&mock_contract_context(minter), &mut state, &mint_msg);
 
     let transfer_msg = TransferFromMsg {
         from: mock_address(alice),
@@ -784,7 +785,7 @@ fn proper_transfer_from() {
         token_id: 1,
     };
 
-    let (state, _) = transfer_from(mock_contract_context(alice), state, transfer_msg);
+    let _ = execute_transfer_from(&mock_contract_context(alice), &mut state, &transfer_msg);
     assert_eq!(
         *state.token_info(1).unwrap(),
         TokenInfo {
@@ -810,7 +811,7 @@ fn transfer_from_not_minted_token() {
         minter: mock_address(minter),
     };
 
-    let (state, events) = initialize(mock_contract_context(2), msg);
+    let (mut state, events) = execute_init(&mock_contract_context(2), &msg);
 
     let transfer_msg = TransferFromMsg {
         from: mock_address(alice),
@@ -818,7 +819,7 @@ fn transfer_from_not_minted_token() {
         token_id: 1,
     };
 
-    let (_, _) = transfer_from(mock_contract_context(alice), state, transfer_msg);
+    let _ = execute_transfer_from(&mock_contract_context(alice), &mut state, &transfer_msg);
 }
 
 #[test]
@@ -834,7 +835,7 @@ fn proper_burn() {
         minter: mock_address(minter),
     };
 
-    let (state, events) = initialize(mock_contract_context(2), msg);
+    let (mut state, events) = execute_init(&mock_contract_context(2), &msg);
 
     let mint_msg = MintMsg {
         token_id: 1,
@@ -842,11 +843,11 @@ fn proper_burn() {
         token_uri: None,
     };
 
-    let (state, _) = mint(mock_contract_context(minter), state, mint_msg);
+    let _ = execute_mint(&mock_contract_context(minter), &mut state, &mint_msg);
 
     let burn_msg = BurnMsg { token_id: 1 };
 
-    let (state, _) = burn(mock_contract_context(alice), state, burn_msg);
+    let _ = execute_burn(&mock_contract_context(alice), &mut state, &burn_msg);
     assert_eq!(state.supply, 0);
     assert_eq!(state.is_minted(1), false);
 }
@@ -865,8 +866,8 @@ fn burn_not_minted_token() {
         minter: mock_address(minter),
     };
 
-    let (state, events) = initialize(mock_contract_context(2), msg);
+    let (mut state, events) = execute_init(&mock_contract_context(2), &msg);
 
     let burn_msg = BurnMsg { token_id: 1 };
-    let (_, _) = burn(mock_contract_context(alice), state, burn_msg);
+    let _ = execute_burn(&mock_contract_context(alice), &mut state, &burn_msg);
 }

@@ -2,11 +2,11 @@ use create_type_spec_derive::CreateTypeSpec;
 use pbc_contract_common::address::Address;
 use read_write_rpc_derive::ReadWriteRPC;
 
-use mpc20::{msg::InitialBalance, state::TokenInfo};
+use mpc20_base::{msg::InitialBalance, state::TokenInfo};
 use utils::events::NamedRPCEvent;
 
 #[derive(ReadWriteRPC, CreateTypeSpec, Clone, PartialEq, Debug)]
-pub struct InitMsg {
+pub struct Mpc20StakingInitMsg {
     pub deposit_token: Option<Address>,
     pub distribution_amount: u128,
     pub distribution_epoch: u64,
@@ -17,7 +17,7 @@ pub struct InitMsg {
     pub minter: Option<Address>,
 }
 
-impl InitMsg {
+impl Mpc20StakingInitMsg {
     pub fn validate(&self) {
         assert!(
             self.distribution_epoch > 0,

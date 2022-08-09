@@ -1,6 +1,6 @@
 use std::collections::BTreeMap;
 
-use mpc20::{
+use mpc20_base::{
     msg::TransferMsg,
     state::{MPC20ContractState, Minter, TokenInfo},
 };
@@ -12,8 +12,8 @@ use pbc_contract_common::{
 use utils::{decimal::DecimalRatio, events::into_rpc_call};
 
 use crate::{
-    contract::{claim, compound, initialize, stake, unstake},
-    msg::{ClaimMsg, CompoundMsg, InitMsg, StakeMsg, UnstakeMsg},
+    actions::{execute_claim, execute_compound, execute_init, execute_stake, execute_unstake},
+    msg::{ClaimMsg, CompoundMsg, Mpc20StakingInitMsg, StakeMsg, UnstakeMsg},
     state::{MPC20StakingContractState, Staker},
 };
 
@@ -54,7 +54,7 @@ fn test_staking() {
 
     let mut block_time = 100;
 
-    let msg = InitMsg {
+    let msg = Mpc20StakingInitMsg {
         deposit_token: None,
         distribution_amount: 1_000,
         distribution_epoch: 10,
@@ -67,7 +67,7 @@ fn test_staking() {
         initial_balances: vec![],
         minter: Some(mock_address(MINTER)),
     };
-    let (state, events) = initialize(mock_contract_context(MINTER, block_time), msg);
+    let (mut state, events) = execute_init(&mock_contract_context(MINTER, block_time), &msg);
     assert_eq!(events, vec![]);
     assert_eq!(
         state,
@@ -80,7 +80,7 @@ fn test_staking() {
             last_distributed: 100,
             stakers: BTreeMap::new(),
             compound_frequency: 100,
-            mpc20_base_state: MPC20ContractState {
+            mpc20: MPC20ContractState {
                 info: TokenInfo {
                     name: "Staking Token".to_string(),
                     symbol: "STKN".to_string(),
@@ -101,13 +101,13 @@ fn test_staking() {
     block_time = 105;
 
     let msg = StakeMsg { amount: 100 };
-    let (state, events) = stake(mock_contract_context(ALICE, block_time), state, msg);
+    let events = execute_stake(&mock_contract_context(ALICE, block_time), &mut state, &msg);
 
     assert_eq!(events.len(), 1);
     let mut eg = EventGroup::new();
     eg.send_from_original_sender(
         &mock_address(DEPOSIT_TOKEN),
-        into_rpc_call(TransferMsg {
+        into_rpc_call(&TransferMsg {
             to: mock_address(DEPOSIT_TOKEN),
             amount: 100,
         }),
@@ -134,7 +134,7 @@ fn test_staking() {
                 }
             )]),
             compound_frequency: 100,
-            mpc20_base_state: MPC20ContractState {
+            mpc20: MPC20ContractState {
                 info: TokenInfo {
                     name: "Staking Token".to_string(),
                     symbol: "STKN".to_string(),
@@ -155,7 +155,7 @@ fn test_staking() {
     block_time = 114;
 
     let msg = StakeMsg { amount: 100 };
-    let (state, events) = stake(mock_contract_context(BOB, block_time), state, msg);
+    let events = execute_stake(&mock_contract_context(BOB, block_time), &mut state, &msg);
     assert_eq!(
         state,
         MPC20StakingContractState {
@@ -186,7 +186,7 @@ fn test_staking() {
                 )
             ]),
             compound_frequency: 100,
-            mpc20_base_state: MPC20ContractState {
+            mpc20: MPC20ContractState {
                 info: TokenInfo {
                     name: "Staking Token".to_string(),
                     symbol: "STKN".to_string(),
@@ -207,7 +207,7 @@ fn test_staking() {
     block_time = 115;
 
     let msg = ClaimMsg { amount: None };
-    let (state, _) = claim(mock_contract_context(ALICE, block_time), state, msg);
+    let _ = execute_claim(&mock_contract_context(ALICE, block_time), &mut state, &msg);
     assert_eq!(
         state,
         MPC20StakingContractState {
@@ -238,7 +238,7 @@ fn test_staking() {
                 )
             ]),
             compound_frequency: 100,
-            mpc20_base_state: MPC20ContractState {
+            mpc20: MPC20ContractState {
                 info: TokenInfo {
                     name: "Staking Token".to_string(),
                     symbol: "STKN".to_string(),
@@ -257,7 +257,7 @@ fn test_staking() {
 
     block_time = 116;
     let msg = ClaimMsg { amount: None };
-    let (state, _) = claim(mock_contract_context(BOB, block_time), state, msg);
+    let _ = execute_claim(&mock_contract_context(BOB, block_time), &mut state, &msg);
     assert_eq!(
         state,
         MPC20StakingContractState {
@@ -288,7 +288,7 @@ fn test_staking() {
                 )
             ]),
             compound_frequency: 100,
-            mpc20_base_state: MPC20ContractState {
+            mpc20: MPC20ContractState {
                 info: TokenInfo {
                     name: "Staking Token".to_string(),
                     symbol: "STKN".to_string(),
@@ -308,7 +308,7 @@ fn test_staking() {
     // BOB unstakes half
     block_time = 120;
     let msg = UnstakeMsg { amount: 50 };
-    let (state, _) = unstake(mock_contract_context(BOB, block_time), state, msg);
+    let _ = execute_unstake(&mock_contract_context(BOB, block_time), &mut state, &msg);
     assert_eq!(
         state,
         MPC20StakingContractState {
@@ -339,7 +339,7 @@ fn test_staking() {
                 )
             ]),
             compound_frequency: 100,
-            mpc20_base_state: MPC20ContractState {
+            mpc20: MPC20ContractState {
                 info: TokenInfo {
                     name: "Staking Token".to_string(),
                     symbol: "STKN".to_string(),
@@ -359,9 +359,9 @@ fn test_staking() {
     // next distribution, ALICE share 66.7, BOB share 33.3
     block_time = 125;
     let msg = ClaimMsg { amount: Some(100) };
-    let (state, _) = claim(mock_contract_context(ALICE, block_time), state, msg);
+    let _ = execute_claim(&mock_contract_context(ALICE, block_time), &mut state, &msg);
     let msg = ClaimMsg { amount: None };
-    let (state, _) = claim(mock_contract_context(BOB, block_time), state, msg);
+    let _ = execute_claim(&mock_contract_context(BOB, block_time), &mut state, &msg);
     assert_eq!(
         state,
         MPC20StakingContractState {
@@ -392,7 +392,7 @@ fn test_staking() {
                 )
             ]),
             compound_frequency: 100,
-            mpc20_base_state: MPC20ContractState {
+            mpc20: MPC20ContractState {
                 info: TokenInfo {
                     name: "Staking Token".to_string(),
                     symbol: "STKN".to_string(),
@@ -413,7 +413,7 @@ fn test_staking() {
     block_time = 134;
 
     let msg = StakeMsg { amount: 50 };
-    let (state, events) = stake(mock_contract_context(JACK, block_time), state, msg);
+    let events = execute_stake(&mock_contract_context(JACK, block_time), &mut state, &msg);
     assert_eq!(
         state,
         MPC20StakingContractState {
@@ -453,7 +453,7 @@ fn test_staking() {
                 )
             ]),
             compound_frequency: 100,
-            mpc20_base_state: MPC20ContractState {
+            mpc20: MPC20ContractState {
                 info: TokenInfo {
                     name: "Staking Token".to_string(),
                     symbol: "STKN".to_string(),
@@ -474,9 +474,9 @@ fn test_staking() {
     block_time = 140;
 
     let msg = ClaimMsg { amount: Some(1) };
-    let (state, _) = claim(mock_contract_context(ALICE, block_time), state, msg.clone());
-    let (state, _) = claim(mock_contract_context(BOB, block_time), state, msg.clone());
-    let (state, _) = claim(mock_contract_context(JACK, block_time), state, msg.clone());
+    let _ = execute_claim(&mock_contract_context(ALICE, block_time), &mut state, &msg);
+    let _ = execute_claim(&mock_contract_context(BOB, block_time), &mut state, &msg);
+    let _ = execute_claim(&mock_contract_context(JACK, block_time), &mut state, &msg);
     assert_eq!(
         state,
         MPC20StakingContractState {
@@ -516,7 +516,7 @@ fn test_staking() {
                 )
             ]),
             compound_frequency: 100,
-            mpc20_base_state: MPC20ContractState {
+            mpc20: MPC20ContractState {
                 info: TokenInfo {
                     name: "Staking Token".to_string(),
                     symbol: "STKN".to_string(),
@@ -541,7 +541,7 @@ fn test_staking() {
     block_time = 144;
 
     let msg = CompoundMsg { amount: Some(100) };
-    let (state, events) = compound(mock_contract_context(JACK, block_time), state, msg);
+    let events = execute_compound(&mock_contract_context(JACK, block_time), &mut state, &msg);
     assert_eq!(
         state,
         MPC20StakingContractState {
@@ -581,7 +581,7 @@ fn test_staking() {
                 )
             ]),
             compound_frequency: 100,
-            mpc20_base_state: MPC20ContractState {
+            mpc20: MPC20ContractState {
                 info: TokenInfo {
                     name: "Staking Token".to_string(),
                     symbol: "STKN".to_string(),
@@ -611,7 +611,7 @@ fn invalid_distribution_amount() {
 
     let block_time = 100;
 
-    let msg = InitMsg {
+    let msg = Mpc20StakingInitMsg {
         deposit_token: None,
         distribution_amount: 0,
         distribution_epoch: 10,
@@ -624,7 +624,7 @@ fn invalid_distribution_amount() {
         initial_balances: vec![],
         minter: Some(mock_address(MINTER)),
     };
-    let (_, _) = initialize(mock_contract_context(MINTER, block_time), msg);
+    let (_, _) = execute_init(&mock_contract_context(MINTER, block_time), &msg);
 }
 
 #[test]
@@ -634,7 +634,7 @@ fn invalid_distribution_epoch() {
 
     let block_time = 100;
 
-    let msg = InitMsg {
+    let msg = Mpc20StakingInitMsg {
         deposit_token: None,
         distribution_amount: 1_000,
         distribution_epoch: 0,
@@ -647,7 +647,7 @@ fn invalid_distribution_epoch() {
         initial_balances: vec![],
         minter: Some(mock_address(MINTER)),
     };
-    let (_, _) = initialize(mock_contract_context(MINTER, block_time), msg);
+    let (_, _) = execute_init(&mock_contract_context(MINTER, block_time), &msg);
 }
 
 #[test]
@@ -661,7 +661,7 @@ fn unstake_more_then_staked() {
 
     let block_time = 150;
 
-    let state = MPC20StakingContractState {
+    let mut state = MPC20StakingContractState {
         deposit_token: mock_address(DEPOSIT_TOKEN),
         distribution_amount: 1_000,
         distribution_epoch: 10,
@@ -698,7 +698,7 @@ fn unstake_more_then_staked() {
             ),
         ]),
         compound_frequency: 100,
-        mpc20_base_state: MPC20ContractState {
+        mpc20: MPC20ContractState {
             info: TokenInfo {
                 name: "Staking Token".to_string(),
                 symbol: "STKN".to_string(),
@@ -720,7 +720,7 @@ fn unstake_more_then_staked() {
     };
 
     let msg = UnstakeMsg { amount: 151 };
-    let (_, _) = unstake(mock_contract_context(JACK, block_time), state, msg);
+    let _ = execute_unstake(&mock_contract_context(JACK, block_time), &mut state, &msg);
 }
 
 #[test]
@@ -734,7 +734,7 @@ fn claim_with_zero_rewards() {
 
     let block_time = 135;
 
-    let state = MPC20StakingContractState {
+    let mut state = MPC20StakingContractState {
         deposit_token: mock_address(DEPOSIT_TOKEN),
         distribution_amount: 1_000,
         distribution_epoch: 10,
@@ -771,7 +771,7 @@ fn claim_with_zero_rewards() {
             ),
         ]),
         compound_frequency: 100,
-        mpc20_base_state: MPC20ContractState {
+        mpc20: MPC20ContractState {
             info: TokenInfo {
                 name: "Staking Token".to_string(),
                 symbol: "STKN".to_string(),
@@ -793,7 +793,7 @@ fn claim_with_zero_rewards() {
     };
 
     let msg = ClaimMsg { amount: None };
-    let (_, _) = claim(mock_contract_context(JACK, block_time), state, msg);
+    let _ = execute_claim(&mock_contract_context(JACK, block_time), &mut state, &msg);
 }
 
 #[test]
@@ -807,7 +807,7 @@ fn claim_more_then_rewarded() {
 
     let block_time = 135;
 
-    let state = MPC20StakingContractState {
+    let mut state = MPC20StakingContractState {
         deposit_token: mock_address(DEPOSIT_TOKEN),
         distribution_amount: 1_000,
         distribution_epoch: 10,
@@ -844,7 +844,7 @@ fn claim_more_then_rewarded() {
             ),
         ]),
         compound_frequency: 100,
-        mpc20_base_state: MPC20ContractState {
+        mpc20: MPC20ContractState {
             info: TokenInfo {
                 name: "Staking Token".to_string(),
                 symbol: "STKN".to_string(),
@@ -866,7 +866,7 @@ fn claim_more_then_rewarded() {
     };
 
     let msg = ClaimMsg { amount: Some(11) };
-    let (_, _) = claim(mock_contract_context(JACK, block_time), state, msg);
+    let _ = execute_claim(&mock_contract_context(JACK, block_time), &mut state, &msg);
 }
 
 #[test]
@@ -880,7 +880,7 @@ fn compound_when_disabled() {
 
     let block_time = 135;
 
-    let state = MPC20StakingContractState {
+    let mut state = MPC20StakingContractState {
         deposit_token: mock_address(DEPOSIT_TOKEN),
         distribution_amount: 1_000,
         distribution_epoch: 10,
@@ -917,7 +917,7 @@ fn compound_when_disabled() {
             ),
         ]),
         compound_frequency: 100,
-        mpc20_base_state: MPC20ContractState {
+        mpc20: MPC20ContractState {
             info: TokenInfo {
                 name: "Staking Token".to_string(),
                 symbol: "STKN".to_string(),
@@ -939,7 +939,7 @@ fn compound_when_disabled() {
     };
 
     let msg = CompoundMsg { amount: None };
-    let (_, _) = compound(mock_contract_context(BOB, block_time), state, msg);
+    let _ = execute_compound(&mock_contract_context(BOB, block_time), &mut state, &msg);
 }
 
 #[test]
@@ -953,7 +953,7 @@ fn compound_to_often() {
 
     let block_time = 135;
 
-    let state = MPC20StakingContractState {
+    let mut state = MPC20StakingContractState {
         deposit_token: mock_address(DEPOSIT_TOKEN),
         distribution_amount: 1_000,
         distribution_epoch: 10,
@@ -990,7 +990,7 @@ fn compound_to_often() {
             ),
         ]),
         compound_frequency: 100,
-        mpc20_base_state: MPC20ContractState {
+        mpc20: MPC20ContractState {
             info: TokenInfo {
                 name: "Staking Token".to_string(),
                 symbol: "STKN".to_string(),
@@ -1012,7 +1012,7 @@ fn compound_to_often() {
     };
 
     let msg = CompoundMsg { amount: None };
-    let (_, _) = compound(mock_contract_context(BOB, block_time), state, msg);
+    let _ = execute_compound(&mock_contract_context(BOB, block_time), &mut state, &msg);
 }
 
 #[test]
@@ -1026,7 +1026,7 @@ fn compound_more_then_rewarded() {
 
     let block_time = 135;
 
-    let state = MPC20StakingContractState {
+    let mut state = MPC20StakingContractState {
         deposit_token: mock_address(DEPOSIT_TOKEN),
         distribution_amount: 1_000,
         distribution_epoch: 10,
@@ -1063,7 +1063,7 @@ fn compound_more_then_rewarded() {
             ),
         ]),
         compound_frequency: 100,
-        mpc20_base_state: MPC20ContractState {
+        mpc20: MPC20ContractState {
             info: TokenInfo {
                 name: "Staking Token".to_string(),
                 symbol: "STKN".to_string(),
@@ -1085,5 +1085,5 @@ fn compound_more_then_rewarded() {
     };
 
     let msg = CompoundMsg { amount: Some(250) };
-    let (_, _) = compound(mock_contract_context(BOB, block_time), state, msg);
+    let _ = execute_compound(&mock_contract_context(BOB, block_time), &mut state, &msg);
 }

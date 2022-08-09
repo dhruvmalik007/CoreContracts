@@ -1,6 +1,8 @@
+use crate::state::ContractState;
+
 use pbc_contract_common::{context::ContractContext, events::EventGroup};
 
-use crate::{
+use mpc1155_base::{
     actions::{
         execute_approve_for_all, execute_batch_burn, execute_batch_mint,
         execute_batch_transfer_from, execute_burn, execute_init, execute_mint,
@@ -10,91 +12,120 @@ use crate::{
         ApproveForAllMsg, BatchBurnMsg, BatchMintMsg, BatchTransferFromMsg, BurnMsg, InitMsg,
         MintMsg, RevokeForAllMsg, SetUriMsg, TransferFromMsg,
     },
-    state::MPC1155ContractState,
 };
 
 #[init]
-pub fn initialize(ctx: ContractContext, msg: InitMsg) -> (MPC1155ContractState, Vec<EventGroup>) {
-    execute_init(ctx, msg)
+pub fn initialize(ctx: ContractContext, msg: InitMsg) -> (ContractState, Vec<EventGroup>) {
+    let (mpc1155, events) = execute_init(&ctx, &msg);
+    let state = ContractState { mpc1155 };
+
+    (state, events)
 }
 
 #[action]
 pub fn set_uri(
     ctx: ContractContext,
-    state: MPC1155ContractState,
+    state: ContractState,
     msg: SetUriMsg,
-) -> (MPC1155ContractState, Vec<EventGroup>) {
-    execute_set_uri(ctx, state, &msg)
+) -> (ContractState, Vec<EventGroup>) {
+    let mut state = state;
+    let events = execute_set_uri(&ctx, &mut state.mpc1155, &msg);
+
+    (state, events)
 }
 
 #[action]
 pub fn mint(
     ctx: ContractContext,
-    state: MPC1155ContractState,
+    state: ContractState,
     msg: MintMsg,
-) -> (MPC1155ContractState, Vec<EventGroup>) {
-    execute_mint(ctx, state, &msg)
+) -> (ContractState, Vec<EventGroup>) {
+    let mut state = state;
+    let events = execute_mint(&ctx, &mut state.mpc1155, &msg);
+
+    (state, events)
 }
 
 #[action]
 pub fn batch_mint(
     ctx: ContractContext,
-    state: MPC1155ContractState,
+    state: ContractState,
     msg: BatchMintMsg,
-) -> (MPC1155ContractState, Vec<EventGroup>) {
-    execute_batch_mint(ctx, state, &msg)
+) -> (ContractState, Vec<EventGroup>) {
+    let mut state = state;
+    let events = execute_batch_mint(&ctx, &mut state.mpc1155, &msg);
+
+    (state, events)
 }
 
 #[action]
 pub fn transfer_from(
     ctx: ContractContext,
-    state: MPC1155ContractState,
+    state: ContractState,
     msg: TransferFromMsg,
-) -> (MPC1155ContractState, Vec<EventGroup>) {
-    execute_transfer_from(ctx, state, &msg)
+) -> (ContractState, Vec<EventGroup>) {
+    let mut state = state;
+    let events = execute_transfer_from(&ctx, &mut state.mpc1155, &msg);
+
+    (state, events)
 }
 
 #[action]
 pub fn batch_transfer_from(
     ctx: ContractContext,
-    state: MPC1155ContractState,
+    state: ContractState,
     msg: BatchTransferFromMsg,
-) -> (MPC1155ContractState, Vec<EventGroup>) {
-    execute_batch_transfer_from(ctx, state, &msg)
+) -> (ContractState, Vec<EventGroup>) {
+    let mut state = state;
+    let events = execute_batch_transfer_from(&ctx, &mut state.mpc1155, &msg);
+
+    (state, events)
 }
 
 #[action]
 pub fn burn(
     ctx: ContractContext,
-    state: MPC1155ContractState,
+    state: ContractState,
     msg: BurnMsg,
-) -> (MPC1155ContractState, Vec<EventGroup>) {
-    execute_burn(ctx, state, &msg)
+) -> (ContractState, Vec<EventGroup>) {
+    let mut state = state;
+    let events = execute_burn(&ctx, &mut state.mpc1155, &msg);
+
+    (state, events)
 }
 
 #[action]
 pub fn batch_burn(
     ctx: ContractContext,
-    state: MPC1155ContractState,
+    state: ContractState,
     msg: BatchBurnMsg,
-) -> (MPC1155ContractState, Vec<EventGroup>) {
-    execute_batch_burn(ctx, state, &msg)
+) -> (ContractState, Vec<EventGroup>) {
+    let mut state = state;
+    let events = execute_batch_burn(&ctx, &mut state.mpc1155, &msg);
+
+    (state, events)
 }
 
 #[action]
 pub fn approve_for_all(
     ctx: ContractContext,
-    state: MPC1155ContractState,
+    state: ContractState,
     msg: ApproveForAllMsg,
-) -> (MPC1155ContractState, Vec<EventGroup>) {
-    execute_approve_for_all(ctx, state, &msg)
+) -> (ContractState, Vec<EventGroup>) {
+    let mut state = state;
+    let events = execute_approve_for_all(&ctx, &mut state.mpc1155, &msg);
+
+    (state, events)
 }
 
 #[action]
 pub fn revoke_for_all(
     ctx: ContractContext,
-    state: MPC1155ContractState,
+    state: ContractState,
     msg: RevokeForAllMsg,
-) -> (MPC1155ContractState, Vec<EventGroup>) {
-    execute_revoke_for_all(ctx, state, &msg)
+) -> (ContractState, Vec<EventGroup>) {
+    let mut state = state;
+    let events = execute_revoke_for_all(&ctx, &mut state.mpc1155, &msg);
+
+    (state, events)
 }

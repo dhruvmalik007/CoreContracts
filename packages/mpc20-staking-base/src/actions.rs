@@ -5,21 +5,21 @@ use rust_decimal::prelude::*;
 use utils::events::into_rpc_call;
 
 use crate::{
-    msg::{ClaimMsg, CompoundMsg, InitMsg, StakeMsg, UnstakeMsg},
+    msg::{ClaimMsg, CompoundMsg, Mpc20StakingInitMsg, StakeMsg, UnstakeMsg},
     state::MPC20StakingContractState,
     ContractError,
 };
 
-use mpc20::{
+use mpc20_base::{
     actions::execute_init as mpc20_execute_init,
-    msg::{InitMsg as Mpc20InitMsg, TransferMsg as Mpc20TransferMsg},
+    msg::{Mpc20InitMsg, TransferMsg as Mpc20TransferMsg},
     state::Minter as Mpc20Minter,
 };
 use utils::decimal::DecimalRatio;
 
 pub fn execute_init(
-    ctx: ContractContext,
-    msg: InitMsg,
+    ctx: &ContractContext,
+    msg: &Mpc20StakingInitMsg,
 ) -> (MPC20StakingContractState, Vec<EventGroup>) {
     msg.validate();
 
@@ -36,11 +36,11 @@ pub fn execute_init(
         capacity: None,
     });
 
-    let (mpc20_base_state, _) = mpc20_execute_init(
+    let (mpc20, _) = mpc20_execute_init(
         ctx,
-        Mpc20InitMsg {
-            info: msg.info,
-            initial_balances: msg.initial_balances,
+        &Mpc20InitMsg {
+            info: msg.info.clone(),
+            initial_balances: msg.initial_balances.clone(),
             minter,
         },
     );
@@ -54,18 +54,17 @@ pub fn execute_init(
         last_distributed,
         stakers: BTreeMap::new(),
         compound_frequency: msg.compound_frequency,
-        mpc20_base_state,
+        mpc20,
     };
 
     (state, vec![])
 }
 
 pub fn execute_stake(
-    ctx: ContractContext,
-    state: MPC20StakingContractState,
-    msg: StakeMsg,
-) -> (MPC20StakingContractState, Vec<EventGroup>) {
-    let mut state = state;
+    ctx: &ContractContext,
+    state: &mut MPC20StakingContractState,
+    msg: &StakeMsg,
+) -> Vec<EventGroup> {
     let mut staker = state.get_staker(&ctx.sender);
 
     state.distribute_rewards(ctx.block_time as u64);
@@ -75,22 +74,21 @@ pub fn execute_stake(
     let mut event_group = EventGroup::new();
     event_group.send_from_original_sender(
         &state.deposit_token,
-        into_rpc_call(Mpc20TransferMsg {
+        into_rpc_call(&Mpc20TransferMsg {
             to: ctx.contract_address,
             amount: msg.amount,
         }),
         None,
     );
 
-    (state, vec![event_group])
+    vec![event_group]
 }
 
 pub fn execute_unstake(
-    ctx: ContractContext,
-    state: MPC20StakingContractState,
-    msg: UnstakeMsg,
-) -> (MPC20StakingContractState, Vec<EventGroup>) {
-    let mut state = state;
+    ctx: &ContractContext,
+    state: &mut MPC20StakingContractState,
+    msg: &UnstakeMsg,
+) -> Vec<EventGroup> {
     let mut staker = state.get_staker(&ctx.sender);
 
     assert!(
@@ -106,22 +104,21 @@ pub fn execute_unstake(
     let mut event_group = EventGroup::new();
     event_group.send_from_contract(
         &state.deposit_token,
-        into_rpc_call(Mpc20TransferMsg {
+        into_rpc_call(&Mpc20TransferMsg {
             to: ctx.sender,
             amount: msg.amount,
         }),
         None,
     );
 
-    (state, vec![event_group])
+    vec![event_group]
 }
 
 pub fn execute_claim(
-    ctx: ContractContext,
-    state: MPC20StakingContractState,
-    msg: ClaimMsg,
-) -> (MPC20StakingContractState, Vec<EventGroup>) {
-    let mut state = state;
+    ctx: &ContractContext,
+    state: &mut MPC20StakingContractState,
+    msg: &ClaimMsg,
+) -> Vec<EventGroup> {
     let mut staker = state.get_staker(&ctx.sender);
 
     state.distribute_rewards(ctx.block_time as u64);
@@ -146,18 +143,17 @@ pub fn execute_claim(
 
     staker.pending_reward = staker.pending_reward.checked_sub(claim_amount).unwrap();
     state.store_staker(&ctx.sender, &staker);
-    state.mpc20_base_state.mint_to(&ctx.sender, claim_amount);
+    state.mpc20.mint_to(&ctx.sender, claim_amount);
 
-    (state, vec![])
+    vec![]
 }
 
 // Works only when deposit_token == ctx.contract_address
 pub fn execute_compound(
-    ctx: ContractContext,
-    state: MPC20StakingContractState,
-    msg: CompoundMsg,
-) -> (MPC20StakingContractState, Vec<EventGroup>) {
-    let mut state = state;
+    ctx: &ContractContext,
+    state: &mut MPC20StakingContractState,
+    msg: &CompoundMsg,
+) -> Vec<EventGroup> {
     let mut staker = state.get_staker(&ctx.sender);
 
     state.distribute_rewards(ctx.block_time as u64);
@@ -190,9 +186,7 @@ pub fn execute_compound(
     staker.pending_reward = staker.pending_reward.checked_sub(compound_amount).unwrap();
     state.increase_stake_amount(&ctx.sender, &mut staker, compound_amount);
 
-    state
-        .mpc20_base_state
-        .mint_to(&ctx.contract_address, compound_amount);
+    state.mpc20.mint_to(&ctx.contract_address, compound_amount);
 
-    (state, vec![])
+    vec![]
 }

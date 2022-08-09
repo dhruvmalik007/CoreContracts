@@ -1,5 +1,5 @@
 [package]
-name = "mpc20-staking"
+name = "mpc1-multisig-base"
 version = "0.0.1"
 edition = "2021"
 
@@ -17,11 +17,10 @@ pbc_lib = { path = "../../sdk/pbc_lib" }
 read_write_rpc_derive = { path = "../../sdk/read_write_rpc_derive" }
 read_write_state_derive = { path = "../../sdk/read_write_state_derive" }
 create_type_spec_derive = { path = "../../sdk/create_type_spec_derive" }
-
-mpc20-base = { path = "../../packages/mpc20-base", features = ["abi"] }
-mpc20-staking-base = { path = "../../packages/mpc20-staking-base", features = ["abi"] }
+utils = { path = "../utils" }
 
 serde_json = "1.0"
+thiserror = "1.0.31"
 
 [features]
 abi = ["pbc_contract_common/abi", "pbc_contract_codegen/abi", "pbc_traits/abi", "create_type_spec_derive/abi"]

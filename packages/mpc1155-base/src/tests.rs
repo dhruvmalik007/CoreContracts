@@ -6,9 +6,10 @@ use pbc_contract_common::{
 };
 
 use crate::{
-    contract::{
-        approve_for_all, batch_burn, batch_mint, batch_transfer_from, burn, initialize, mint,
-        revoke_for_all, set_uri, transfer_from,
+    actions::{
+        execute_approve_for_all, execute_batch_burn, execute_batch_mint,
+        execute_batch_transfer_from, execute_burn, execute_init, execute_mint,
+        execute_revoke_for_all, execute_set_uri, execute_transfer_from,
     },
     msg::{
         ApproveForAllMsg, BatchBurnMsg, BatchMintMsg, BatchTransferFromMsg, BurnMsg, InitMsg,
@@ -46,14 +47,14 @@ fn mock_contract_context(sender: u8) -> ContractContext {
 }
 
 #[test]
-fn proper_initialize() {
+fn proper_execute_init() {
     let msg = InitMsg {
         owner: Some(mock_address(1)),
         uri: "ipfs://random".to_string(),
         minter: mock_address(3),
     };
 
-    let (state, events) = initialize(mock_contract_context(2), msg);
+    let (state, events) = execute_init(&mock_contract_context(2), &msg);
     assert_eq!(events.len(), 0);
     assert_eq!(
         state,
@@ -78,13 +79,13 @@ fn proper_set_uri() {
         minter: mock_address(3),
     };
 
-    let (state, _) = initialize(mock_contract_context(2), msg);
+    let (mut state, _) = execute_init(&mock_contract_context(2), &msg);
 
     let set_base_uri_msg = SetUriMsg {
         new_uri: "ipfs://new.new".to_string(),
     };
 
-    let (state, _) = set_uri(mock_contract_context(owner), state, set_base_uri_msg);
+    let _ = execute_set_uri(&mock_contract_context(owner), &mut state, &set_base_uri_msg);
     assert_eq!(state.uri, "ipfs://new.new".to_string());
 }
 
@@ -99,13 +100,13 @@ fn owner_is_not_set_on_set_base_uri() {
         minter: mock_address(3),
     };
 
-    let (state, _) = initialize(mock_contract_context(2), msg);
+    let (mut state, _) = execute_init(&mock_contract_context(2), &msg);
 
     let set_base_uri_msg = SetUriMsg {
         new_uri: "ipfs://new.new".to_string(),
     };
 
-    let (_, _) = set_uri(mock_contract_context(owner), state, set_base_uri_msg);
+    let _ = execute_set_uri(&mock_contract_context(owner), &mut state, &set_base_uri_msg);
 }
 
 #[test]
@@ -120,13 +121,13 @@ fn sender_is_not_owner_on_set_base_uri() {
         minter: mock_address(3),
     };
 
-    let (state, _) = initialize(mock_contract_context(2), msg);
+    let (mut state, _) = execute_init(&mock_contract_context(2), &msg);
 
     let set_base_uri_msg = SetUriMsg {
         new_uri: "ipfs://new.new".to_string(),
     };
 
-    let (_, _) = set_uri(mock_contract_context(alice), state, set_base_uri_msg);
+    let _ = execute_set_uri(&mock_contract_context(alice), &mut state, &set_base_uri_msg);
 }
 
 #[test]
@@ -142,7 +143,7 @@ fn proper_mint() {
         minter: mock_address(minter),
     };
 
-    let (state, _) = initialize(mock_contract_context(owner), msg);
+    let (mut state, _) = execute_init(&mock_contract_context(owner), &msg);
 
     let mint_msg = MintMsg {
         to: mock_address(alice),
@@ -153,7 +154,7 @@ fn proper_mint() {
         },
     };
 
-    let (state, _) = mint(mock_contract_context(minter), state, mint_msg);
+    let _ = execute_mint(&mock_contract_context(minter), &mut state, &mint_msg);
     assert_eq!(
         state.tokens,
         BTreeMap::from([(
@@ -197,8 +198,7 @@ fn proper_mint() {
     ]
     .into_iter()
     {
-        let (inner_state, _) = mint(mock_contract_context(minter), state.clone(), msg);
-        state = inner_state;
+        let _ = execute_mint(&mock_contract_context(minter), &mut state, &msg);
     }
 
     assert_eq!(
@@ -243,7 +243,7 @@ fn sender_is_not_minter_on_mint() {
         minter: mock_address(minter),
     };
 
-    let (state, _) = initialize(mock_contract_context(owner), msg);
+    let (mut state, _) = execute_init(&mock_contract_context(owner), &msg);
 
     let mint_msg = MintMsg {
         to: mock_address(alice),
@@ -254,7 +254,7 @@ fn sender_is_not_minter_on_mint() {
         },
     };
 
-    let (_, _) = mint(mock_contract_context(alice), state, mint_msg);
+    let _ = execute_mint(&mock_contract_context(alice), &mut state, &mint_msg);
 }
 
 #[test]
@@ -270,7 +270,7 @@ fn proper_batch_mint() {
         minter: mock_address(minter),
     };
 
-    let (mut state, _) = initialize(mock_contract_context(owner), msg);
+    let (mut state, _) = execute_init(&mock_contract_context(owner), &msg);
 
     for msg in vec![
         BatchMintMsg {
@@ -306,8 +306,7 @@ fn proper_batch_mint() {
     ]
     .into_iter()
     {
-        let (inner_state, _) = batch_mint(mock_contract_context(minter), state, msg);
-        state = inner_state;
+        let _ = execute_batch_mint(&mock_contract_context(minter), &mut state, &msg);
     }
 
     assert_eq!(
@@ -354,7 +353,7 @@ fn sender_is_not_minter_on_batch_mint() {
         minter: mock_address(minter),
     };
 
-    let (state, _) = initialize(mock_contract_context(owner), msg);
+    let (mut state, _) = execute_init(&mock_contract_context(owner), &msg);
 
     let batch_mint_msg = BatchMintMsg {
         to: mock_address(alice),
@@ -372,7 +371,7 @@ fn sender_is_not_minter_on_batch_mint() {
         ],
     };
 
-    let (_, _) = batch_mint(mock_contract_context(alice), state, batch_mint_msg);
+    let _ = execute_batch_mint(&mock_contract_context(alice), &mut state, &batch_mint_msg);
 }
 
 #[test]
@@ -387,12 +386,12 @@ fn proper_approve_for_all() {
         minter: mock_address(1),
     };
 
-    let (state, _) = initialize(mock_contract_context(2), msg);
+    let (mut state, _) = execute_init(&mock_contract_context(2), &msg);
 
     let approve_all_msg = ApproveForAllMsg {
         operator: mock_address(bob),
     };
-    let (state, _) = approve_for_all(mock_contract_context(alice), state, approve_all_msg);
+    let _ = execute_approve_for_all(&mock_contract_context(alice), &mut state, &approve_all_msg);
     assert_eq!(
         state.operator_approvals,
         BTreeMap::from([(
@@ -404,7 +403,7 @@ fn proper_approve_for_all() {
     let approve_all_msg = ApproveForAllMsg {
         operator: mock_address(alice),
     };
-    let (state, _) = approve_for_all(mock_contract_context(bob), state, approve_all_msg);
+    let _ = execute_approve_for_all(&mock_contract_context(bob), &mut state, &approve_all_msg);
     assert_eq!(
         state.operator_approvals,
         BTreeMap::from([
@@ -433,21 +432,21 @@ fn proper_revoke_for_all() {
         minter: mock_address(1),
     };
 
-    let (state, _) = initialize(mock_contract_context(2), msg);
+    let (mut state, _) = execute_init(&mock_contract_context(2), &msg);
 
     let approve_all_msg = ApproveForAllMsg {
         operator: mock_address(bob),
     };
-    let (state, _) = approve_for_all(mock_contract_context(alice), state, approve_all_msg);
+    let _ = execute_approve_for_all(&mock_contract_context(alice), &mut state, &approve_all_msg);
     let approve_all_msg = ApproveForAllMsg {
         operator: mock_address(jack),
     };
-    let (state, _) = approve_for_all(mock_contract_context(alice), state, approve_all_msg);
+    let _ = execute_approve_for_all(&mock_contract_context(alice), &mut state, &approve_all_msg);
 
     let revoke_all_msg = RevokeForAllMsg {
         operator: mock_address(bob),
     };
-    let (state, _) = revoke_for_all(mock_contract_context(alice), state, revoke_all_msg);
+    let _ = execute_revoke_for_all(&mock_contract_context(alice), &mut state, &revoke_all_msg);
     assert_eq!(
         state.operator_approvals,
         BTreeMap::from([(
@@ -459,7 +458,7 @@ fn proper_revoke_for_all() {
     let revoke_all_msg = RevokeForAllMsg {
         operator: mock_address(jack),
     };
-    let (state, _) = revoke_for_all(mock_contract_context(alice), state, revoke_all_msg);
+    let _ = execute_revoke_for_all(&mock_contract_context(alice), &mut state, &revoke_all_msg);
     assert_eq!(state.operator_approvals, BTreeMap::new());
 }
 
@@ -476,12 +475,12 @@ fn revoke_not_existing_operator() {
         minter: mock_address(1),
     };
 
-    let (state, _) = initialize(mock_contract_context(2), msg);
+    let (mut state, _) = execute_init(&mock_contract_context(2), &msg);
 
     let revoke_all_msg = RevokeForAllMsg {
         operator: mock_address(bob),
     };
-    let (_, _) = revoke_for_all(mock_contract_context(alice), state, revoke_all_msg);
+    let _ = execute_revoke_for_all(&mock_contract_context(alice), &mut state, &revoke_all_msg);
 }
 
 #[test]
@@ -498,7 +497,7 @@ fn proper_transfer_from() {
         minter: mock_address(minter),
     };
 
-    let (mut state, _) = initialize(mock_contract_context(owner), msg);
+    let (mut state, _) = execute_init(&mock_contract_context(owner), &msg);
 
     for msg in vec![
         BatchMintMsg {
@@ -534,8 +533,7 @@ fn proper_transfer_from() {
     ]
     .into_iter()
     {
-        let (inner_state, _) = batch_mint(mock_contract_context(minter), state, msg);
-        state = inner_state;
+        let _ = execute_batch_mint(&mock_contract_context(minter), &mut state, &msg);
     }
 
     for (sender, msg) in vec![
@@ -586,8 +584,7 @@ fn proper_transfer_from() {
     ]
     .into_iter()
     {
-        let (inner_state, _) = transfer_from(mock_contract_context(sender), state, msg);
-        state = inner_state;
+        let _ = execute_transfer_from(&mock_contract_context(sender), &mut state, &msg);
     }
 
     assert_eq!(
@@ -616,7 +613,7 @@ fn proper_transfer_from() {
     let approve_all_msg = ApproveForAllMsg {
         operator: mock_address(jack),
     };
-    let (state, _) = approve_for_all(mock_contract_context(alice), state, approve_all_msg);
+    let _ = execute_approve_for_all(&mock_contract_context(alice), &mut state, &approve_all_msg);
 
     let transfer_from_msg = TransferFromMsg {
         from: mock_address(alice),
@@ -627,7 +624,7 @@ fn proper_transfer_from() {
         },
     };
 
-    let (state, _) = transfer_from(mock_contract_context(jack), state, transfer_from_msg);
+    let _ = execute_transfer_from(&mock_contract_context(jack), &mut state, &transfer_from_msg);
     assert_eq!(
         state.balances,
         BTreeMap::from([
@@ -665,7 +662,7 @@ fn transfer_not_owned_token() {
         minter: mock_address(minter),
     };
 
-    let (state, _) = initialize(mock_contract_context(owner), msg);
+    let (mut state, _) = execute_init(&mock_contract_context(owner), &msg);
 
     let mint_msg = MintMsg {
         to: mock_address(alice),
@@ -676,7 +673,7 @@ fn transfer_not_owned_token() {
         },
     };
 
-    let (state, _) = mint(mock_contract_context(minter), state, mint_msg);
+    let _ = execute_mint(&mock_contract_context(minter), &mut state, &mint_msg);
 
     let transfer_from_msg = TransferFromMsg {
         from: mock_address(alice),
@@ -686,7 +683,7 @@ fn transfer_not_owned_token() {
             amount: 1,
         },
     };
-    let (_, _) = transfer_from(mock_contract_context(bob), state, transfer_from_msg);
+    let _ = execute_transfer_from(&mock_contract_context(bob), &mut state, &transfer_from_msg);
 }
 
 #[test]
@@ -703,7 +700,7 @@ fn transfer_more_than_balance() {
         minter: mock_address(minter),
     };
 
-    let (state, _) = initialize(mock_contract_context(owner), msg);
+    let (mut state, _) = execute_init(&mock_contract_context(owner), &msg);
 
     let mint_msg = MintMsg {
         to: mock_address(alice),
@@ -714,7 +711,7 @@ fn transfer_more_than_balance() {
         },
     };
 
-    let (state, _) = mint(mock_contract_context(minter), state, mint_msg);
+    let _ = execute_mint(&mock_contract_context(minter), &mut state, &mint_msg);
 
     let transfer_from_msg = TransferFromMsg {
         from: mock_address(alice),
@@ -724,7 +721,11 @@ fn transfer_more_than_balance() {
             amount: 11,
         },
     };
-    let (_, _) = transfer_from(mock_contract_context(alice), state, transfer_from_msg);
+    let _ = execute_transfer_from(
+        &mock_contract_context(alice),
+        &mut state,
+        &transfer_from_msg,
+    );
 }
 
 #[test]
@@ -740,7 +741,7 @@ fn proper_batch_transfer_from() {
         minter: mock_address(minter),
     };
 
-    let (state, _) = initialize(mock_contract_context(owner), msg);
+    let (mut state, _) = execute_init(&mock_contract_context(owner), &msg);
 
     let batch_mint_msg = BatchMintMsg {
         to: mock_address(alice),
@@ -757,7 +758,7 @@ fn proper_batch_transfer_from() {
             },
         ],
     };
-    let (state, _) = batch_mint(mock_contract_context(minter), state, batch_mint_msg);
+    let _ = execute_batch_mint(&mock_contract_context(minter), &mut state, &batch_mint_msg);
 
     let batch_transfer_from_msg = BatchTransferFromMsg {
         from: mock_address(alice),
@@ -773,8 +774,11 @@ fn proper_batch_transfer_from() {
             },
         ],
     };
-    let (state, _) =
-        batch_transfer_from(mock_contract_context(alice), state, batch_transfer_from_msg);
+    let _ = execute_batch_transfer_from(
+        &mock_contract_context(alice),
+        &mut state,
+        &batch_transfer_from_msg,
+    );
 
     assert_eq!(
         state.balances,
@@ -805,7 +809,7 @@ fn batch_transfer_not_owned_token() {
         minter: mock_address(minter),
     };
 
-    let (state, _) = initialize(mock_contract_context(owner), msg);
+    let (mut state, _) = execute_init(&mock_contract_context(owner), &msg);
 
     let mint_msg = MintMsg {
         to: mock_address(alice),
@@ -816,7 +820,7 @@ fn batch_transfer_not_owned_token() {
         },
     };
 
-    let (state, _) = mint(mock_contract_context(minter), state, mint_msg);
+    let _ = execute_mint(&mock_contract_context(minter), &mut state, &mint_msg);
 
     let batch_transfer_from_msg = BatchTransferFromMsg {
         from: mock_address(alice),
@@ -826,7 +830,11 @@ fn batch_transfer_not_owned_token() {
             amount: 1,
         }],
     };
-    let (_, _) = batch_transfer_from(mock_contract_context(bob), state, batch_transfer_from_msg);
+    let _ = execute_batch_transfer_from(
+        &mock_contract_context(bob),
+        &mut state,
+        &batch_transfer_from_msg,
+    );
 }
 
 #[test]
@@ -843,7 +851,7 @@ fn batch_transfer_more_than_balance() {
         minter: mock_address(minter),
     };
 
-    let (state, _) = initialize(mock_contract_context(owner), msg);
+    let (mut state, _) = execute_init(&mock_contract_context(owner), &msg);
 
     let mint_msg = MintMsg {
         to: mock_address(alice),
@@ -854,7 +862,7 @@ fn batch_transfer_more_than_balance() {
         },
     };
 
-    let (state, _) = mint(mock_contract_context(minter), state, mint_msg);
+    let _ = execute_mint(&mock_contract_context(minter), &mut state, &mint_msg);
 
     let batch_transfer_from_msg = BatchTransferFromMsg {
         from: mock_address(alice),
@@ -864,7 +872,11 @@ fn batch_transfer_more_than_balance() {
             amount: 11,
         }],
     };
-    let (_, _) = batch_transfer_from(mock_contract_context(alice), state, batch_transfer_from_msg);
+    let _ = execute_batch_transfer_from(
+        &mock_contract_context(alice),
+        &mut state,
+        &batch_transfer_from_msg,
+    );
 }
 
 #[test]
@@ -879,7 +891,7 @@ fn proper_burn() {
         minter: mock_address(minter),
     };
 
-    let (state, _) = initialize(mock_contract_context(owner), msg);
+    let (mut state, _) = execute_init(&mock_contract_context(owner), &msg);
 
     let mint_msg = MintMsg {
         to: mock_address(alice),
@@ -890,7 +902,7 @@ fn proper_burn() {
         },
     };
 
-    let (state, _) = mint(mock_contract_context(minter), state, mint_msg);
+    let _ = execute_mint(&mock_contract_context(minter), &mut state, &mint_msg);
 
     let burn_msg = BurnMsg {
         from: mock_address(alice),
@@ -899,7 +911,7 @@ fn proper_burn() {
             amount: 1,
         },
     };
-    let (state, _) = burn(mock_contract_context(alice), state, burn_msg);
+    let _ = execute_burn(&mock_contract_context(alice), &mut state, &burn_msg);
     assert_eq!(
         state.balances,
         BTreeMap::from([(1, BTreeMap::from([(mock_address(alice), 9)]))])
@@ -920,7 +932,7 @@ fn burn_not_owned_token() {
         minter: mock_address(minter),
     };
 
-    let (state, _) = initialize(mock_contract_context(owner), msg);
+    let (mut state, _) = execute_init(&mock_contract_context(owner), &msg);
 
     let mint_msg = MintMsg {
         to: mock_address(alice),
@@ -931,7 +943,7 @@ fn burn_not_owned_token() {
         },
     };
 
-    let (state, _) = mint(mock_contract_context(minter), state, mint_msg);
+    let _ = execute_mint(&mock_contract_context(minter), &mut state, &mint_msg);
 
     let burn_msg = BurnMsg {
         from: mock_address(alice),
@@ -940,7 +952,7 @@ fn burn_not_owned_token() {
             amount: 1,
         },
     };
-    let (_, _) = burn(mock_contract_context(bob), state, burn_msg);
+    let _ = execute_burn(&mock_contract_context(bob), &mut state, &burn_msg);
 }
 
 #[test]
@@ -957,7 +969,7 @@ fn burn_more_than_balance() {
         minter: mock_address(minter),
     };
 
-    let (state, _) = initialize(mock_contract_context(owner), msg);
+    let (mut state, _) = execute_init(&mock_contract_context(owner), &msg);
 
     let mint_msg = MintMsg {
         to: mock_address(alice),
@@ -968,7 +980,7 @@ fn burn_more_than_balance() {
         },
     };
 
-    let (state, _) = mint(mock_contract_context(minter), state, mint_msg);
+    let _ = execute_mint(&mock_contract_context(minter), &mut state, &mint_msg);
 
     let burn_msg = BurnMsg {
         from: mock_address(alice),
@@ -977,7 +989,7 @@ fn burn_more_than_balance() {
             amount: 11,
         },
     };
-    let (_, _) = burn(mock_contract_context(alice), state, burn_msg);
+    let _ = execute_burn(&mock_contract_context(alice), &mut state, &burn_msg);
 }
 
 #[test]
@@ -992,7 +1004,7 @@ fn proper_batch_burn() {
         minter: mock_address(minter),
     };
 
-    let (state, _) = initialize(mock_contract_context(owner), msg);
+    let (mut state, _) = execute_init(&mock_contract_context(owner), &msg);
 
     let mint_msg = MintMsg {
         to: mock_address(alice),
@@ -1003,7 +1015,7 @@ fn proper_batch_burn() {
         },
     };
 
-    let (state, _) = mint(mock_contract_context(minter), state, mint_msg);
+    let _ = execute_mint(&mock_contract_context(minter), &mut state, &mint_msg);
 
     let mint_msg = MintMsg {
         to: mock_address(alice),
@@ -1014,7 +1026,7 @@ fn proper_batch_burn() {
         },
     };
 
-    let (state, _) = mint(mock_contract_context(minter), state, mint_msg);
+    let _ = execute_mint(&mock_contract_context(minter), &mut state, &mint_msg);
 
     let batch_burn_msg = BatchBurnMsg {
         from: mock_address(alice),
@@ -1029,7 +1041,7 @@ fn proper_batch_burn() {
             },
         ],
     };
-    let (state, _) = batch_burn(mock_contract_context(alice), state, batch_burn_msg);
+    let _ = execute_batch_burn(&mock_contract_context(alice), &mut state, &batch_burn_msg);
     assert_eq!(
         state.balances,
         BTreeMap::from([
@@ -1053,7 +1065,7 @@ fn batch_burn_not_owned_token() {
         minter: mock_address(minter),
     };
 
-    let (state, _) = initialize(mock_contract_context(owner), msg);
+    let (mut state, _) = execute_init(&mock_contract_context(owner), &msg);
 
     let mint_msg = MintMsg {
         to: mock_address(alice),
@@ -1064,7 +1076,7 @@ fn batch_burn_not_owned_token() {
         },
     };
 
-    let (state, _) = mint(mock_contract_context(minter), state, mint_msg);
+    let _ = execute_mint(&mock_contract_context(minter), &mut state, &mint_msg);
 
     let mint_msg = MintMsg {
         to: mock_address(alice),
@@ -1075,7 +1087,7 @@ fn batch_burn_not_owned_token() {
         },
     };
 
-    let (state, _) = mint(mock_contract_context(minter), state, mint_msg);
+    let _ = execute_mint(&mock_contract_context(minter), &mut state, &mint_msg);
 
     let batch_burn_msg = BatchBurnMsg {
         from: mock_address(alice),
@@ -1090,7 +1102,7 @@ fn batch_burn_not_owned_token() {
             },
         ],
     };
-    let (_, _) = batch_burn(mock_contract_context(bob), state, batch_burn_msg);
+    let _ = execute_batch_burn(&mock_contract_context(bob), &mut state, &batch_burn_msg);
 }
 
 #[test]
@@ -1107,7 +1119,7 @@ fn batch_burn_more_than_balance() {
         minter: mock_address(minter),
     };
 
-    let (state, _) = initialize(mock_contract_context(owner), msg);
+    let (mut state, _) = execute_init(&mock_contract_context(owner), &msg);
 
     let mint_msg = MintMsg {
         to: mock_address(alice),
@@ -1118,7 +1130,7 @@ fn batch_burn_more_than_balance() {
         },
     };
 
-    let (state, _) = mint(mock_contract_context(minter), state, mint_msg);
+    let _ = execute_mint(&mock_contract_context(minter), &mut state, &mint_msg);
 
     let batch_burn_msg = BatchBurnMsg {
         from: mock_address(alice),
@@ -1127,5 +1139,5 @@ fn batch_burn_more_than_balance() {
             amount: 11,
         }],
     };
-    let (_, _) = batch_burn(mock_contract_context(bob), state, batch_burn_msg);
+    let _ = execute_batch_burn(&mock_contract_context(bob), &mut state, &batch_burn_msg);
 }

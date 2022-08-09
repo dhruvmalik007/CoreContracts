@@ -13,13 +13,13 @@ pub struct InitialBalance {
 }
 
 #[derive(ReadWriteRPC, CreateTypeSpec, Clone, PartialEq, Debug)]
-pub struct InitMsg {
+pub struct Mpc20InitMsg {
     pub info: TokenInfo,
     pub initial_balances: Vec<InitialBalance>,
     pub minter: Option<Minter>,
 }
 
-impl InitMsg {
+impl Mpc20InitMsg {
     pub fn capacity(&self) -> Option<u128> {
         self.minter.as_ref().and_then(|m| m.capacity)
     }
