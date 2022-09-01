@@ -18,6 +18,11 @@ read_write_rpc_derive = { path = "../../sdk/read_write_rpc_derive" }
 read_write_state_derive = { path = "../../sdk/read_write_state_derive" }
 create_type_spec_derive = { path = "../../sdk/create_type_spec_derive" }
 
+utils = { path = "../utils", features = ["abi"] }
+mpc20-base = { path = "../mpc20-base" }
+ownable-base = { path = "../ownable-base" }
+
+hex = "0.4"
 thiserror = "1.0.31"
 
 [features]

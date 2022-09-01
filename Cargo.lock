@@ -545,6 +545,7 @@ name = "token-sale"
 version = "0.0.1"
 dependencies = [
  "create_type_spec_derive",
+ "ownable-base",
  "pbc_contract_codegen",
  "pbc_contract_common",
  "pbc_lib",
@@ -552,6 +553,7 @@ dependencies = [
  "read_write_rpc_derive",
  "read_write_state_derive",
  "serde_json",
+ "token-sale-base",
 ]
 
 [[package]]
@@ -559,6 +561,9 @@ name = "token-sale-base"
 version = "0.0.1"
 dependencies = [
  "create_type_spec_derive",
+ "hex",
+ "mpc20-base",
+ "ownable-base",
  "pbc_contract_codegen",
  "pbc_contract_common",
  "pbc_lib",
@@ -566,6 +571,7 @@ dependencies = [
  "read_write_rpc_derive",
  "read_write_state_derive",
  "thiserror",
+ "utils",
 ]
 
 [[package]]
