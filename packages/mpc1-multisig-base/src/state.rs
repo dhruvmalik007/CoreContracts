@@ -5,7 +5,7 @@ use pbc_contract_common::address::Address;
 use read_write_rpc_derive::ReadWriteRPC;
 use read_write_state_derive::ReadWriteState;
 
-#[derive(ReadWriteState, CreateTypeSpec, Clone, PartialEq, Debug)]
+#[derive(ReadWriteState, CreateTypeSpec, Clone, PartialEq, Eq, Debug)]
 pub struct MPC1MultisigContractState {
     pub members: BTreeMap<Address, u64>,
     pub threshold_weight: u64,
@@ -23,7 +23,7 @@ impl MPC1MultisigContractState {
     }
 }
 
-#[derive(ReadWriteRPC, ReadWriteState, CreateTypeSpec, Clone, PartialEq, Debug)]
+#[derive(ReadWriteRPC, ReadWriteState, CreateTypeSpec, Clone, PartialEq, Eq, Debug)]
 pub struct Proposal {
     pub title: String,
     pub description: String,
@@ -72,7 +72,7 @@ impl Proposal {
     }
 
     pub fn current_status(&self, block_time: u64) -> ProposalStatus {
-        let mut status = self.status.clone();
+        let mut status = self.status;
         if status == VOTING_PHASE_STATUS {
             if self.is_passed() {
                 status = ACCEPTED_STATUS;
@@ -95,7 +95,7 @@ impl Proposal {
     }
 }
 
-#[derive(ReadWriteRPC, ReadWriteState, CreateTypeSpec, Clone, PartialEq, Debug)]
+#[derive(ReadWriteRPC, ReadWriteState, CreateTypeSpec, Clone, PartialEq, Eq, Debug)]
 pub struct ProposalExecuteCall {
     pub contract: Address,
     pub payload: Vec<u8>,
@@ -111,7 +111,7 @@ pub type Vote = u8;
 pub const YES_VOTE: Vote = 1;
 pub const NO_VOTE: Vote = 2;
 
-#[derive(ReadWriteRPC, ReadWriteState, CreateTypeSpec, Clone, PartialEq, Debug)]
+#[derive(ReadWriteRPC, ReadWriteState, CreateTypeSpec, Clone, PartialEq, Eq, Debug)]
 pub struct SubmittedVotes {
     pub yes: u64,
     pub no: u64,
@@ -123,7 +123,7 @@ impl SubmittedVotes {
     }
 }
 
-#[derive(ReadWriteRPC, ReadWriteState, CreateTypeSpec, Clone, PartialEq, Debug)]
+#[derive(ReadWriteRPC, ReadWriteState, CreateTypeSpec, Clone, PartialEq, Eq, Debug)]
 pub struct Ballot {
     pub member: Address,
     pub vote: Vote,

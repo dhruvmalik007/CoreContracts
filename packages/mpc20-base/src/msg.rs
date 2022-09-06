@@ -6,13 +6,13 @@ use crate::state::{Minter, TokenInfo};
 
 use utils::events::NamedRPCEvent;
 
-#[derive(ReadWriteRPC, CreateTypeSpec, Clone, PartialEq, Debug)]
+#[derive(ReadWriteRPC, CreateTypeSpec, Clone, PartialEq, Eq, Debug)]
 pub struct InitialBalance {
     pub address: Address,
     pub amount: u128,
 }
 
-#[derive(ReadWriteRPC, CreateTypeSpec, Clone, PartialEq, Debug)]
+#[derive(ReadWriteRPC, CreateTypeSpec, Clone, PartialEq, Eq, Debug)]
 pub struct Mpc20InitMsg {
     pub info: TokenInfo,
     pub initial_balances: Vec<InitialBalance>,
@@ -71,7 +71,7 @@ impl Mpc20InitMsg {
     }
 }
 
-#[derive(ReadWriteRPC, CreateTypeSpec, Clone, PartialEq, Debug)]
+#[derive(ReadWriteRPC, CreateTypeSpec, Clone, PartialEq, Eq, Debug)]
 pub struct MintMsg {
     pub recipient: Address,
     pub amount: u128,
@@ -83,7 +83,7 @@ impl NamedRPCEvent for MintMsg {
     }
 }
 
-#[derive(ReadWriteRPC, CreateTypeSpec, Clone, PartialEq, Debug)]
+#[derive(ReadWriteRPC, CreateTypeSpec, Clone, PartialEq, Eq, Debug)]
 pub struct TransferMsg {
     pub to: Address,
     pub amount: u128,
@@ -95,7 +95,7 @@ impl NamedRPCEvent for TransferMsg {
     }
 }
 
-#[derive(ReadWriteRPC, CreateTypeSpec, Clone, PartialEq, Debug)]
+#[derive(ReadWriteRPC, CreateTypeSpec, Clone, PartialEq, Eq, Debug)]
 pub struct TransferFromMsg {
     pub owner: Address,
     pub to: Address,
@@ -108,7 +108,7 @@ impl NamedRPCEvent for TransferFromMsg {
     }
 }
 
-#[derive(ReadWriteRPC, CreateTypeSpec, Clone, PartialEq, Debug)]
+#[derive(ReadWriteRPC, CreateTypeSpec, Clone, PartialEq, Eq, Debug)]
 pub struct BurnMsg {
     pub amount: u128,
 }
@@ -119,7 +119,7 @@ impl NamedRPCEvent for BurnMsg {
     }
 }
 
-#[derive(ReadWriteRPC, CreateTypeSpec, Clone, PartialEq, Debug)]
+#[derive(ReadWriteRPC, CreateTypeSpec, Clone, PartialEq, Eq, Debug)]
 pub struct BurnFromMsg {
     pub owner: Address,
     pub amount: u128,
@@ -131,7 +131,7 @@ impl NamedRPCEvent for BurnFromMsg {
     }
 }
 
-#[derive(ReadWriteRPC, CreateTypeSpec, Clone, PartialEq, Debug)]
+#[derive(ReadWriteRPC, CreateTypeSpec, Clone, PartialEq, Eq, Debug)]
 pub struct ApproveMsg {
     pub spender: Address,
     pub amount: u128,
@@ -143,7 +143,7 @@ impl NamedRPCEvent for ApproveMsg {
     }
 }
 
-#[derive(ReadWriteRPC, CreateTypeSpec, Clone, PartialEq, Debug)]
+#[derive(ReadWriteRPC, CreateTypeSpec, Clone, PartialEq, Eq, Debug)]
 pub struct IncreaseAllowanceMsg {
     pub spender: Address,
     pub amount: u128,
@@ -155,7 +155,7 @@ impl NamedRPCEvent for IncreaseAllowanceMsg {
     }
 }
 
-#[derive(ReadWriteRPC, CreateTypeSpec, Clone, PartialEq, Debug)]
+#[derive(ReadWriteRPC, CreateTypeSpec, Clone, PartialEq, Eq, Debug)]
 pub struct DecreaseAllowanceMsg {
     pub spender: Address,
     pub amount: u128,

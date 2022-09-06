@@ -10,13 +10,13 @@ crate-type = ["cdylib", "rlib"]
 cargo-partisia = "0.2.9"
 
 [dependencies]
-pbc_contract_common = { path = "../../sdk/pbc_contract_common" }
-pbc_contract_codegen = { path = "../../sdk/pbc_contract_codegen" }
-pbc_traits = { path = "../../sdk/pbc_traits" }
-pbc_lib = { path = "../../sdk/pbc_lib" }
-read_write_rpc_derive = { path = "../../sdk/read_write_rpc_derive" }
-read_write_state_derive = { path = "../../sdk/read_write_state_derive" }
-create_type_spec_derive = { path = "../../sdk/create_type_spec_derive" }
+pbc_contract_common = { git = "https://git@gitlab.com/partisiablockchain/language/contract-sdk.git", tag = "9.1.1" }
+pbc_traits = { git = "https://git@gitlab.com/partisiablockchain/language/contract-sdk.git", tag = "9.1.1" }
+pbc_lib = { git = "https://git@gitlab.com/partisiablockchain/language/contract-sdk.git", tag = "9.1.1" }
+read_write_rpc_derive = { git = "https://git@gitlab.com/partisiablockchain/language/contract-sdk.git", tag = "9.1.1" }
+read_write_state_derive = { git = "https://git@gitlab.com/partisiablockchain/language/contract-sdk.git", tag = "9.1.1" }
+create_type_spec_derive = { git = "https://git@gitlab.com/partisiablockchain/language/contract-sdk.git", tag = "9.1.1" }
+pbc_contract_codegen = { git = "https://git@gitlab.com/partisiablockchain/language/contract-sdk.git", tag = "9.1.1" }
 
 mpc1-multisig-base = { path = "../../packages/mpc1-multisig-base", features = ["abi"] }
 

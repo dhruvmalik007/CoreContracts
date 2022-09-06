@@ -5,20 +5,20 @@ use read_write_rpc_derive::ReadWriteRPC;
 use crate::state::Vote;
 use utils::events::NamedRPCEvent;
 
-#[derive(ReadWriteRPC, CreateTypeSpec, Clone, PartialEq, Debug)]
+#[derive(ReadWriteRPC, CreateTypeSpec, Clone, PartialEq, Eq, Debug)]
 pub struct MultisigMember {
     pub address: Address,
     pub weight: u64,
 }
 
-#[derive(ReadWriteRPC, CreateTypeSpec, Clone, PartialEq, Debug)]
+#[derive(ReadWriteRPC, CreateTypeSpec, Clone, PartialEq, Eq, Debug)]
 pub struct InitMsg {
     pub members: Vec<MultisigMember>,
     pub threshold_weight: u64,
     pub voting_phase_period: u64,
 }
 
-#[derive(ReadWriteRPC, CreateTypeSpec, Clone, PartialEq, Debug)]
+#[derive(ReadWriteRPC, CreateTypeSpec, Clone, PartialEq, Eq, Debug)]
 pub struct CreateProposalMsg {
     pub title: String,
     pub description: String,
@@ -32,14 +32,14 @@ impl NamedRPCEvent for CreateProposalMsg {
     }
 }
 
-#[derive(ReadWriteRPC, CreateTypeSpec, Clone, PartialEq, Debug)]
+#[derive(ReadWriteRPC, CreateTypeSpec, Clone, PartialEq, Eq, Debug)]
 pub struct ProposalExecuteCallMsg {
     pub contract: Address,
     pub method_name: String,
     pub base64_encoded_payload: String,
 }
 
-#[derive(ReadWriteRPC, CreateTypeSpec, Clone, PartialEq, Debug)]
+#[derive(ReadWriteRPC, CreateTypeSpec, Clone, PartialEq, Eq, Debug)]
 pub struct ProposalVoteMsg {
     pub proposal_id: u64,
     pub vote: Vote,
@@ -51,7 +51,7 @@ impl NamedRPCEvent for ProposalVoteMsg {
     }
 }
 
-#[derive(ReadWriteRPC, CreateTypeSpec, Clone, PartialEq, Debug)]
+#[derive(ReadWriteRPC, CreateTypeSpec, Clone, PartialEq, Eq, Debug)]
 pub struct ProposalExecuteMsg {
     pub proposal_id: u64,
 }
@@ -62,7 +62,7 @@ impl NamedRPCEvent for ProposalExecuteMsg {
     }
 }
 
-#[derive(ReadWriteRPC, CreateTypeSpec, Clone, PartialEq, Debug)]
+#[derive(ReadWriteRPC, CreateTypeSpec, Clone, PartialEq, Eq, Debug)]
 pub struct ProposalCloseMsg {
     pub proposal_id: u64,
 }

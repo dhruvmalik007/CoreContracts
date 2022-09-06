@@ -9,7 +9,7 @@ use read_write_state_derive::ReadWriteState;
 use mpc20_base::state::MPC20ContractState;
 use utils::decimal::DecimalRatio;
 
-#[derive(ReadWriteState, CreateTypeSpec, Clone, PartialEq, Debug)]
+#[derive(ReadWriteState, CreateTypeSpec, Clone, PartialEq, Eq, Debug)]
 pub struct MPC20StakingContractState {
     pub deposit_token: Address,
     pub distribution_amount: u128,
@@ -79,7 +79,7 @@ impl MPC20StakingContractState {
     }
 }
 
-#[derive(ReadWriteRPC, ReadWriteState, CreateTypeSpec, Clone, PartialEq, Debug)]
+#[derive(ReadWriteRPC, ReadWriteState, CreateTypeSpec, Clone, PartialEq, Eq, Debug)]
 pub struct Staker {
     pub reward_index: DecimalRatio,
     pub staked_amount: u128,

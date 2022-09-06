@@ -9,7 +9,7 @@ use pbc_contract_common::{
     context::ContractContext,
     events::EventGroup,
 };
-use utils::{decimal::DecimalRatio, events::into_rpc_call};
+use utils::{decimal::DecimalRatio, events::get_msg_shortname};
 
 use crate::{
     actions::{execute_claim, execute_compound, execute_init, execute_stake, execute_unstake},
@@ -32,7 +32,7 @@ fn mock_contract_context(sender: u8, block_time: i64) -> ContractContext {
         contract_address: mock_address(1u8),
         sender: mock_address(sender),
         block_time,
-        block_production_time: 10,
+        block_production_time: block_time,
         current_transaction: [
             0u8, 0u8, 0u8, 0u8, 0u8, 0u8, 0u8, 0u8, 0u8, 0u8, 0u8, 0u8, 0u8, 0u8, 0u8, 0u8, 0u8,
             0u8, 0u8, 0u8, 0u8, 0u8, 0u8, 0u8, 0u8, 0u8, 0u8, 0u8, 0u8, 0u8, 0u8, 0u8,
@@ -52,7 +52,7 @@ fn test_staking() {
     const BOB: u8 = 11;
     const JACK: u8 = 12;
 
-    let mut block_time = 100;
+    let mut block_production_time = 100;
 
     let msg = Mpc20StakingInitMsg {
         deposit_token: None,
@@ -67,7 +67,8 @@ fn test_staking() {
         initial_balances: vec![],
         minter: Some(mock_address(MINTER)),
     };
-    let (mut state, events) = execute_init(&mock_contract_context(MINTER, block_time), &msg);
+    let (mut state, events) =
+        execute_init(&mock_contract_context(MINTER, block_production_time), &msg);
     assert_eq!(events, vec![]);
     assert_eq!(
         state,
@@ -98,22 +99,30 @@ fn test_staking() {
     );
 
     // no distribution yet, total_stake is zero
-    block_time = 105;
+    block_production_time = 105;
 
     let msg = StakeMsg { amount: 100 };
-    let events = execute_stake(&mock_contract_context(ALICE, block_time), &mut state, &msg);
+    let events = execute_stake(
+        &mock_contract_context(ALICE, block_production_time),
+        &mut state,
+        &msg,
+    );
 
     assert_eq!(events.len(), 1);
-    let mut eg = EventGroup::new();
-    eg.send_from_original_sender(
-        &mock_address(DEPOSIT_TOKEN),
-        into_rpc_call(&TransferMsg {
-            to: mock_address(DEPOSIT_TOKEN),
-            amount: 100,
-        }),
-        None,
-    );
-    assert_eq!(events[0], eg);
+
+    let transfer_msg = TransferMsg {
+        to: mock_address(DEPOSIT_TOKEN),
+        amount: 100,
+    };
+    let mut eg = EventGroup::builder();
+    eg.call(
+        mock_address(DEPOSIT_TOKEN),
+        get_msg_shortname(&transfer_msg),
+    )
+    .from_original_sender()
+    .argument(transfer_msg)
+    .done();
+    assert_eq!(events[0], eg.build());
 
     assert_eq!(
         state,
@@ -152,10 +161,14 @@ fn test_staking() {
     );
 
     // no distribution yet, total stake 100
-    block_time = 114;
+    block_production_time = 114;
 
     let msg = StakeMsg { amount: 100 };
-    let events = execute_stake(&mock_contract_context(BOB, block_time), &mut state, &msg);
+    let events = execute_stake(
+        &mock_contract_context(BOB, block_production_time),
+        &mut state,
+        &msg,
+    );
     assert_eq!(
         state,
         MPC20StakingContractState {
@@ -204,10 +217,14 @@ fn test_staking() {
     );
 
     // first distribution, ALICE and BOB must claim and receive equal rewards
-    block_time = 115;
+    block_production_time = 115;
 
     let msg = ClaimMsg { amount: None };
-    let _ = execute_claim(&mock_contract_context(ALICE, block_time), &mut state, &msg);
+    let _ = execute_claim(
+        &mock_contract_context(ALICE, block_production_time),
+        &mut state,
+        &msg,
+    );
     assert_eq!(
         state,
         MPC20StakingContractState {
@@ -255,9 +272,13 @@ fn test_staking() {
         }
     );
 
-    block_time = 116;
+    block_production_time = 116;
     let msg = ClaimMsg { amount: None };
-    let _ = execute_claim(&mock_contract_context(BOB, block_time), &mut state, &msg);
+    let _ = execute_claim(
+        &mock_contract_context(BOB, block_production_time),
+        &mut state,
+        &msg,
+    );
     assert_eq!(
         state,
         MPC20StakingContractState {
@@ -306,9 +327,13 @@ fn test_staking() {
     );
 
     // BOB unstakes half
-    block_time = 120;
+    block_production_time = 120;
     let msg = UnstakeMsg { amount: 50 };
-    let _ = execute_unstake(&mock_contract_context(BOB, block_time), &mut state, &msg);
+    let _ = execute_unstake(
+        &mock_contract_context(BOB, block_production_time),
+        &mut state,
+        &msg,
+    );
     assert_eq!(
         state,
         MPC20StakingContractState {
@@ -357,11 +382,19 @@ fn test_staking() {
     );
 
     // next distribution, ALICE share 66.7, BOB share 33.3
-    block_time = 125;
+    block_production_time = 125;
     let msg = ClaimMsg { amount: Some(100) };
-    let _ = execute_claim(&mock_contract_context(ALICE, block_time), &mut state, &msg);
+    let _ = execute_claim(
+        &mock_contract_context(ALICE, block_production_time),
+        &mut state,
+        &msg,
+    );
     let msg = ClaimMsg { amount: None };
-    let _ = execute_claim(&mock_contract_context(BOB, block_time), &mut state, &msg);
+    let _ = execute_claim(
+        &mock_contract_context(BOB, block_production_time),
+        &mut state,
+        &msg,
+    );
     assert_eq!(
         state,
         MPC20StakingContractState {
@@ -410,10 +443,14 @@ fn test_staking() {
     );
 
     // JACK stakes 50, ALICE share 50, BOB and JACK 25 resp
-    block_time = 134;
+    block_production_time = 134;
 
     let msg = StakeMsg { amount: 50 };
-    let events = execute_stake(&mock_contract_context(JACK, block_time), &mut state, &msg);
+    let events = execute_stake(
+        &mock_contract_context(JACK, block_production_time),
+        &mut state,
+        &msg,
+    );
     assert_eq!(
         state,
         MPC20StakingContractState {
@@ -471,12 +508,24 @@ fn test_staking() {
     );
 
     // everyone claims 1 token
-    block_time = 140;
+    block_production_time = 140;
 
     let msg = ClaimMsg { amount: Some(1) };
-    let _ = execute_claim(&mock_contract_context(ALICE, block_time), &mut state, &msg);
-    let _ = execute_claim(&mock_contract_context(BOB, block_time), &mut state, &msg);
-    let _ = execute_claim(&mock_contract_context(JACK, block_time), &mut state, &msg);
+    let _ = execute_claim(
+        &mock_contract_context(ALICE, block_production_time),
+        &mut state,
+        &msg,
+    );
+    let _ = execute_claim(
+        &mock_contract_context(BOB, block_production_time),
+        &mut state,
+        &msg,
+    );
+    let _ = execute_claim(
+        &mock_contract_context(JACK, block_production_time),
+        &mut state,
+        &msg,
+    );
     assert_eq!(
         state,
         MPC20StakingContractState {
@@ -538,10 +587,14 @@ fn test_staking() {
     );
 
     // JACK compounds
-    block_time = 144;
+    block_production_time = 144;
 
     let msg = CompoundMsg { amount: Some(100) };
-    let events = execute_compound(&mock_contract_context(JACK, block_time), &mut state, &msg);
+    let events = execute_compound(
+        &mock_contract_context(JACK, block_production_time),
+        &mut state,
+        &msg,
+    );
     assert_eq!(
         state,
         MPC20StakingContractState {
@@ -609,7 +662,7 @@ fn test_staking() {
 fn invalid_distribution_amount() {
     const MINTER: u8 = 9;
 
-    let block_time = 100;
+    let block_production_time = 100;
 
     let msg = Mpc20StakingInitMsg {
         deposit_token: None,
@@ -624,7 +677,7 @@ fn invalid_distribution_amount() {
         initial_balances: vec![],
         minter: Some(mock_address(MINTER)),
     };
-    let (_, _) = execute_init(&mock_contract_context(MINTER, block_time), &msg);
+    let (_, _) = execute_init(&mock_contract_context(MINTER, block_production_time), &msg);
 }
 
 #[test]
@@ -632,7 +685,7 @@ fn invalid_distribution_amount() {
 fn invalid_distribution_epoch() {
     const MINTER: u8 = 9;
 
-    let block_time = 100;
+    let block_production_time = 100;
 
     let msg = Mpc20StakingInitMsg {
         deposit_token: None,
@@ -647,7 +700,7 @@ fn invalid_distribution_epoch() {
         initial_balances: vec![],
         minter: Some(mock_address(MINTER)),
     };
-    let (_, _) = execute_init(&mock_contract_context(MINTER, block_time), &msg);
+    let (_, _) = execute_init(&mock_contract_context(MINTER, block_production_time), &msg);
 }
 
 #[test]
@@ -659,7 +712,7 @@ fn unstake_more_then_staked() {
     const BOB: u8 = 11;
     const JACK: u8 = 12;
 
-    let block_time = 150;
+    let block_production_time = 150;
 
     let mut state = MPC20StakingContractState {
         deposit_token: mock_address(DEPOSIT_TOKEN),
@@ -720,7 +773,11 @@ fn unstake_more_then_staked() {
     };
 
     let msg = UnstakeMsg { amount: 151 };
-    let _ = execute_unstake(&mock_contract_context(JACK, block_time), &mut state, &msg);
+    let _ = execute_unstake(
+        &mock_contract_context(JACK, block_production_time),
+        &mut state,
+        &msg,
+    );
 }
 
 #[test]
@@ -732,7 +789,7 @@ fn claim_with_zero_rewards() {
     const BOB: u8 = 11;
     const JACK: u8 = 12;
 
-    let block_time = 135;
+    let block_production_time = 135;
 
     let mut state = MPC20StakingContractState {
         deposit_token: mock_address(DEPOSIT_TOKEN),
@@ -793,7 +850,11 @@ fn claim_with_zero_rewards() {
     };
 
     let msg = ClaimMsg { amount: None };
-    let _ = execute_claim(&mock_contract_context(JACK, block_time), &mut state, &msg);
+    let _ = execute_claim(
+        &mock_contract_context(JACK, block_production_time),
+        &mut state,
+        &msg,
+    );
 }
 
 #[test]
@@ -805,7 +866,7 @@ fn claim_more_then_rewarded() {
     const BOB: u8 = 11;
     const JACK: u8 = 12;
 
-    let block_time = 135;
+    let block_production_time = 135;
 
     let mut state = MPC20StakingContractState {
         deposit_token: mock_address(DEPOSIT_TOKEN),
@@ -866,7 +927,11 @@ fn claim_more_then_rewarded() {
     };
 
     let msg = ClaimMsg { amount: Some(11) };
-    let _ = execute_claim(&mock_contract_context(JACK, block_time), &mut state, &msg);
+    let _ = execute_claim(
+        &mock_contract_context(JACK, block_production_time),
+        &mut state,
+        &msg,
+    );
 }
 
 #[test]
@@ -878,7 +943,7 @@ fn compound_when_disabled() {
     const BOB: u8 = 11;
     const JACK: u8 = 12;
 
-    let block_time = 135;
+    let block_production_time = 135;
 
     let mut state = MPC20StakingContractState {
         deposit_token: mock_address(DEPOSIT_TOKEN),
@@ -939,7 +1004,11 @@ fn compound_when_disabled() {
     };
 
     let msg = CompoundMsg { amount: None };
-    let _ = execute_compound(&mock_contract_context(BOB, block_time), &mut state, &msg);
+    let _ = execute_compound(
+        &mock_contract_context(BOB, block_production_time),
+        &mut state,
+        &msg,
+    );
 }
 
 #[test]
@@ -951,7 +1020,7 @@ fn compound_to_often() {
     const BOB: u8 = 11;
     const JACK: u8 = 12;
 
-    let block_time = 135;
+    let block_production_time = 135;
 
     let mut state = MPC20StakingContractState {
         deposit_token: mock_address(DEPOSIT_TOKEN),
@@ -1012,7 +1081,11 @@ fn compound_to_often() {
     };
 
     let msg = CompoundMsg { amount: None };
-    let _ = execute_compound(&mock_contract_context(BOB, block_time), &mut state, &msg);
+    let _ = execute_compound(
+        &mock_contract_context(BOB, block_production_time),
+        &mut state,
+        &msg,
+    );
 }
 
 #[test]
@@ -1024,7 +1097,7 @@ fn compound_more_then_rewarded() {
     const BOB: u8 = 11;
     const JACK: u8 = 12;
 
-    let block_time = 135;
+    let block_production_time = 135;
 
     let mut state = MPC20StakingContractState {
         deposit_token: mock_address(DEPOSIT_TOKEN),
@@ -1085,5 +1158,9 @@ fn compound_more_then_rewarded() {
     };
 
     let msg = CompoundMsg { amount: Some(250) };
-    let _ = execute_compound(&mock_contract_context(BOB, block_time), &mut state, &msg);
+    let _ = execute_compound(
+        &mock_contract_context(BOB, block_production_time),
+        &mut state,
+        &msg,
+    );
 }

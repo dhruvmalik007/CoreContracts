@@ -4,7 +4,7 @@ use read_write_rpc_derive::ReadWriteRPC;
 
 use utils::events::NamedRPCEvent;
 
-#[derive(ReadWriteRPC, CreateTypeSpec, Clone, PartialEq, Debug)]
+#[derive(ReadWriteRPC, CreateTypeSpec, Clone, PartialEq, Eq, Debug)]
 pub struct InitMsg {
     pub owner: Option<Address>,
     pub name: String,
@@ -13,7 +13,7 @@ pub struct InitMsg {
     pub minter: Address,
 }
 
-#[derive(ReadWriteRPC, CreateTypeSpec, Clone, PartialEq, Debug)]
+#[derive(ReadWriteRPC, CreateTypeSpec, Clone, PartialEq, Eq, Debug)]
 pub struct SetBaseUriMsg {
     pub new_base_uri: String,
 }
@@ -24,7 +24,7 @@ impl NamedRPCEvent for SetBaseUriMsg {
     }
 }
 
-#[derive(ReadWriteRPC, CreateTypeSpec, Clone, PartialEq, Debug)]
+#[derive(ReadWriteRPC, CreateTypeSpec, Clone, PartialEq, Eq, Debug)]
 pub struct MintMsg {
     pub token_id: u128,
     pub to: Address,
@@ -37,7 +37,7 @@ impl NamedRPCEvent for MintMsg {
     }
 }
 
-#[derive(ReadWriteRPC, CreateTypeSpec, Clone, PartialEq, Debug)]
+#[derive(ReadWriteRPC, CreateTypeSpec, Clone, PartialEq, Eq, Debug)]
 pub struct TransferMsg {
     pub to: Address,
     pub token_id: u128,
@@ -49,7 +49,7 @@ impl NamedRPCEvent for TransferMsg {
     }
 }
 
-#[derive(ReadWriteRPC, CreateTypeSpec, Clone, PartialEq, Debug)]
+#[derive(ReadWriteRPC, CreateTypeSpec, Clone, PartialEq, Eq, Debug)]
 pub struct TransferFromMsg {
     pub from: Address,
     pub to: Address,
@@ -62,7 +62,7 @@ impl NamedRPCEvent for TransferFromMsg {
     }
 }
 
-#[derive(ReadWriteRPC, CreateTypeSpec, Clone, PartialEq, Debug)]
+#[derive(ReadWriteRPC, CreateTypeSpec, Clone, PartialEq, Eq, Debug)]
 pub struct ApproveMsg {
     pub spender: Address,
     pub token_id: u128,
@@ -74,7 +74,7 @@ impl NamedRPCEvent for ApproveMsg {
     }
 }
 
-#[derive(ReadWriteRPC, CreateTypeSpec, Clone, PartialEq, Debug)]
+#[derive(ReadWriteRPC, CreateTypeSpec, Clone, PartialEq, Eq, Debug)]
 pub struct ApproveForAllMsg {
     pub operator: Address,
 }
@@ -85,7 +85,7 @@ impl NamedRPCEvent for ApproveForAllMsg {
     }
 }
 
-#[derive(ReadWriteRPC, CreateTypeSpec, Clone, PartialEq, Debug)]
+#[derive(ReadWriteRPC, CreateTypeSpec, Clone, PartialEq, Eq, Debug)]
 pub struct RevokeMsg {
     pub spender: Address,
     pub token_id: u128,
@@ -97,7 +97,7 @@ impl NamedRPCEvent for RevokeMsg {
     }
 }
 
-#[derive(ReadWriteRPC, CreateTypeSpec, Clone, PartialEq, Debug)]
+#[derive(ReadWriteRPC, CreateTypeSpec, Clone, PartialEq, Eq, Debug)]
 pub struct RevokeForAllMsg {
     pub operator: Address,
 }
@@ -108,7 +108,7 @@ impl NamedRPCEvent for RevokeForAllMsg {
     }
 }
 
-#[derive(ReadWriteRPC, CreateTypeSpec, Clone, PartialEq, Debug)]
+#[derive(ReadWriteRPC, CreateTypeSpec, Clone, PartialEq, Eq, Debug)]
 pub struct BurnMsg {
     pub token_id: u128,
 }
