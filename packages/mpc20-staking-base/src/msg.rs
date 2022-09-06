@@ -5,7 +5,7 @@ use read_write_rpc_derive::ReadWriteRPC;
 use mpc20_base::{msg::InitialBalance, state::TokenInfo};
 use utils::events::NamedRPCEvent;
 
-#[derive(ReadWriteRPC, CreateTypeSpec, Clone, PartialEq, Debug)]
+#[derive(ReadWriteRPC, CreateTypeSpec, Clone, PartialEq, Eq, Debug)]
 pub struct Mpc20StakingInitMsg {
     pub deposit_token: Option<Address>,
     pub distribution_amount: u128,
@@ -30,7 +30,7 @@ impl Mpc20StakingInitMsg {
     }
 }
 
-#[derive(ReadWriteRPC, CreateTypeSpec, Clone, PartialEq, Debug)]
+#[derive(ReadWriteRPC, CreateTypeSpec, Clone, PartialEq, Eq, Debug)]
 pub struct StakeMsg {
     pub amount: u128,
 }
@@ -41,7 +41,7 @@ impl NamedRPCEvent for StakeMsg {
     }
 }
 
-#[derive(ReadWriteRPC, CreateTypeSpec, Clone, PartialEq, Debug)]
+#[derive(ReadWriteRPC, CreateTypeSpec, Clone, PartialEq, Eq, Debug)]
 pub struct UnstakeMsg {
     pub amount: u128,
 }
@@ -52,7 +52,7 @@ impl NamedRPCEvent for UnstakeMsg {
     }
 }
 
-#[derive(ReadWriteRPC, CreateTypeSpec, Clone, PartialEq, Debug)]
+#[derive(ReadWriteRPC, CreateTypeSpec, Clone, PartialEq, Eq, Debug)]
 pub struct ClaimMsg {
     pub amount: Option<u128>,
 }
@@ -63,7 +63,7 @@ impl NamedRPCEvent for ClaimMsg {
     }
 }
 
-#[derive(ReadWriteRPC, CreateTypeSpec, Clone, PartialEq, Debug)]
+#[derive(ReadWriteRPC, CreateTypeSpec, Clone, PartialEq, Eq, Debug)]
 pub struct CompoundMsg {
     pub amount: Option<u128>,
 }

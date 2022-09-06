@@ -54,6 +54,7 @@ dependencies = [
 [[package]]
 name = "create_type_spec_derive"
 version = "0.1.0"
+source = "git+https://git@gitlab.com/partisiablockchain/language/contract-sdk.git?tag=9.1.1#d9a7844b78cb1bc8c1bdfc188090794c0307033e"
 dependencies = [
  "derive_commons",
  "proc-macro2",
@@ -65,6 +66,7 @@ dependencies = [
 [[package]]
 name = "derive_commons"
 version = "0.1.0"
+source = "git+https://git@gitlab.com/partisiablockchain/language/contract-sdk.git?tag=9.1.1#d9a7844b78cb1bc8c1bdfc188090794c0307033e"
 dependencies = [
  "proc-macro2",
  "quote",
@@ -79,12 +81,6 @@ checksum = "d3dd60d1080a57a05ab032377049e0591415d2b31afd7028356dbf3cc6dcb066"
 dependencies = [
  "generic-array",
 ]
-
-[[package]]
-name = "file_diff"
-version = "1.0.0"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "31a7a908b8f32538a2143e59a6e4e2508988832d5d4d6f7c156b3cbc762643a5"
 
 [[package]]
 name = "generic-array"
@@ -106,12 +102,6 @@ dependencies = [
  "libc",
  "wasi",
 ]
-
-[[package]]
-name = "glob"
-version = "0.3.0"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "9b919933a397b79c37e33b77bb2aa3dc8eb6e165ad809e58ff75bc7db2e34574"
 
 [[package]]
 name = "hex"
@@ -305,12 +295,6 @@ dependencies = [
 ]
 
 [[package]]
-name = "once_cell"
-version = "1.12.0"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "7709cef83f0c1f58f666e746a08b21e0085f7440fa6a29cc194d68aac97a4225"
-
-[[package]]
 name = "opaque-debug"
 version = "0.3.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -347,6 +331,7 @@ dependencies = [
 [[package]]
 name = "pbc_contract_codegen"
 version = "0.1.0"
+source = "git+https://git@gitlab.com/partisiablockchain/language/contract-sdk.git?tag=9.1.1#d9a7844b78cb1bc8c1bdfc188090794c0307033e"
 dependencies = [
  "pbc_contract_common",
  "pbc_external",
@@ -354,18 +339,15 @@ dependencies = [
  "pbc_traits",
  "proc-macro2",
  "quote",
- "serde",
- "serde_json",
  "sha2",
  "syn",
- "trybuild",
 ]
 
 [[package]]
 name = "pbc_contract_common"
 version = "0.1.0"
+source = "git+https://git@gitlab.com/partisiablockchain/language/contract-sdk.git?tag=9.1.1#d9a7844b78cb1bc8c1bdfc188090794c0307033e"
 dependencies = [
- "file_diff",
  "pbc_external",
  "pbc_traits",
  "quote",
@@ -377,14 +359,17 @@ dependencies = [
 [[package]]
 name = "pbc_external"
 version = "0.1.0"
+source = "git+https://git@gitlab.com/partisiablockchain/language/contract-sdk.git?tag=9.1.1#d9a7844b78cb1bc8c1bdfc188090794c0307033e"
 
 [[package]]
 name = "pbc_lib"
 version = "0.1.0"
+source = "git+https://git@gitlab.com/partisiablockchain/language/contract-sdk.git?tag=9.1.1#d9a7844b78cb1bc8c1bdfc188090794c0307033e"
 
 [[package]]
 name = "pbc_traits"
 version = "0.1.0"
+source = "git+https://git@gitlab.com/partisiablockchain/language/contract-sdk.git?tag=9.1.1#d9a7844b78cb1bc8c1bdfc188090794c0307033e"
 dependencies = [
  "quote",
 ]
@@ -410,6 +395,7 @@ dependencies = [
 [[package]]
 name = "read_write_rpc_derive"
 version = "0.1.0"
+source = "git+https://git@gitlab.com/partisiablockchain/language/contract-sdk.git?tag=9.1.1#d9a7844b78cb1bc8c1bdfc188090794c0307033e"
 dependencies = [
  "derive_commons",
  "proc-macro2",
@@ -420,6 +406,7 @@ dependencies = [
 [[package]]
 name = "read_write_state_derive"
 version = "0.1.0"
+source = "git+https://git@gitlab.com/partisiablockchain/language/contract-sdk.git?tag=9.1.1#d9a7844b78cb1bc8c1bdfc188090794c0307033e"
 dependencies = [
  "derive_commons",
  "proc-macro2",
@@ -449,20 +436,6 @@ name = "serde"
 version = "1.0.137"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "61ea8d54c77f8315140a05f4c7237403bf38b72704d031543aa1d16abbf517d1"
-dependencies = [
- "serde_derive",
-]
-
-[[package]]
-name = "serde_derive"
-version = "1.0.137"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "1f26faba0c3959972377d3b2d306ee9f71faee9714294e41bb777f83f88578be"
-dependencies = [
- "proc-macro2",
- "quote",
- "syn",
-]
 
 [[package]]
 name = "serde_json"
@@ -509,15 +482,6 @@ dependencies = [
  "proc-macro2",
  "quote",
  "unicode-ident",
-]
-
-[[package]]
-name = "termcolor"
-version = "1.1.3"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "bab24d30b911b2376f3a13cc2cd443142f0c81dda04c118693e35b3835757755"
-dependencies = [
- "winapi-util",
 ]
 
 [[package]]
@@ -569,30 +533,6 @@ dependencies = [
 ]
 
 [[package]]
-name = "toml"
-version = "0.5.9"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "8d82e1a7758622a465f8cee077614c73484dac5b836c02ff6a40d5d1010324d7"
-dependencies = [
- "serde",
-]
-
-[[package]]
-name = "trybuild"
-version = "1.0.63"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "764b9e244b482a9b81bde596aa37aa6f1347bf8007adab25e59f901b32b4e0a0"
-dependencies = [
- "glob",
- "once_cell",
- "serde",
- "serde_derive",
- "serde_json",
- "termcolor",
- "toml",
-]
-
-[[package]]
 name = "typenum"
 version = "1.15.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -641,34 +581,3 @@ name = "wasi"
 version = "0.11.0+wasi-snapshot-preview1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "9c8d87e72b64a3b4db28d11ce29237c246188f4f51057d65a7eab63b7987e423"
-
-[[package]]
-name = "winapi"
-version = "0.3.9"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "5c839a674fcd7a98952e593242ea400abe93992746761e38641405d28b00f419"
-dependencies = [
- "winapi-i686-pc-windows-gnu",
- "winapi-x86_64-pc-windows-gnu",
-]
-
-[[package]]
-name = "winapi-i686-pc-windows-gnu"
-version = "0.4.0"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "ac3b87c63620426dd9b991e5ce0329eff545bccbbb34f3be09ff6fb6ab51b7b6"
-
-[[package]]
-name = "winapi-util"
-version = "0.1.5"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "70ec6ce85bb158151cae5e5c87f95a8e97d2c0c4b001223f33a334e3ce5de178"
-dependencies = [
- "winapi",
-]
-
-[[package]]
-name = "winapi-x86_64-pc-windows-gnu"
-version = "0.4.0"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "712e227841d057c1ee1cd2fb22fa7e5a5461ae8e48fa2ca79ec42cfc1931183f"

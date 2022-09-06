@@ -5,7 +5,9 @@ use create_type_spec_derive::CreateTypeSpec;
 use read_write_rpc_derive::ReadWriteRPC;
 use read_write_state_derive::ReadWriteState;
 
-#[derive(ReadWriteRPC, ReadWriteState, CreateTypeSpec, Clone, Copy, PartialEq, Debug)]
+#[derive(
+    ReadWriteRPC, ReadWriteState, CreateTypeSpec, Clone, Copy, Eq, PartialEq, Debug, Default,
+)]
 pub struct DecimalRatio {
     numerator: u128,
     scale: u32,
@@ -18,6 +20,10 @@ impl DecimalRatio {
 
     pub fn zero() -> Self {
         Decimal::ZERO.into()
+    }
+
+    pub fn one() -> Self {
+        Decimal::ONE.into()
     }
 
     pub fn from_ratio(numerator: u128, denominator: u128) -> Self {
@@ -46,18 +52,9 @@ impl From<Decimal> for DecimalRatio {
     }
 }
 
-impl Into<Decimal> for DecimalRatio {
-    fn into(self) -> Decimal {
-        Decimal::from_i128_with_scale(self.numerator as i128, self.scale)
-    }
-}
-
-impl Default for DecimalRatio {
-    fn default() -> Self {
-        Self {
-            numerator: 0,
-            scale: 0,
-        }
+impl From<DecimalRatio> for Decimal {
+    fn from(dr: DecimalRatio) -> Self {
+        Decimal::from_i128_with_scale(dr.numerator as i128, dr.scale)
     }
 }
 
@@ -105,6 +102,28 @@ impl Div for DecimalRatio {
     }
 }
 
+impl PartialOrd for DecimalRatio {
+    fn partial_cmp(&self, other: &Self) -> Option<std::cmp::Ordering> {
+        Some(self.cmp(other))
+    }
+}
+
+impl Ord for DecimalRatio {
+    fn cmp(&self, other: &Self) -> std::cmp::Ordering {
+        let a: Decimal = (*self).into();
+        let b: Decimal = (*other).into();
+
+        a.cmp(&b)
+    }
+}
+
+impl ToString for DecimalRatio {
+    fn to_string(&self) -> String {
+        let d: Decimal = (*self).into();
+        d.to_string()
+    }
+}
+
 #[cfg(test)]
 mod tests {
     use rust_decimal::prelude::*;
@@ -115,6 +134,7 @@ mod tests {
     fn test_decimal_math() {
         let a = DecimalRatio::new(100, 3);
         let b = DecimalRatio::new(400, 0);
+
         let res: Decimal = (a / b).into();
         assert_eq!(res.to_string(), "0.00025");
 
@@ -132,5 +152,18 @@ mod tests {
             * (DecimalRatio::new(556436, 3) - DecimalRatio::new(431, 0))
             / DecimalRatio::new(489314, 4);
         assert_eq!(res, DecimalRatio::new(11392541652762847578446559878, 26));
+    }
+
+    #[test]
+    fn test_cmp() {
+        let a = DecimalRatio::new(100, 3);
+        let b = DecimalRatio::new(400, 0);
+
+        assert_eq!(b > a && b >= a, true);
+        assert_eq!(a < b && a <= b, true);
+
+        let eq1 = DecimalRatio::new(100, 3);
+        let eq2 = DecimalRatio::new(100, 3);
+        assert_eq!(eq1 == eq2, true);
     }
 }

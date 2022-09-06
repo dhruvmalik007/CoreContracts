@@ -70,9 +70,9 @@ pub fn execute_create_proposal(
     );
     let member_power = *state.members.get(&ctx.sender).unwrap();
 
-    let max_voting_phase = ctx.block_time as u64 + state.voting_phase_period;
+    let max_voting_phase = ctx.block_production_time as u64 + state.voting_phase_period;
     let voting_phase_end = if let Some(period) = msg.voting_phase_period {
-        let voting_phase = ctx.block_time as u64 + period;
+        let voting_phase = ctx.block_production_time as u64 + period;
         assert!(
             voting_phase <= max_voting_phase,
             "{}",
@@ -142,7 +142,7 @@ pub fn execute_vote(
         ContractError::ProposalIsNotInTheVotingPhase
     );
     assert!(
-        proposal.not_expired(ctx.block_time as u64),
+        proposal.not_expired(ctx.block_production_time as u64),
         "{}",
         ContractError::Expired
     );
@@ -152,8 +152,8 @@ pub fn execute_vote(
         ContractError::AlreadyVoted
     );
 
-    proposal.register_vote(&ctx.sender, msg.vote.clone(), member_power);
-    proposal.update_status(ctx.block_time as u64);
+    proposal.register_vote(&ctx.sender, msg.vote, member_power);
+    proposal.update_status(ctx.block_production_time as u64);
 
     vec![]
 }
@@ -217,7 +217,7 @@ pub fn execute_close_proposal(
         ContractError::WrongCloseStatus,
     );
     assert!(
-        !proposal.not_expired(ctx.block_time as u64),
+        !proposal.not_expired(ctx.block_production_time as u64),
         "{}",
         ContractError::ProposalNotExpired
     );

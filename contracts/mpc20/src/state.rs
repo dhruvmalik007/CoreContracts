@@ -1,6 +1,7 @@
 use mpc20_base::state::MPC20ContractState;
+
 #[state]
-#[derive(PartialEq, Debug)]
+#[derive(PartialEq, Eq, Debug)]
 pub struct ContractState {
     pub mpc20: MPC20ContractState,
 }

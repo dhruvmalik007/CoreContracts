@@ -3,7 +3,7 @@ use read_write_state_derive::ReadWriteState;
 
 use crate::ContractError;
 
-#[derive(ReadWriteState, CreateTypeSpec, Clone, PartialEq, Debug)]
+#[derive(ReadWriteState, CreateTypeSpec, Clone, PartialEq, Eq, Debug)]
 pub struct PausableBaseState {
     paused: bool,
 }

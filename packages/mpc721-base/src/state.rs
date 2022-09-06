@@ -7,7 +7,7 @@ use read_write_state_derive::ReadWriteState;
 
 use crate::ContractError;
 
-#[derive(ReadWriteState, CreateTypeSpec, Clone, PartialEq, Debug)]
+#[derive(ReadWriteState, CreateTypeSpec, Clone, PartialEq, Eq, Debug)]
 pub struct MPC721ContractState {
     pub owner: Option<Address>,
     pub name: String,
@@ -19,7 +19,7 @@ pub struct MPC721ContractState {
     pub operator_approvals: BTreeMap<Address, BTreeMap<Address, bool>>,
 }
 
-#[derive(ReadWriteRPC, ReadWriteState, CreateTypeSpec, Clone, PartialEq, Debug)]
+#[derive(ReadWriteRPC, ReadWriteState, CreateTypeSpec, Clone, PartialEq, Eq, Debug)]
 pub struct TokenInfo {
     pub owner: Address,
     pub approvals: Vec<Address>,

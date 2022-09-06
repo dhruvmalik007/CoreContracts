@@ -7,7 +7,7 @@ use read_write_state_derive::ReadWriteState;
 
 use crate::{msg::InitialBalance, ContractError};
 
-#[derive(ReadWriteState, CreateTypeSpec, Clone, PartialEq, Debug)]
+#[derive(ReadWriteState, CreateTypeSpec, Clone, PartialEq, Eq, Debug)]
 pub struct MPC20ContractState {
     pub info: TokenInfo,
     pub total_supply: u128,
@@ -16,14 +16,14 @@ pub struct MPC20ContractState {
     pub allowances: BTreeMap<Address, BTreeMap<Address, u128>>,
 }
 
-#[derive(ReadWriteRPC, ReadWriteState, CreateTypeSpec, Clone, PartialEq, Debug)]
+#[derive(ReadWriteRPC, ReadWriteState, CreateTypeSpec, Clone, PartialEq, Eq, Debug)]
 pub struct TokenInfo {
     pub name: String,
     pub symbol: String,
     pub decimals: u8,
 }
 
-#[derive(ReadWriteRPC, ReadWriteState, CreateTypeSpec, Clone, PartialEq, Debug)]
+#[derive(ReadWriteRPC, ReadWriteState, CreateTypeSpec, Clone, PartialEq, Eq, Debug)]
 pub struct Minter {
     pub minter: Address,
     pub capacity: Option<u128>,

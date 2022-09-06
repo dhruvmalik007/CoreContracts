@@ -2,7 +2,7 @@ use std::collections::BTreeMap;
 
 use pbc_contract_common::{context::ContractContext, events::EventGroup};
 use rust_decimal::prelude::*;
-use utils::events::into_rpc_call;
+use utils::events::get_msg_shortname;
 
 use crate::{
     msg::{ClaimMsg, CompoundMsg, Mpc20StakingInitMsg, StakeMsg, UnstakeMsg},
@@ -29,7 +29,7 @@ pub fn execute_init(
         ctx.contract_address
     };
 
-    let last_distributed = ctx.block_time as u64;
+    let last_distributed = ctx.block_production_time as u64;
 
     let minter = msg.minter.map(|minter_addr| Mpc20Minter {
         minter: minter_addr,
@@ -67,21 +67,23 @@ pub fn execute_stake(
 ) -> Vec<EventGroup> {
     let mut staker = state.get_staker(&ctx.sender);
 
-    state.distribute_rewards(ctx.block_time as u64);
+    state.distribute_rewards(ctx.block_production_time as u64);
     staker.compute_reward(state.global_index);
     state.increase_stake_amount(&ctx.sender, &mut staker, msg.amount);
 
-    let mut event_group = EventGroup::new();
-    event_group.send_from_original_sender(
-        &state.deposit_token,
-        into_rpc_call(&Mpc20TransferMsg {
-            to: ctx.contract_address,
-            amount: msg.amount,
-        }),
-        None,
-    );
+    let transfer_msg = Mpc20TransferMsg {
+        to: ctx.contract_address,
+        amount: msg.amount,
+    };
 
-    vec![event_group]
+    let mut event_group = EventGroup::builder();
+    event_group
+        .call(state.deposit_token, get_msg_shortname(&transfer_msg))
+        .from_original_sender()
+        .argument(transfer_msg)
+        .done();
+
+    vec![event_group.build()]
 }
 
 pub fn execute_unstake(
@@ -97,21 +99,22 @@ pub fn execute_unstake(
         ContractError::CannotUnstakeMoreThenStaked,
     );
 
-    state.distribute_rewards(ctx.block_time as u64);
+    state.distribute_rewards(ctx.block_production_time as u64);
     staker.compute_reward(state.global_index);
     state.decrease_stake_amount(&ctx.sender, &mut staker, msg.amount);
 
-    let mut event_group = EventGroup::new();
-    event_group.send_from_contract(
-        &state.deposit_token,
-        into_rpc_call(&Mpc20TransferMsg {
-            to: ctx.sender,
-            amount: msg.amount,
-        }),
-        None,
-    );
+    let transfer_msg = Mpc20TransferMsg {
+        to: ctx.sender,
+        amount: msg.amount,
+    };
 
-    vec![event_group]
+    let mut event_group = EventGroup::builder();
+    event_group
+        .call(state.deposit_token, get_msg_shortname(&transfer_msg))
+        .argument(transfer_msg)
+        .done();
+
+    vec![event_group.build()]
 }
 
 pub fn execute_claim(
@@ -121,7 +124,7 @@ pub fn execute_claim(
 ) -> Vec<EventGroup> {
     let mut staker = state.get_staker(&ctx.sender);
 
-    state.distribute_rewards(ctx.block_time as u64);
+    state.distribute_rewards(ctx.block_production_time as u64);
     staker.compute_reward(state.global_index);
 
     assert!(
@@ -156,7 +159,7 @@ pub fn execute_compound(
 ) -> Vec<EventGroup> {
     let mut staker = state.get_staker(&ctx.sender);
 
-    state.distribute_rewards(ctx.block_time as u64);
+    state.distribute_rewards(ctx.block_production_time as u64);
     staker.compute_reward(state.global_index);
 
     assert!(
@@ -166,7 +169,7 @@ pub fn execute_compound(
     );
 
     assert!(
-        (staker.last_compound + state.compound_frequency) < (ctx.block_time as u64),
+        (staker.last_compound + state.compound_frequency) < (ctx.block_production_time as u64),
         "{}",
         ContractError::ForbiddenToCompoundToOften,
     );
@@ -182,7 +185,7 @@ pub fn execute_compound(
         staker.pending_reward
     };
 
-    staker.last_compound = ctx.block_time as u64;
+    staker.last_compound = ctx.block_production_time as u64;
     staker.pending_reward = staker.pending_reward.checked_sub(compound_amount).unwrap();
     state.increase_stake_amount(&ctx.sender, &mut staker, compound_amount);
 

@@ -1,8 +1,16 @@
-use pbc_contract_common::{to_leb128_bytes, FunctionName};
+use pbc_contract_common::{address::Shortname, to_leb128_bytes, FunctionName};
 use pbc_traits::ReadWriteRPC;
 
 pub trait NamedRPCEvent {
     fn event_name(&self) -> String;
+}
+
+#[inline]
+pub fn get_msg_shortname<T>(msg: &T) -> Shortname
+where
+    T: NamedRPCEvent + ReadWriteRPC,
+{
+    *FunctionName::create_from_str(msg.event_name().as_str(), None).shortname()
 }
 
 #[inline]

@@ -4,7 +4,7 @@ use read_write_state_derive::ReadWriteState;
 
 use crate::ContractError;
 
-#[derive(ReadWriteState, CreateTypeSpec, Clone, PartialEq, Debug)]
+#[derive(ReadWriteState, CreateTypeSpec, Clone, PartialEq, Eq, Debug)]
 pub struct OwnableBaseState {
     owner: Address,
 }
@@ -60,7 +60,7 @@ mod tests {
             contract_address: mock_address(1u8),
             sender: mock_address(sender),
             block_time: 100,
-            block_production_time: 10,
+            block_production_time: 100,
             current_transaction: [
                 0u8, 0u8, 0u8, 0u8, 0u8, 0u8, 0u8, 0u8, 0u8, 0u8, 0u8, 0u8, 0u8, 0u8, 0u8, 0u8,
                 0u8, 0u8, 0u8, 0u8, 0u8, 0u8, 0u8, 0u8, 0u8, 0u8, 0u8, 0u8, 0u8, 0u8, 0u8, 0u8,

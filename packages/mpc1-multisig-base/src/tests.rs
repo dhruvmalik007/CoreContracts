@@ -36,7 +36,7 @@ fn mock_contract_context(sender: u8) -> ContractContext {
         contract_address: mock_address(1u8),
         sender: mock_address(sender),
         block_time: 100,
-        block_production_time: 10,
+        block_production_time: 100,
         current_transaction: [
             0u8, 0u8, 0u8, 0u8, 0u8, 0u8, 0u8, 0u8, 0u8, 0u8, 0u8, 0u8, 0u8, 0u8, 0u8, 0u8, 0u8,
             0u8, 0u8, 0u8, 0u8, 0u8, 0u8, 0u8, 0u8, 0u8, 0u8, 0u8, 0u8, 0u8, 0u8, 0u8,
@@ -652,7 +652,7 @@ fn proposal_expired_on_vote() {
     };
 
     let mut context = mock_contract_context(2);
-    context.block_time = 86501;
+    context.block_production_time = 86501;
     let events = execute_vote(&context, &mut state, &vote_msg);
 }
 
@@ -974,7 +974,7 @@ fn proper_close_proposal() {
 
     let proposal_close_msg = ProposalCloseMsg { proposal_id: 1 };
     let mut context = mock_contract_context(1);
-    context.block_time = 86501;
+    context.block_production_time = 86501;
     let events = execute_close_proposal(&context, &mut state, &proposal_close_msg);
     assert_eq!(
         state,
@@ -1052,7 +1052,7 @@ fn unauthorized_member_on_close_proposal() {
 
     let proposal_close_msg = ProposalCloseMsg { proposal_id: 1 };
     let mut context = mock_contract_context(5);
-    context.block_time = 86501;
+    context.block_production_time = 86501;
     let events = execute_close_proposal(&context, &mut state, &proposal_close_msg);
 }
 
@@ -1095,7 +1095,7 @@ fn proposal_not_found_on_close_proposal() {
 
     let proposal_close_msg = ProposalCloseMsg { proposal_id: 2 };
     let mut context = mock_contract_context(1);
-    context.block_time = 86501;
+    context.block_production_time = 86501;
     let events = execute_close_proposal(&context, &mut state, &proposal_close_msg);
 }
 
@@ -1144,7 +1144,7 @@ fn wrong_close_status_on_close_proposal() {
 
     let proposal_close_msg = ProposalCloseMsg { proposal_id: 1 };
     let mut context = mock_contract_context(1);
-    context.block_time = 86501;
+    context.block_production_time = 86501;
     let events = execute_close_proposal(&context, &mut state, &proposal_close_msg);
 }
 
@@ -1187,6 +1187,6 @@ fn proposal_not_expired_on_close_proposal() {
 
     let proposal_close_msg = ProposalCloseMsg { proposal_id: 1 };
     let mut context = mock_contract_context(1);
-    context.block_time = 86499;
+    context.block_production_time = 86499;
     let events = execute_close_proposal(&context, &mut state, &proposal_close_msg);
 }
