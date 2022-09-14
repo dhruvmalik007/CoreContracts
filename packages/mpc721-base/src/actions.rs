@@ -11,6 +11,14 @@ use crate::{
     ContractError,
 };
 
+/// ## Description
+/// Inits contract state.
+/// Returns [`(MPC721ContractState, Vec<EventGroup>)`] if operation was successful,
+/// otherwise panics with error message defined in [`ContractError`]
+/// ## Params
+/// * **_ctx** is an object of type [`ContractContext`]
+///
+/// * **msg** is an object of type [`InitMsg`]
 pub fn execute_init(
     _ctx: &ContractContext,
     msg: &InitMsg,
@@ -29,6 +37,16 @@ pub fn execute_init(
     (state, vec![])
 }
 
+/// ## Description
+/// Set base uri for the tokens.
+/// Returns [`(MPC721ContractState, Vec<EventGroup>)`] if operation was successful,
+/// otherwise panics with error message defined in [`ContractError`]
+/// ## Params
+/// * **ctx** is an object of type [`ContractContext`]
+///
+/// * **state** is an object of type [`MPC721ContractState`]
+///
+/// * **msg** is an object of type [`SetBaseUriMsg`]
 pub fn execute_set_base_uri(
     ctx: &ContractContext,
     state: &mut MPC721ContractState,
@@ -44,6 +62,16 @@ pub fn execute_set_base_uri(
     vec![]
 }
 
+/// ## Description
+/// Mint a new token. Can only be executed by minter account.
+/// Returns [`(MPC721ContractState, Vec<EventGroup>)`] if operation was successful,
+/// otherwise panics with error message defined in [`ContractError`]
+/// ## Params
+/// * **ctx** is an object of type [`ContractContext`]
+///
+/// * **state** is an object of type [`MPC721ContractState`]
+///
+/// * **msg** is an object of type [`MintMsg`]
 pub fn execute_mint(
     ctx: &ContractContext,
     state: &mut MPC721ContractState,
@@ -63,6 +91,16 @@ pub fn execute_mint(
     vec![]
 }
 
+/// ## Description
+/// Transfer token to another account.
+/// Returns [`(MPC721ContractState, Vec<EventGroup>)`] if operation was successful,
+/// otherwise panics with error message defined in [`ContractError`]
+/// ## Params
+/// * **ctx** is an object of type [`ContractContext`]
+///
+/// * **state** is an object of type [`MPC721ContractState`]
+///
+/// * **msg** is an object of type [`TransferMsg`]
 pub fn execute_transfer(
     ctx: &ContractContext,
     state: &mut MPC721ContractState,
@@ -74,6 +112,16 @@ pub fn execute_transfer(
     vec![]
 }
 
+/// ## Description
+/// Only with approval extension. Transfer token from owner to spender.
+/// Returns [`(MPC721ContractState, Vec<EventGroup>)`] if operation was successful,
+/// otherwise panics with error message defined in [`ContractError`]
+/// ## Params
+/// * **ctx** is an object of type [`ContractContext`]
+///
+/// * **state** is an object of type [`MPC721ContractState`]
+///
+/// * **msg** is an object of type [`TransferFromMsg`]
 pub fn execute_transfer_from(
     ctx: &ContractContext,
     state: &mut MPC721ContractState,
@@ -85,6 +133,16 @@ pub fn execute_transfer_from(
     vec![]
 }
 
+/// ## Description
+/// Allows spender to transfer token from the owner account.
+/// Returns [`(MPC721ContractState, Vec<EventGroup>)`] if operation was successful,
+/// otherwise panics with error message defined in [`ContractError`]
+/// ## Params
+/// * **ctx** is an object of type [`ContractContext`]
+///
+/// * **state** is an object of type [`MPC721ContractState`]
+///
+/// * **msg** is an object of type [`ApproveMsg`]
 pub fn execute_approve(
     ctx: &ContractContext,
     state: &mut MPC721ContractState,
@@ -96,6 +154,16 @@ pub fn execute_approve(
     vec![]
 }
 
+/// ## Description
+/// Allows operator to transfer any owner tokens from his account.
+/// Returns [`(MPC721ContractState, Vec<EventGroup>)`] if operation was successful,
+/// otherwise panics with error message defined in [`ContractError`]
+/// ## Params
+/// * **ctx** is an object of type [`ContractContext`]
+///
+/// * **state** is an object of type [`MPC721ContractState`]
+///
+/// * **msg** is an object of type [`ApproveForAllMsg`]
 pub fn execute_approve_for_all(
     ctx: &ContractContext,
     state: &mut MPC721ContractState,
@@ -105,6 +173,16 @@ pub fn execute_approve_for_all(
     vec![]
 }
 
+/// ## Description
+/// Remove approval.
+/// Returns [`(MPC721ContractState, Vec<EventGroup>)`] if operation was successful,
+/// otherwise panics with error message defined in [`ContractError`]
+/// ## Params
+/// * **ctx** is an object of type [`ContractContext`]
+///
+/// * **state** is an object of type [`MPC721ContractState`]
+///
+/// * **msg** is an object of type [`RevokeMsg`]
 pub fn execute_revoke(
     ctx: &ContractContext,
     state: &mut MPC721ContractState,
@@ -116,6 +194,16 @@ pub fn execute_revoke(
     vec![]
 }
 
+/// ## Description
+/// Remove operator.
+/// Returns [`(MPC721ContractState, Vec<EventGroup>)`] if operation was successful,
+/// otherwise panics with error message defined in [`ContractError`]
+/// ## Params
+/// * **ctx** is an object of type [`ContractContext`]
+///
+/// * **state** is an object of type [`MPC721ContractState`]
+///
+/// * **msg** is an object of type [`RevokeForAllMsg`]
 pub fn execute_revoke_for_all(
     ctx: &ContractContext,
     state: &mut MPC721ContractState,
@@ -125,6 +213,16 @@ pub fn execute_revoke_for_all(
     vec![]
 }
 
+/// ## Description
+/// Destroy your token forever.
+/// Returns [`(MPC721ContractState, Vec<EventGroup>)`] if operation was successful,
+/// otherwise panics with error message defined in [`ContractError`]
+/// ## Params
+/// * **ctx** is an object of type [`ContractContext`]
+///
+/// * **state** is an object of type [`MPC721ContractState`]
+///
+/// * **msg** is an object of type [`BurnMsg`]
 pub fn execute_burn(
     ctx: &ContractContext,
     state: &mut MPC721ContractState,

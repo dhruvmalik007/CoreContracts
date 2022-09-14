@@ -17,6 +17,14 @@ use mpc20_base::{
 };
 use utils::decimal::DecimalRatio;
 
+/// ## Description
+/// Inits contract state.
+/// Returns [`(MPC20StakingContractState, Vec<EventGroup>)`] if operation was successful,
+/// otherwise panics with error message defined in [`ContractError`]
+/// ## Params
+/// * **_ctx** is an object of type [`ContractContext`]
+///
+/// * **msg** is an object of type [`Mpc20StakingInitMsg`]
 pub fn execute_init(
     ctx: &ContractContext,
     msg: &Mpc20StakingInitMsg,
@@ -60,6 +68,16 @@ pub fn execute_init(
     (state, vec![])
 }
 
+/// ## Description
+/// Stake specified amount of tokens to earn rewards.
+/// Returns [`(MPC20StakingContractState, Vec<EventGroup>)`] if operation was successful,
+/// otherwise panics with error message defined in [`ContractError`]
+/// ## Params
+/// * **ctx** is an object of type [`ContractContext`]
+///
+/// * **state** is an object of type [`MPC20StakingContractState`]
+///
+/// * **msg** is an object of type [`StakeMsg`]
 pub fn execute_stake(
     ctx: &ContractContext,
     state: &mut MPC20StakingContractState,
@@ -86,6 +104,16 @@ pub fn execute_stake(
     vec![event_group.build()]
 }
 
+/// ## Description
+/// Withdraw staked tokens.
+/// Returns [`(MPC20StakingContractState, Vec<EventGroup>)`] if operation was successful,
+/// otherwise panics with error message defined in [`ContractError`]
+/// ## Params
+/// * **ctx** is an object of type [`ContractContext`]
+///
+/// * **state** is an object of type [`MPC20StakingContractState`]
+///
+/// * **msg** is an object of type [`UnstakeMsg`]
 pub fn execute_unstake(
     ctx: &ContractContext,
     state: &mut MPC20StakingContractState,
@@ -117,6 +145,16 @@ pub fn execute_unstake(
     vec![event_group.build()]
 }
 
+/// ## Description
+/// Claim earned rewards.
+/// Returns [`(MPC20StakingContractState, Vec<EventGroup>)`] if operation was successful,
+/// otherwise panics with error message defined in [`ContractError`]
+/// ## Params
+/// * **ctx** is an object of type [`ContractContext`]
+///
+/// * **state** is an object of type [`MPC20StakingContractState`]
+///
+/// * **msg** is an object of type [`ClaimMsg`]
 pub fn execute_claim(
     ctx: &ContractContext,
     state: &mut MPC20StakingContractState,
@@ -151,7 +189,17 @@ pub fn execute_claim(
     vec![]
 }
 
-// Works only when deposit_token == ctx.contract_address
+/// ## Description
+/// Compound earned rewards(e.g. stake them).
+/// Only works when deposit token is reward token.
+/// Returns [`(MPC20StakingContractState, Vec<EventGroup>)`] if operation was successful,
+/// otherwise panics with error message defined in [`ContractError`]
+/// ## Params
+/// * **ctx** is an object of type [`ContractContext`]
+///
+/// * **state** is an object of type [`MPC20StakingContractState`]
+///
+/// * **msg** is an object of type [`CompoundMsg`]
 pub fn execute_compound(
     ctx: &ContractContext,
     state: &mut MPC20StakingContractState,

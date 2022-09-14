@@ -9,6 +9,14 @@ use crate::{
     ContractError,
 };
 
+/// ## Description
+/// Inits contract state.
+/// Returns [`(MPC20ContractState, Vec<EventGroup>)`] if operation was successful,
+/// otherwise panics with error message defined in [`ContractError`]
+/// ## Params
+/// * **_ctx** is an object of type [`ContractContext`]
+///
+/// * **msg** is an object of type [`Mpc20InitMsg`]
 pub fn execute_init(
     _ctx: &ContractContext,
     msg: &Mpc20InitMsg,
@@ -28,6 +36,17 @@ pub fn execute_init(
     (state, vec![])
 }
 
+/// ## Description
+/// Mint specified amount of tokens to provided address.
+/// Only works when minter option is enabled.
+/// Returns [`(MPC20ContractState, Vec<EventGroup>)`] if operation was successful,
+/// otherwise panics with error message defined in [`ContractError`]
+/// ## Params
+/// * **ctx** is an object of type [`ContractContext`]
+///
+/// * **state** is an object of type [`MPC20ContractState`]
+///
+/// * **msg** is an object of type [`MintMsg`]
 pub fn execute_mint(
     ctx: &ContractContext,
     state: &mut MPC20ContractState,
@@ -53,6 +72,16 @@ pub fn execute_mint(
     vec![]
 }
 
+/// ## Description
+/// Moves amount tokens from the msg sender account to specified `to` account.
+/// Returns [`(MPC20ContractState, Vec<EventGroup>)`] if operation was successful,
+/// otherwise panics with error message defined in [`ContractError`]
+/// ## Params
+/// * **ctx** is an object of type [`ContractContext`]
+///
+/// * **state** is an object of type [`MPC20ContractState`]
+///
+/// * **msg** is an object of type [`TransferMsg`]
 pub fn execute_transfer(
     ctx: &ContractContext,
     state: &mut MPC20ContractState,
@@ -70,6 +99,17 @@ pub fn execute_transfer(
     vec![]
 }
 
+/// ## Description
+/// Only with approval extension.
+/// Transfers amount tokens from owner -> recipient if sender has sufficient pre-approval.
+/// Returns [`(MPC20ContractState, Vec<EventGroup>)`] if operation was successful,
+/// otherwise panics with error message defined in [`ContractError`]
+/// ## Params
+/// * **_ctx** is an object of type [`ContractContext`]
+///
+/// * **state** is an object of type [`MPC20ContractState`]
+///
+/// * **msg** is an object of type [TransferFromMsg``]
 pub fn execute_transfer_from(
     _ctx: &ContractContext,
     state: &mut MPC20ContractState,
@@ -88,6 +128,16 @@ pub fn execute_transfer_from(
     vec![]
 }
 
+/// ## Description
+/// Burn is a method to destroy your tokens forever.
+/// Returns [`(MPC20ContractState, Vec<EventGroup>)`] if operation was successful,
+/// otherwise panics with error message defined in [`ContractError`]
+/// ## Params
+/// * **ctx** is an object of type [`ContractContext`]
+///
+/// * **state** is an object of type [`MPC20ContractState`]
+///
+/// * **msg** is an object of type [`BurnMsg`]
 pub fn execute_burn(
     ctx: &ContractContext,
     state: &mut MPC20ContractState,
@@ -105,6 +155,16 @@ pub fn execute_burn(
     vec![]
 }
 
+/// ## Description
+/// Only with approval extension. Destroys your tokens forever.
+/// Returns [`(MPC20ContractState, Vec<EventGroup>)`] if operation was successful,
+/// otherwise panics with error message defined in [`ContractError`]
+/// ## Params
+/// * **ctx** is an object of type [`ContractContext`]
+///
+/// * **state** is an object of type [`MPC20ContractState`]
+///
+/// * **msg** is an object of type [`BurnFromMsg`]
 pub fn execute_burn_from(
     ctx: &ContractContext,
     state: &mut MPC20ContractState,
@@ -123,6 +183,16 @@ pub fn execute_burn_from(
     vec![]
 }
 
+/// ## Description
+/// Sets amount as the allowance of spender over the caller's tokens.
+/// Returns [`(MPC20ContractState, Vec<EventGroup>)`] if operation was successful,
+/// otherwise panics with error message defined in [`ContractError`]
+/// ## Params
+/// * **ctx** is an object of type [`ContractContext`]
+///
+/// * **state** is an object of type [`MPC20ContractState`]
+///
+/// * **msg** is an object of type [`ApproveMsg`]
 pub fn execute_approve(
     ctx: &ContractContext,
     state: &mut MPC20ContractState,
@@ -144,6 +214,16 @@ pub fn execute_approve(
     vec![]
 }
 
+/// ## Description
+/// Allows spender to access an additional amount tokens from the owner's account.
+/// Returns [`(MPC20ContractState, Vec<EventGroup>)`] if operation was successful,
+/// otherwise panics with error message defined in [`ContractError`]
+/// ## Params
+/// * **ctx** is an object of type [`ContractContext`]
+///
+/// * **state** is an object of type [`MPC20ContractState`]
+///
+/// * **msg** is an object of type [`IncreaseAllowanceMsg`]
 pub fn execute_increase_allowance(
     ctx: &ContractContext,
     state: &mut MPC20ContractState,
@@ -165,6 +245,16 @@ pub fn execute_increase_allowance(
     vec![]
 }
 
+/// ## Description
+/// Lowers the spender's access of tokens from the owner's account by amount.
+/// Returns [`(MPC20ContractState, Vec<EventGroup>)`] if operation was successful,
+/// otherwise panics with error message defined in [`ContractError`]
+/// ## Params
+/// * **ctx** is an object of type [`ContractContext`]
+///
+/// * **state** is an object of type [`MPC20ContractState`]
+///
+/// * **msg** is an object of type [`DecreaseAllowanceMsg`]
 pub fn execute_decrease_allowance(
     ctx: &ContractContext,
     state: &mut MPC20ContractState,

@@ -7,30 +7,61 @@ use read_write_state_derive::ReadWriteState;
 
 use crate::ContractError;
 
+/// ## Description
+/// This structure describes main mpc1155 contract state.
 #[derive(ReadWriteState, CreateTypeSpec, Clone, PartialEq, Eq, Debug)]
 pub struct MPC1155ContractState {
+    /// optional owner address
     pub owner: Option<Address>,
+    /// base uri for the tokens
     pub uri: String,
+    /// minter address
     pub minter: Address,
+    /// token holders balance
     pub balances: BTreeMap<u128, BTreeMap<Address, u128>>,
+    /// token approvals
     pub operator_approvals: BTreeMap<Address, BTreeMap<Address, bool>>,
+    /// token info by token id
     pub tokens: BTreeMap<u128, TokenInfo>,
 }
 
+/// ## Description
+/// This structure describes minted mpc1155 token information
 #[derive(ReadWriteRPC, ReadWriteState, CreateTypeSpec, Clone, PartialEq, Eq, Debug)]
 pub struct TokenInfo {
+    /// optional token uri
     pub token_uri: Option<String>,
 }
 
 impl MPC1155ContractState {
+    /// ## Description
+    /// Sets new base uri
+    /// ## Params
+    /// * **uri** is an object of type [`str`]
     pub fn set_uri(&mut self, uri: &str) {
         self.uri = uri.to_string()
     }
 
+    /// ## Description
+    /// Stores new token at specified token id
+    /// ## Params
+    /// * **token_id** is an object of type [`u128`]
+    ///
+    /// * **info** is an object of type [`TokenInfo`]
     pub fn store_token(&mut self, token_id: u128, info: &TokenInfo) {
         self.tokens.entry(token_id).or_insert_with(|| info.clone());
     }
 
+    /// ## Description
+    /// Transfers token from owner to spender
+    /// ## Params
+    /// * **from** is an object of type [`Option<Address>`]
+    ///
+    /// * **to** is an object of type [`Option<Address>`]
+    ///
+    /// * **token_id** is a field of type [`u128`]
+    ///
+    /// * **amount** is a field of type [`u128`]
     pub fn transfer(
         &mut self,
         from: Option<&Address>,
@@ -59,6 +90,12 @@ impl MPC1155ContractState {
         }
     }
 
+    /// ## Description
+    /// Adds new operator approval
+    /// ## Params
+    /// * **owner** is an object of type [`Address`]
+    ///
+    /// * **operator** is an object of type [`Address`]
     pub fn add_operator(&mut self, owner: &Address, operator: &Address) {
         let owner_operators = self
             .operator_approvals
@@ -68,6 +105,12 @@ impl MPC1155ContractState {
         owner_operators.insert(*operator, true);
     }
 
+    /// ## Description
+    /// Removes operator approval
+    /// ## Params
+    /// * **owner** is an object of type [`Address`]
+    ///
+    /// * **operator** is an object of type [`Address`]
     pub fn remove_operator(&mut self, owner: &Address, operator: &Address) {
         let owner_operators = self
             .operator_approvals
@@ -81,6 +124,10 @@ impl MPC1155ContractState {
         }
     }
 
+    /// ## Description
+    /// Checks that specified address is an owner or not
+    /// ## Params
+    /// * **address** is an object of type [`Address`]
     pub fn is_owner(&self, address: &Address) -> bool {
         if let Some(owner) = self.owner {
             owner.eq(address)
@@ -89,6 +136,12 @@ impl MPC1155ContractState {
         }
     }
 
+    /// ## Description
+    /// Checks approval
+    /// ## Params
+    /// * **owner** is an object of type [`Address`]
+    ///
+    /// * **sender** is an object of type [`Address`]
     pub fn is_token_owner_or_operator(&self, owner: &Address, sender: &Address) -> bool {
         if owner == sender {
             return true;
@@ -103,6 +156,10 @@ impl MPC1155ContractState {
         false
     }
 
+    /// ## Description
+    /// Returns token info by specified token id
+    /// ## Params
+    /// * **token_id** is an object of type [`u128`]
     pub fn token_info(&self, token_id: u128) -> Option<&TokenInfo> {
         self.tokens.get(&token_id)
     }

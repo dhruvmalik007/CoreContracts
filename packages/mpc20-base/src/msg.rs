@@ -6,16 +6,25 @@ use crate::state::{Minter, TokenInfo};
 
 use utils::events::NamedRPCEvent;
 
+/// ## Description
+/// This structure describes fields for mpc20 initial balances
 #[derive(ReadWriteRPC, CreateTypeSpec, Clone, PartialEq, Eq, Debug)]
 pub struct InitialBalance {
+    /// initial holder address
     pub address: Address,
+    /// initial amount
     pub amount: u128,
 }
 
+/// ## Description
+/// This structure describes fields for mpc20 initialize msg
 #[derive(ReadWriteRPC, CreateTypeSpec, Clone, PartialEq, Eq, Debug)]
 pub struct Mpc20InitMsg {
+    /// mpc20 token information
     pub info: TokenInfo,
+    /// initial balances
     pub initial_balances: Vec<InitialBalance>,
+    /// optional address allowed to mint new tokens
     pub minter: Option<Minter>,
 }
 
@@ -71,9 +80,13 @@ impl Mpc20InitMsg {
     }
 }
 
+/// ## Description
+/// This structure describes fields for mpc20 mint msg
 #[derive(ReadWriteRPC, CreateTypeSpec, Clone, PartialEq, Eq, Debug)]
 pub struct MintMsg {
+    /// token receiver
     pub recipient: Address,
+    /// amount to receive
     pub amount: u128,
 }
 
@@ -83,9 +96,13 @@ impl NamedRPCEvent for MintMsg {
     }
 }
 
+/// ## Description
+/// This structure describes fields for mpc20 transfer msg
 #[derive(ReadWriteRPC, CreateTypeSpec, Clone, PartialEq, Eq, Debug)]
 pub struct TransferMsg {
+    /// token receiver
     pub to: Address,
+    /// amount to receive
     pub amount: u128,
 }
 
@@ -95,10 +112,15 @@ impl NamedRPCEvent for TransferMsg {
     }
 }
 
+/// ## Description
+/// This structure describes fields for mpc20 trasnfer from msg
 #[derive(ReadWriteRPC, CreateTypeSpec, Clone, PartialEq, Eq, Debug)]
 pub struct TransferFromMsg {
+    /// token owner
     pub owner: Address,
+    /// token receiver
     pub to: Address,
+    /// amount to receive
     pub amount: u128,
 }
 
@@ -108,8 +130,11 @@ impl NamedRPCEvent for TransferFromMsg {
     }
 }
 
+/// ## Description
+/// This structure describes fields for mpc20 burn msg
 #[derive(ReadWriteRPC, CreateTypeSpec, Clone, PartialEq, Eq, Debug)]
 pub struct BurnMsg {
+    /// amount of tokens to burn
     pub amount: u128,
 }
 
@@ -119,9 +144,13 @@ impl NamedRPCEvent for BurnMsg {
     }
 }
 
+/// ## Description
+/// This structure describes fields for mpc20 burn from msg
 #[derive(ReadWriteRPC, CreateTypeSpec, Clone, PartialEq, Eq, Debug)]
 pub struct BurnFromMsg {
+    /// token owner
     pub owner: Address,
+    /// amount of tokens to burn
     pub amount: u128,
 }
 
@@ -131,9 +160,13 @@ impl NamedRPCEvent for BurnFromMsg {
     }
 }
 
+/// ## Description
+/// This structure describes fields for mpc20 approve msg
 #[derive(ReadWriteRPC, CreateTypeSpec, Clone, PartialEq, Eq, Debug)]
 pub struct ApproveMsg {
+    /// approved address
     pub spender: Address,
+    /// approved amount
     pub amount: u128,
 }
 
@@ -143,9 +176,13 @@ impl NamedRPCEvent for ApproveMsg {
     }
 }
 
+/// ## Description
+/// This structure describes fields for mpc20 increase allowance msg
 #[derive(ReadWriteRPC, CreateTypeSpec, Clone, PartialEq, Eq, Debug)]
 pub struct IncreaseAllowanceMsg {
+    /// approved spender
     pub spender: Address,
+    /// approved amount to increase
     pub amount: u128,
 }
 
@@ -155,9 +192,13 @@ impl NamedRPCEvent for IncreaseAllowanceMsg {
     }
 }
 
+/// ## Description
+/// This structure describes fields for mpc20 decrease allowance msg
 #[derive(ReadWriteRPC, CreateTypeSpec, Clone, PartialEq, Eq, Debug)]
 pub struct DecreaseAllowanceMsg {
+    /// approved spender
     pub spender: Address,
+    /// approved amount to decrease
     pub amount: u128,
 }
 

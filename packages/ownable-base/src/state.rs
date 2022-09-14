@@ -4,16 +4,29 @@ use read_write_state_derive::ReadWriteState;
 
 use crate::ContractError;
 
+/// ## Description
+/// This structure describes ownable extension state
 #[derive(ReadWriteState, CreateTypeSpec, Clone, PartialEq, Eq, Debug)]
 pub struct OwnableBaseState {
+    /// owner address
     owner: Address,
 }
 
 impl OwnableBaseState {
+    /// ## Description
+    /// Creates ownable extension state
+    /// ## Params
+    /// * **ctx** is an object of type [`ContractContext`]
     pub fn new(ctx: &ContractContext) -> Self {
         Self { owner: ctx.sender }
     }
 
+    /// ## Description
+    /// Transfers ownership to the new address
+    /// ## Params
+    /// * **ctx** is an object of type [`ContractContext`]
+    ///
+    /// * **new_owner** is an object of type [`Address`]
     pub fn transfer_ownership(&mut self, ctx: &ContractContext, new_owner: Address) {
         self.assert_only_owner(ctx);
         self.change_owner(new_owner)
@@ -23,6 +36,10 @@ impl OwnableBaseState {
         self.owner = new_owner;
     }
 
+    /// ## Description
+    /// Verifies that sender is an owner
+    /// ## Params
+    /// * **ctx** is an object of type [`ContractContext`]
     pub fn assert_only_owner(&self, ctx: &ContractContext) {
         assert!(
             self.owner == ctx.sender,
@@ -31,6 +48,8 @@ impl OwnableBaseState {
         );
     }
 
+    /// ## Description
+    /// Returns current owner address
     pub fn get_owner(&self) -> Address {
         self.owner
     }
