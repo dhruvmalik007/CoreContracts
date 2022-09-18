@@ -1,5 +1,7 @@
 use thiserror::Error;
 
+/// ## Description
+/// This enum describes mpc20-staking contract errors
 #[derive(Error, Debug)]
 pub enum ContractError {
     #[error("Cannot unstake more then staked")]

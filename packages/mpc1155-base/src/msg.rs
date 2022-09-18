@@ -4,15 +4,23 @@ use read_write_rpc_derive::ReadWriteRPC;
 
 use utils::events::NamedRPCEvent;
 
+/// ## Description
+/// This structure describes fields for mpc1155 initialize msg
 #[derive(ReadWriteRPC, CreateTypeSpec, Clone, PartialEq, Eq, Debug)]
 pub struct InitMsg {
+    /// optional owner address
     pub owner: Option<Address>,
+    /// base uri
     pub uri: String,
+    /// minter address
     pub minter: Address,
 }
 
+/// ## Description
+/// This structure describes fields for mpc1155 set uri msg
 #[derive(ReadWriteRPC, CreateTypeSpec, Clone, PartialEq, Eq, Debug)]
 pub struct SetUriMsg {
+    /// new base uri
     pub new_uri: String,
 }
 
@@ -22,13 +30,20 @@ impl NamedRPCEvent for SetUriMsg {
     }
 }
 
+/// ## Description
+/// This structure describes fields for mpc1155 mint msg
 #[derive(ReadWriteRPC, CreateTypeSpec, Clone, PartialEq, Eq, Debug)]
 pub struct TokenMintInfoMsg {
+    /// token id
     pub token_id: u128,
+    /// amount of token to mint
     pub amount: u128,
+    /// optional token uri
     pub token_uri: Option<String>,
 }
 
+/// ## Description
+/// This structure describes fields for mpc1155 mint msg
 #[derive(ReadWriteRPC, CreateTypeSpec, Clone, PartialEq, Eq, Debug)]
 pub struct MintMsg {
     pub to: Address,
@@ -41,9 +56,13 @@ impl NamedRPCEvent for MintMsg {
     }
 }
 
+/// ## Description
+/// This structure describes fields for mpc1155 batch mint msg
 #[derive(ReadWriteRPC, CreateTypeSpec, Clone, PartialEq, Eq, Debug)]
 pub struct BatchMintMsg {
+    /// receiver address
     pub to: Address,
+    /// list of tokens to mint
     pub token_infos: Vec<TokenMintInfoMsg>,
 }
 
@@ -53,44 +72,72 @@ impl NamedRPCEvent for BatchMintMsg {
     }
 }
 
+/// ## Description
+/// This structure describes fields for mpc1155 transfer msg
 #[derive(ReadWriteRPC, CreateTypeSpec, Clone, PartialEq, Eq, Debug)]
 pub struct TokenTransferInfoMsg {
+    /// token id
     pub token_id: u128,
+    /// amount of tokens to transfer
     pub amount: u128,
 }
 
+/// ## Description
+/// This structure describes fields for mpc1155 transfer from msg
 #[derive(ReadWriteRPC, CreateTypeSpec, Clone, PartialEq, Eq, Debug)]
 pub struct TransferFromMsg {
+    /// owner address
     pub from: Address,
+    /// receiver address
     pub to: Address,
+    /// token info for transfer
     pub token_info: TokenTransferInfoMsg,
 }
 
+/// ## Description
+/// This structure describes fields for mpc1155 batch transfer from msg
 #[derive(ReadWriteRPC, CreateTypeSpec, Clone, PartialEq, Eq, Debug)]
 pub struct BatchTransferFromMsg {
+    /// owner address
     pub from: Address,
+    /// receiver address
     pub to: Address,
+    /// list of token infos for transfer
     pub token_infos: Vec<TokenTransferInfoMsg>,
 }
 
+/// ## Description
+/// This structure describes fields for mpc1155 burn msg
 #[derive(ReadWriteRPC, CreateTypeSpec, Clone, PartialEq, Eq, Debug)]
 pub struct BurnMsg {
+    /// owner address
     pub from: Address,
+    /// token info for burn
     pub token_info: TokenTransferInfoMsg,
 }
 
+/// ## Description
+/// This structure describes fields for mpc1155 batch burn msg
 #[derive(ReadWriteRPC, CreateTypeSpec, Clone, PartialEq, Eq, Debug)]
 pub struct BatchBurnMsg {
+    /// owner address
     pub from: Address,
+    /// list of token infos for burn
     pub token_infos: Vec<TokenTransferInfoMsg>,
 }
 
+/// ## Description
+/// This structure describes fields for mpc1155 approve for all msg
 #[derive(ReadWriteRPC, CreateTypeSpec, Clone, PartialEq, Eq, Debug)]
 pub struct ApproveForAllMsg {
+    /// operator address to approve
     pub operator: Address,
 }
 
+/// ## Description
+/// This structure describes fields for mpc1155 revoke for all msg
 #[derive(ReadWriteRPC, CreateTypeSpec, Clone, PartialEq, Eq, Debug)]
 pub struct RevokeForAllMsg {
+    /// operator address to revoke
     pub operator: Address,
 }

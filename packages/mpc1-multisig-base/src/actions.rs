@@ -12,6 +12,14 @@ use crate::{
     ContractError,
 };
 
+/// ## Description
+/// Inits contract state.
+/// Returns [`(MPC1MultisigContractState, Vec<EventGroup>)`] if operation was successful,
+/// otherwise panics with error message defined in [`ContractError`]
+/// ## Params
+/// * **_ctx** is an object of type [`ContractContext`]
+///
+/// * **msg** is an object of type [`InitMsg`]
 pub fn execute_init(
     _ctx: &ContractContext,
     msg: &InitMsg,
@@ -58,6 +66,16 @@ pub fn execute_init(
     (state, vec![])
 }
 
+/// ## Description
+/// Creates a new proposal.
+/// Returns [`(MPC1MultisigContractState, Vec<EventGroup>)`] if operation was successful,
+/// otherwise panics with error message defined in [`ContractError`]
+/// ## Params
+/// * **ctx** is an object of type [`ContractContext`]
+///
+/// * **state** is an object of type [`MPC1MultisigContractState`]
+///
+/// * **msg** is an object of type [`CreateProposalMsg`]
 pub fn execute_create_proposal(
     ctx: &ContractContext,
     state: &mut MPC1MultisigContractState,
@@ -117,6 +135,16 @@ pub fn execute_create_proposal(
     vec![]
 }
 
+/// ## Description
+/// Performes a yes or no vote for specified proposal.
+/// Returns [`(MPC1MultisigContractState, Vec<EventGroup>)`] if operation was successful,
+/// otherwise panics with error message defined in [`ContractError`]
+/// ## Params
+/// * **ctx** is an object of type [`ContractContext`]
+///
+/// * **state** is an object of type [`MPC1MultisigContractState`]
+///
+/// * **msg** is an object of type [`ProposalVoteMsg`]
 pub fn execute_vote(
     ctx: &ContractContext,
     state: &mut MPC1MultisigContractState,
@@ -158,6 +186,16 @@ pub fn execute_vote(
     vec![]
 }
 
+/// ## Description
+/// Executes proposal if accepted.
+/// Returns [`(MPC1MultisigContractState, Vec<EventGroup>)`] if operation was successful,
+/// otherwise panics with error message defined in [`ContractError`]
+/// ## Params
+/// * **ctx** is an object of type [`ContractContext`]
+///
+/// * **state** is an object of type [`MPC1MultisigContractState`]
+///
+/// * **msg** is an object of type [`ProposalExecuteMsg`]
 pub fn execute_execute_proposal(
     ctx: &ContractContext,
     state: &mut MPC1MultisigContractState,
@@ -191,6 +229,16 @@ pub fn execute_execute_proposal(
     vec![event_group]
 }
 
+/// ## Description
+/// Closes proposal if expired or threshold was not reached.
+/// Returns [`(MPC1MultisigContractState, Vec<EventGroup>)`] if operation was successful,
+/// otherwise panics with error message defined in [`ContractError`]
+/// ## Params
+/// * **ctx** is an object of type [`ContractContext`]
+///
+/// * **state** is an object of type [`MPC1MultisigContractState`]
+///
+/// * **msg** is an object of type [`ProposalCloseMsg`]
 pub fn execute_close_proposal(
     ctx: &ContractContext,
     state: &mut MPC1MultisigContractState,

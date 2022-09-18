@@ -11,6 +11,14 @@ use crate::{
     ContractError,
 };
 
+/// ## Description
+/// Inits contract state.
+/// Returns [`(MPC1155ContractState, Vec<EventGroup>)`] if operation was successful,
+/// otherwise panics with error message defined in [`ContractError`]
+/// ## Params
+/// * **_ctx** is an object of type [`ContractContext`]
+///
+/// * **msg** is an object of type [`InitMsg`]
 pub fn execute_init(
     _ctx: &ContractContext,
     msg: &InitMsg,
@@ -27,6 +35,16 @@ pub fn execute_init(
     (state, vec![])
 }
 
+/// ## Description
+/// Set uri for the tokens.
+/// Returns [`(MPC1155ContractState, Vec<EventGroup>)`] if operation was successful,
+/// otherwise panics with error message defined in [`ContractError`]
+/// ## Params
+/// * **ctx** is an object of type [`ContractContext`]
+///
+/// * **state** is an object of type [`MPC1155ContractState`]
+///
+/// * **msg** is an object of type [`SetUriMsg`]
 pub fn execute_set_uri(
     ctx: &ContractContext,
     state: &mut MPC1155ContractState,
@@ -42,6 +60,16 @@ pub fn execute_set_uri(
     vec![]
 }
 
+/// ## Description
+/// Mint a new token. Can only be executed by minter account.
+/// Returns [`(MPC1155ContractState, Vec<EventGroup>)`] if operation was successful,
+/// otherwise panics with error message defined in [`ContractError`]
+/// ## Params
+/// * **ctx** is an object of type [`ContractContext`]
+///
+/// * **state** is an object of type [`MPC1155ContractState`]
+///
+/// * **msg** is an object of type [`MintMsg`]
 pub fn execute_mint(
     ctx: &ContractContext,
     state: &mut MPC1155ContractState,
@@ -69,6 +97,16 @@ pub fn execute_mint(
     vec![]
 }
 
+/// ## Description
+/// Batch mint a new token. Can only be executed by minter account.
+/// Returns [`(MPC1155ContractState, Vec<EventGroup>)`] if operation was successful,
+/// otherwise panics with error message defined in [`ContractError`]
+/// ## Params
+/// * **ctx** is an object of type [`ContractContext`]
+///
+/// * **state** is an object of type [`MPC1155ContractState`]
+///
+/// * **msg** is an object of type [`BatchMintMsg`]
 pub fn execute_batch_mint(
     ctx: &ContractContext,
     state: &mut MPC1155ContractState,
@@ -93,6 +131,16 @@ pub fn execute_batch_mint(
     vec![]
 }
 
+/// ## Description
+/// Only with approval extension. Transfer token from owner to spender.
+/// Returns [`(MPC1155ContractState, Vec<EventGroup>)`] if operation was successful,
+/// otherwise panics with error message defined in [`ContractError`]
+/// ## Params
+/// * **ctx** is an object of type [`ContractContext`]
+///
+/// * **state** is an object of type [`MPC1155ContractState`]
+///
+/// * **msg** is an object of type [`TransferFromMsg`]
 pub fn execute_transfer_from(
     ctx: &ContractContext,
     state: &mut MPC1155ContractState,
@@ -114,6 +162,16 @@ pub fn execute_transfer_from(
     vec![]
 }
 
+/// ## Description
+/// Only with approval extension. Batch transfer token from owner to spender.
+/// Returns [`(MPC1155ContractState, Vec<EventGroup>)`] if operation was successful,
+/// otherwise panics with error message defined in [`ContractError`]
+/// ## Params
+/// * **ctx** is an object of type [`ContractContext`]
+///
+/// * **state** is an object of type [`MPC1155ContractState`]
+///
+/// * **msg** is an object of type [`BatchTransferFromMsg`]
 pub fn execute_batch_transfer_from(
     ctx: &ContractContext,
     state: &mut MPC1155ContractState,
@@ -137,6 +195,16 @@ pub fn execute_batch_transfer_from(
     vec![]
 }
 
+/// ## Description
+/// Destroy your token forever.
+/// Returns [`(MPC1155ContractState, Vec<EventGroup>)`] if operation was successful,
+/// otherwise panics with error message defined in [`ContractError`]
+/// ## Params
+/// * **ctx** is an object of type [`ContractContext`]
+///
+/// * **state** is an object of type [`MPC1155ContractState`]
+///
+/// * **msg** is an object of type [`BurnMsg`]
 pub fn execute_burn(
     ctx: &ContractContext,
     state: &mut MPC1155ContractState,
@@ -158,6 +226,16 @@ pub fn execute_burn(
     vec![]
 }
 
+/// ## Description
+/// Batch destroy your token forever.
+/// Returns [`(MPC1155ContractState, Vec<EventGroup>)`] if operation was successful,
+/// otherwise panics with error message defined in [`ContractError`]
+/// ## Params
+/// * **ctx** is an object of type [`ContractContext`]
+///
+/// * **state** is an object of type [`MPC1155ContractState`]
+///
+/// * **msg** is an object of type [`BatchBurnMsg`]
 pub fn execute_batch_burn(
     ctx: &ContractContext,
     state: &mut MPC1155ContractState,
@@ -181,6 +259,16 @@ pub fn execute_batch_burn(
     vec![]
 }
 
+/// ## Description
+/// Allows operator to transfer any owner tokens from his account.
+/// Returns [`(MPC1155ContractState, Vec<EventGroup>)`] if operation was successful,
+/// otherwise panics with error message defined in [`ContractError`]
+/// ## Params
+/// * **ctx** is an object of type [`ContractContext`]
+///
+/// * **state** is an object of type [`MPC1155ContractState`]
+///
+/// * **msg** is an object of type [`ApproveForAllMsg`]
 pub fn execute_approve_for_all(
     ctx: &ContractContext,
     state: &mut MPC1155ContractState,
@@ -190,6 +278,16 @@ pub fn execute_approve_for_all(
     vec![]
 }
 
+/// ## Description
+/// Remove operator.
+/// Returns [`(MPC1155ContractState, Vec<EventGroup>)`] if operation was successful,
+/// otherwise panics with error message defined in [`ContractError`]
+/// ## Params
+/// * **ctx** is an object of type [`ContractContext`]
+///
+/// * **state** is an object of type [`MPC1155ContractState`]
+///
+/// * **msg** is an object of type [`RevokeForAllMsg`]
 pub fn execute_revoke_for_all(
     ctx: &ContractContext,
     state: &mut MPC1155ContractState,
