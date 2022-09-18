@@ -8,8 +8,8 @@ pub fn validate_merkle_root(merkle_root: &str) {
     );
 }
 
-pub fn verify_merkle_proof(merkle_root: &str, leaf: &str, proof: &[String]) {
-    let mut leaf_buf: [u8; 32] = sha3::Keccak256::digest(leaf.as_bytes())
+pub fn verify_merkle_proof(merkle_root: &str, leaf: &[u8], proof: &[String]) {
+    let mut leaf_buf: [u8; 32] = sha3::Keccak256::digest(leaf)
         .as_slice()
         .try_into()
         .expect("Wrong length");
@@ -73,7 +73,7 @@ mod tests {
         let proof =
             ["710c92c04197da66b0229c0b29238c069cf720f52acf4fb2a292cb3df8dc830a".to_string()];
 
-        verify_merkle_proof(merkle_root, leaf, &proof);
+        verify_merkle_proof(merkle_root, leaf.as_bytes(), &proof);
     }
 
     #[test]
@@ -84,7 +84,7 @@ mod tests {
         let proof =
             ["43297d829509b8ba92b45435b8888d40c2dbc00691e4a11cdba2977bc8cd18ae".to_string()];
 
-        verify_merkle_proof(merkle_root, leaf, &proof)
+        verify_merkle_proof(merkle_root, leaf.as_bytes(), &proof)
     }
 
     #[test]
@@ -95,7 +95,7 @@ mod tests {
         let proof =
             ["710c92c04197da66b0229c0b29238c069cf720f52acf4fb2a292cb3df8dc830a".to_string()];
 
-        verify_merkle_proof(merkle_root, leaf, &proof)
+        verify_merkle_proof(merkle_root, leaf.as_bytes(), &proof)
     }
 
     #[test]
@@ -106,6 +106,6 @@ mod tests {
         let proof =
             ["710c92c04197da66b0229c0b29238c069cf720f52acf4fb2a292cb3df8dc830a".to_string()];
 
-        verify_merkle_proof(merkle_root, leaf, &proof)
+        verify_merkle_proof(merkle_root, leaf.as_bytes(), &proof)
     }
 }
