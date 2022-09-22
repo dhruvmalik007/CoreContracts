@@ -12,6 +12,8 @@ pub const MAINNET_MPC_TOKEN: Address = Address {
     ],
 };
 
+pub const MPC_DECIMALS: u8 = 4;
+
 pub fn native_mpc_transfer(
     event_group: &mut EventGroupBuilder,
     to: Address,
