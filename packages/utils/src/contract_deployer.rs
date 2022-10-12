@@ -41,7 +41,6 @@ pub fn add_contract_deploy_event(
 
     event_group
         .call(CONTRACT_DEPLOYER, Shortname::from_u32(1))
-        .from_original_sender()
         .argument(wasm.to_vec())
         .argument(abi.to_vec())
         .argument(msg.to_vec())
