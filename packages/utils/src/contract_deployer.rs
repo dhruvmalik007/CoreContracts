@@ -23,7 +23,7 @@ pub fn add_contract_deploy_event_with_msg<T>(
 where
     T: ReadWriteRPC,
 {
-    let mut raw_init_msg: Vec<u8> = init_msg_signature();
+    let mut raw_init_msg: Vec<u8> = vec![];
     init_msg.rpc_write_to(&mut raw_init_msg).unwrap();
 
     add_contract_deploy_event(ctx, event_group, wasm, abi, &raw_init_msg)
