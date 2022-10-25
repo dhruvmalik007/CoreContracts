@@ -1,6 +1,6 @@
 use pbc_contract_common::{
     address::{Address, Shortname},
-    events::{EventGroupBuilder, InteractionBuilder},
+    events::EventGroupBuilder,
     to_leb128_bytes, FunctionName,
 };
 use pbc_traits::ReadWriteRPC;
