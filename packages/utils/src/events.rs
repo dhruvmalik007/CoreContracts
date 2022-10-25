@@ -1,5 +1,5 @@
 use pbc_contract_common::{
-    address::{Address, Shortname},
+    address::{Address, Shortname, ShortnameCallback},
     events::EventGroupBuilder,
     to_leb128_bytes, FunctionName,
 };
@@ -32,6 +32,17 @@ pub fn build_msg_call<T>(
     }
 
     interaction.argument(msg.clone()).done();
+}
+
+#[inline]
+pub fn build_msg_callback<T>(builder: &mut EventGroupBuilder, callback_byte: u32, msg: &T)
+where
+    T: ReadWriteRPC + Clone,
+{
+    builder
+        .with_callback(ShortnameCallback::from_u32(callback_byte))
+        .argument(msg.clone())
+        .done();
 }
 
 #[inline]
