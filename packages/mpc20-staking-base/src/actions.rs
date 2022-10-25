@@ -2,7 +2,7 @@ use std::collections::BTreeMap;
 
 use pbc_contract_common::{context::ContractContext, events::EventGroup};
 use rust_decimal::prelude::*;
-use utils::events::get_msg_shortname;
+use utils::events::build_msg_call;
 
 use crate::{
     msg::{ClaimMsg, CompoundMsg, Mpc20StakingInitMsg, StakeMsg, UnstakeMsg},
@@ -95,11 +95,7 @@ pub fn execute_stake(
     };
 
     let mut event_group = EventGroup::builder();
-    event_group
-        .call(state.deposit_token, get_msg_shortname(&transfer_msg))
-        .from_original_sender()
-        .argument(transfer_msg)
-        .done();
+    build_msg_call(&mut event_group, &state.deposit_token, true, &transfer_msg);
 
     vec![event_group.build()]
 }
@@ -137,10 +133,7 @@ pub fn execute_unstake(
     };
 
     let mut event_group = EventGroup::builder();
-    event_group
-        .call(state.deposit_token, get_msg_shortname(&transfer_msg))
-        .argument(transfer_msg)
-        .done();
+    build_msg_call(&mut event_group, &state.deposit_token, false, &transfer_msg);
 
     vec![event_group.build()]
 }

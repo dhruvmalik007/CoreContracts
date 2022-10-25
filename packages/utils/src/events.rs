@@ -1,4 +1,8 @@
-use pbc_contract_common::{address::Shortname, to_leb128_bytes, FunctionName};
+use pbc_contract_common::{
+    address::{Address, Shortname},
+    events::{EventGroupBuilder, InteractionBuilder},
+    to_leb128_bytes, FunctionName,
+};
 use pbc_traits::ReadWriteRPC;
 
 pub trait NamedRPCEvent {
@@ -11,6 +15,45 @@ where
     T: NamedRPCEvent + ReadWriteRPC,
 {
     *FunctionName::create_from_str(msg.event_name().as_str(), None).shortname()
+}
+
+#[inline]
+pub fn build_msg_call<T>(
+    builder: &mut EventGroupBuilder,
+    dest: &Address,
+    from_original_sender: bool,
+    msg: &T,
+) where
+    T: NamedRPCEvent + ReadWriteRPC + Clone,
+{
+    let mut interaction = builder.call(*dest, get_msg_shortname(msg));
+    if from_original_sender {
+        interaction = interaction.from_original_sender();
+    }
+
+    interaction.argument(msg.clone()).done();
+}
+
+pub trait ParamsArgumentBuilder {
+    fn build_params_argument(&self, interaction: &mut InteractionBuilder);
+}
+
+#[inline]
+pub fn build_params_call<T>(
+    builder: &mut EventGroupBuilder,
+    dest: &Address,
+    from_original_sender: bool,
+    msg: &T,
+) where
+    T: NamedRPCEvent + ParamsArgumentBuilder + ReadWriteRPC + Clone,
+{
+    let mut interaction = builder.call(*dest, get_msg_shortname(msg));
+    if from_original_sender {
+        interaction = interaction.from_original_sender();
+    }
+
+    msg.build_params_argument(&mut interaction);
+    interaction.done();
 }
 
 #[inline]
