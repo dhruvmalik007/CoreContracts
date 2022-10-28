@@ -5,6 +5,11 @@ use pbc_contract_common::{
 };
 use pbc_traits::ReadWriteRPC;
 
+pub trait IntoShortnameRPCEvent {
+    fn action_shortname(&self) -> u32;
+    fn as_interaction(&self, builder: &mut EventGroupBuilder, dest: &Address);
+}
+
 pub trait NamedRPCEvent {
     fn event_name(&self) -> String;
 }
@@ -43,33 +48,6 @@ where
         .with_callback(ShortnameCallback::from_u32(callback_byte))
         .argument(msg.clone())
         .done();
-}
-
-#[inline]
-pub fn into_rpc_call<T>(msg: &T) -> Vec<u8>
-where
-    T: NamedRPCEvent + ReadWriteRPC,
-{
-    let fn_name = FunctionName::create_from_str(msg.event_name().as_str(), None);
-    let mut event_payload: Vec<u8> = to_leb128_bytes(fn_name.shortname().as_u32());
-    msg.rpc_write_to(&mut event_payload).unwrap();
-
-    event_payload
-}
-
-pub trait ShortnamedRPCEvent {
-    fn short_event_name(&self) -> Vec<u8>;
-}
-
-#[inline]
-pub fn into_shortname_rpc_call<T>(msg: &T) -> Vec<u8>
-where
-    T: ShortnamedRPCEvent + ReadWriteRPC,
-{
-    let mut event_payload: Vec<u8> = msg.short_event_name();
-    msg.rpc_write_to(&mut event_payload).unwrap();
-
-    event_payload
 }
 
 #[inline]

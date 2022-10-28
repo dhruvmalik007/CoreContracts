@@ -467,7 +467,7 @@ fn proper_transfer_from() {
     );
 
     let transfer_from_msg = TransferFromMsg {
-        owner: mock_address(alice),
+        from: mock_address(alice),
         to: mock_address(bob),
         amount: 100,
     };
@@ -497,7 +497,7 @@ fn zero_amount_on_transfer_from() {
     let (mut state, _) = execute_init(&mock_contract_context(2u8), &msg);
 
     let transfer_from_msg = TransferFromMsg {
-        owner: mock_address(alice),
+        from: mock_address(alice),
         to: mock_address(bob),
         amount: 0,
     };

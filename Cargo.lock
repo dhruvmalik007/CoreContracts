@@ -57,6 +57,20 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "baf1de4339761588bc0619e3cbc0120ee582ebb74b53b4efbf79117bd2da40fd"
 
 [[package]]
+name = "contract-version-base"
+version = "0.0.1"
+dependencies = [
+ "create_type_spec_derive",
+ "pbc_contract_codegen",
+ "pbc_contract_common",
+ "pbc_lib",
+ "pbc_traits",
+ "read_write_rpc_derive",
+ "read_write_state_derive",
+ "thiserror",
+]
+
+[[package]]
 name = "cpufeatures"
 version = "0.2.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -207,6 +221,7 @@ dependencies = [
 name = "mpc20"
 version = "0.0.1"
 dependencies = [
+ "contract-version-base",
  "create_type_spec_derive",
  "mpc20-base",
  "pbc_contract_codegen",
@@ -216,6 +231,7 @@ dependencies = [
  "read_write_rpc_derive",
  "read_write_state_derive",
  "serde_json",
+ "utils",
 ]
 
 [[package]]

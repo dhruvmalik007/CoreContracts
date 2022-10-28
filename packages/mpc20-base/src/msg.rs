@@ -1,10 +1,10 @@
 use create_type_spec_derive::CreateTypeSpec;
-use pbc_contract_common::address::Address;
+use pbc_contract_common::address::{Address, Shortname};
 use read_write_rpc_derive::ReadWriteRPC;
 
 use crate::state::{Minter, TokenInfo};
 
-use utils::events::NamedRPCEvent;
+use utils::events::{IntoShortnameRPCEvent, NamedRPCEvent};
 
 /// ## Description
 /// This structure describes fields for mpc20 initial balances
@@ -81,22 +81,6 @@ impl Mpc20InitMsg {
 }
 
 /// ## Description
-/// This structure describes fields for mpc20 mint msg
-#[derive(ReadWriteRPC, CreateTypeSpec, Clone, PartialEq, Eq, Debug)]
-pub struct MintMsg {
-    /// token receiver
-    pub recipient: Address,
-    /// amount to receive
-    pub amount: u128,
-}
-
-impl NamedRPCEvent for MintMsg {
-    fn event_name(&self) -> String {
-        "mint".to_string()
-    }
-}
-
-/// ## Description
 /// This structure describes fields for mpc20 transfer msg
 #[derive(ReadWriteRPC, CreateTypeSpec, Clone, PartialEq, Eq, Debug)]
 pub struct TransferMsg {
@@ -112,12 +96,30 @@ impl NamedRPCEvent for TransferMsg {
     }
 }
 
+impl IntoShortnameRPCEvent for TransferMsg {
+    fn action_shortname(&self) -> u32 {
+        0x01
+    }
+
+    fn as_interaction(
+        &self,
+        builder: &mut pbc_contract_common::events::EventGroupBuilder,
+        dest: &Address,
+    ) {
+        builder
+            .call(*dest, Shortname::from_u32(self.action_shortname()))
+            .argument(self.to)
+            .argument(self.amount)
+            .done();
+    }
+}
+
 /// ## Description
 /// This structure describes fields for mpc20 trasnfer from msg
 #[derive(ReadWriteRPC, CreateTypeSpec, Clone, PartialEq, Eq, Debug)]
 pub struct TransferFromMsg {
     /// token owner
-    pub owner: Address,
+    pub from: Address,
     /// token receiver
     pub to: Address,
     /// amount to receive
@@ -130,33 +132,22 @@ impl NamedRPCEvent for TransferFromMsg {
     }
 }
 
-/// ## Description
-/// This structure describes fields for mpc20 burn msg
-#[derive(ReadWriteRPC, CreateTypeSpec, Clone, PartialEq, Eq, Debug)]
-pub struct BurnMsg {
-    /// amount of tokens to burn
-    pub amount: u128,
-}
-
-impl NamedRPCEvent for BurnMsg {
-    fn event_name(&self) -> String {
-        "burn".to_string()
+impl IntoShortnameRPCEvent for TransferFromMsg {
+    fn action_shortname(&self) -> u32 {
+        0x03
     }
-}
 
-/// ## Description
-/// This structure describes fields for mpc20 burn from msg
-#[derive(ReadWriteRPC, CreateTypeSpec, Clone, PartialEq, Eq, Debug)]
-pub struct BurnFromMsg {
-    /// token owner
-    pub owner: Address,
-    /// amount of tokens to burn
-    pub amount: u128,
-}
-
-impl NamedRPCEvent for BurnFromMsg {
-    fn event_name(&self) -> String {
-        "burn_from".to_string()
+    fn as_interaction(
+        &self,
+        builder: &mut pbc_contract_common::events::EventGroupBuilder,
+        dest: &Address,
+    ) {
+        builder
+            .call(*dest, Shortname::from_u32(self.action_shortname()))
+            .argument(self.from)
+            .argument(self.to)
+            .argument(self.amount)
+            .done();
     }
 }
 
@@ -176,6 +167,123 @@ impl NamedRPCEvent for ApproveMsg {
     }
 }
 
+impl IntoShortnameRPCEvent for ApproveMsg {
+    fn action_shortname(&self) -> u32 {
+        0x05
+    }
+
+    fn as_interaction(
+        &self,
+        builder: &mut pbc_contract_common::events::EventGroupBuilder,
+        dest: &Address,
+    ) {
+        builder
+            .call(*dest, Shortname::from_u32(self.action_shortname()))
+            .argument(self.spender)
+            .argument(self.amount)
+            .done();
+    }
+}
+
+/// ## Description
+/// This structure describes fields for mpc20 mint msg
+#[derive(ReadWriteRPC, CreateTypeSpec, Clone, PartialEq, Eq, Debug)]
+pub struct MintMsg {
+    /// token receiver
+    pub recipient: Address,
+    /// amount to receive
+    pub amount: u128,
+}
+
+impl NamedRPCEvent for MintMsg {
+    fn event_name(&self) -> String {
+        "mint".to_string()
+    }
+}
+
+impl IntoShortnameRPCEvent for MintMsg {
+    fn action_shortname(&self) -> u32 {
+        0x07
+    }
+
+    fn as_interaction(
+        &self,
+        builder: &mut pbc_contract_common::events::EventGroupBuilder,
+        dest: &Address,
+    ) {
+        builder
+            .call(*dest, Shortname::from_u32(self.action_shortname()))
+            .argument(self.recipient)
+            .argument(self.amount)
+            .done();
+    }
+}
+
+/// ## Description
+/// This structure describes fields for mpc20 burn msg
+#[derive(ReadWriteRPC, CreateTypeSpec, Clone, PartialEq, Eq, Debug)]
+pub struct BurnMsg {
+    /// amount of tokens to burn
+    pub amount: u128,
+}
+
+impl NamedRPCEvent for BurnMsg {
+    fn event_name(&self) -> String {
+        "burn".to_string()
+    }
+}
+
+impl IntoShortnameRPCEvent for BurnMsg {
+    fn action_shortname(&self) -> u32 {
+        0x09
+    }
+
+    fn as_interaction(
+        &self,
+        builder: &mut pbc_contract_common::events::EventGroupBuilder,
+        dest: &Address,
+    ) {
+        builder
+            .call(*dest, Shortname::from_u32(self.action_shortname()))
+            .argument(self.amount)
+            .done();
+    }
+}
+
+/// ## Description
+/// This structure describes fields for mpc20 burn from msg
+#[derive(ReadWriteRPC, CreateTypeSpec, Clone, PartialEq, Eq, Debug)]
+pub struct BurnFromMsg {
+    /// token owner
+    pub owner: Address,
+    /// amount of tokens to burn
+    pub amount: u128,
+}
+
+impl NamedRPCEvent for BurnFromMsg {
+    fn event_name(&self) -> String {
+        "burn_from".to_string()
+    }
+}
+
+impl IntoShortnameRPCEvent for BurnFromMsg {
+    fn action_shortname(&self) -> u32 {
+        0x11
+    }
+
+    fn as_interaction(
+        &self,
+        builder: &mut pbc_contract_common::events::EventGroupBuilder,
+        dest: &Address,
+    ) {
+        builder
+            .call(*dest, Shortname::from_u32(self.action_shortname()))
+            .argument(self.owner)
+            .argument(self.amount)
+            .done();
+    }
+}
+
 /// ## Description
 /// This structure describes fields for mpc20 increase allowance msg
 #[derive(ReadWriteRPC, CreateTypeSpec, Clone, PartialEq, Eq, Debug)]
@@ -192,6 +300,24 @@ impl NamedRPCEvent for IncreaseAllowanceMsg {
     }
 }
 
+impl IntoShortnameRPCEvent for IncreaseAllowanceMsg {
+    fn action_shortname(&self) -> u32 {
+        0x13
+    }
+
+    fn as_interaction(
+        &self,
+        builder: &mut pbc_contract_common::events::EventGroupBuilder,
+        dest: &Address,
+    ) {
+        builder
+            .call(*dest, Shortname::from_u32(self.action_shortname()))
+            .argument(self.spender)
+            .argument(self.amount)
+            .done();
+    }
+}
+
 /// ## Description
 /// This structure describes fields for mpc20 decrease allowance msg
 #[derive(ReadWriteRPC, CreateTypeSpec, Clone, PartialEq, Eq, Debug)]
@@ -205,5 +331,23 @@ pub struct DecreaseAllowanceMsg {
 impl NamedRPCEvent for DecreaseAllowanceMsg {
     fn event_name(&self) -> String {
         "decrease_allowance".to_string()
+    }
+}
+
+impl IntoShortnameRPCEvent for DecreaseAllowanceMsg {
+    fn action_shortname(&self) -> u32 {
+        0x15
+    }
+
+    fn as_interaction(
+        &self,
+        builder: &mut pbc_contract_common::events::EventGroupBuilder,
+        dest: &Address,
+    ) {
+        builder
+            .call(*dest, Shortname::from_u32(self.action_shortname()))
+            .argument(self.spender)
+            .argument(self.amount)
+            .done();
     }
 }
