@@ -121,8 +121,8 @@ pub fn execute_transfer_from(
         ContractError::AmountMustBeHigherThenZero,
     );
 
-    state.decrease_allowance(&msg.owner, &msg.to, msg.amount);
-    state.decrease_balance(&msg.owner, msg.amount);
+    state.decrease_allowance(&msg.from, &msg.to, msg.amount);
+    state.decrease_balance(&msg.from, msg.amount);
     state.increase_balance(&msg.to, msg.amount);
 
     vec![]

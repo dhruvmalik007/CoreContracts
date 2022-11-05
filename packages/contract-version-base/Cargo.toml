@@ -1,6 +1,6 @@
 [package]
-name = "token-sale"
-version = "0.0.1"
+name = "contract-version-base"
+version = "1.0.0"
 edition = "2021"
 
 [lib]
@@ -18,7 +18,7 @@ read_write_state_derive = { git = "https://git@gitlab.com/partisiablockchain/lan
 create_type_spec_derive = { git = "https://git@gitlab.com/partisiablockchain/language/contract-sdk.git", tag = "9.1.1" }
 pbc_contract_codegen = { git = "https://git@gitlab.com/partisiablockchain/language/contract-sdk.git", tag = "9.1.1" }
 
-serde_json = "1.0"
+thiserror = "1.0.31"
 
 [features]
 abi = ["pbc_contract_common/abi", "pbc_contract_codegen/abi", "pbc_traits/abi", "create_type_spec_derive/abi"]

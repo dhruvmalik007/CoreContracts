@@ -700,6 +700,7 @@ fn member_already_voted_on_vote() {
     let events = execute_vote(&mock_contract_context(1), &mut state, &vote_msg);
 }
 
+#[allow(deprecated)]
 #[test]
 fn proper_execute_proposal() {
     let msg = InitMsg {

@@ -18,16 +18,10 @@ pub fn is_native_mpc(token: &Address) -> bool {
     MAINNET_MPC_TOKEN == *token
 }
 
-pub fn native_mpc_transfer(
-    event_group: &mut EventGroupBuilder,
-    to: Address,
-    amount: i64,
-    from_origin: bool,
-) {
-    let mut interaction = event_group.call(MAINNET_MPC_TOKEN, Shortname::from_u32(0x03));
-    if from_origin {
-        interaction = interaction.from_original_sender();
-    }
-
-    interaction.argument(to).argument(amount).done();
+pub fn native_mpc_transfer(event_group: &mut EventGroupBuilder, to: Address, amount: i64) {
+    event_group
+        .call(MAINNET_MPC_TOKEN, Shortname::from_u32(0x03))
+        .argument(to)
+        .argument(amount)
+        .done();
 }

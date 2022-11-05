@@ -1,6 +1,6 @@
 [package]
 name = "mpc721"
-version = "0.0.1"
+version = "1.0.0"
 edition = "2021"
 
 [lib]
@@ -19,8 +19,12 @@ create_type_spec_derive = { git = "https://git@gitlab.com/partisiablockchain/lan
 pbc_contract_codegen = { git = "https://git@gitlab.com/partisiablockchain/language/contract-sdk.git", tag = "9.1.1" }
 
 mpc721-base = { path = "../../packages/mpc721-base", features = ["abi"] }
+contract-version-base = { path = "../../packages/contract-version-base", features = ["abi"] }
 
 serde_json = "1.0"
+
+[dev-dependencies]
+utils = { path = "../../packages/utils", features = ["abi"] }
 
 [features]
 abi = ["pbc_contract_common/abi", "pbc_contract_codegen/abi", "pbc_traits/abi", "create_type_spec_derive/abi"]

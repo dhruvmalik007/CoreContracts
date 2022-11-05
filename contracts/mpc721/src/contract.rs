@@ -1,6 +1,7 @@
 use crate::state::ContractState;
 
-use pbc_contract_common::{context::ContractContext, events::EventGroup};
+use contract_version_base::state::ContractVersionBase;
+use pbc_contract_common::{address::Address, context::ContractContext, events::EventGroup};
 
 use mpc721_base::{
     actions::{
@@ -14,118 +15,143 @@ use mpc721_base::{
     },
 };
 
+const CONTRACT_NAME: &str = env!("CARGO_PKG_NAME");
+const CONTRACT_VERSION: &str = env!("CARGO_PKG_VERSION");
+
 #[init]
 pub fn initialize(ctx: ContractContext, msg: InitMsg) -> (ContractState, Vec<EventGroup>) {
     let (mpc721, events) = execute_init(&ctx, &msg);
-    let state = ContractState { mpc721 };
+    let state = ContractState {
+        mpc721,
+        version: ContractVersionBase::new(CONTRACT_NAME, CONTRACT_VERSION),
+    };
 
     (state, events)
 }
 
-#[action]
-pub fn set_base_uri(
-    ctx: ContractContext,
-    state: ContractState,
-    msg: SetBaseUriMsg,
-) -> (ContractState, Vec<EventGroup>) {
-    let mut state = state;
-    let events = execute_set_base_uri(&ctx, &mut state.mpc721, &msg);
-
-    (state, events)
-}
-
-#[action]
-pub fn mint(
-    ctx: ContractContext,
-    state: ContractState,
-    msg: MintMsg,
-) -> (ContractState, Vec<EventGroup>) {
-    let mut state = state;
-    let events = execute_mint(&ctx, &mut state.mpc721, &msg);
-
-    (state, events)
-}
-
-#[action]
+#[action(shortname = 0x01)]
 pub fn transfer(
     ctx: ContractContext,
     state: ContractState,
-    msg: TransferMsg,
+    to: Address,
+    token_id: u128,
 ) -> (ContractState, Vec<EventGroup>) {
     let mut state = state;
-    let events = execute_transfer(&ctx, &mut state.mpc721, &msg);
+    let events = execute_transfer(&ctx, &mut state.mpc721, &TransferMsg { to, token_id });
 
     (state, events)
 }
 
-#[action]
+#[action(shortname = 0x03)]
 pub fn transfer_from(
     ctx: ContractContext,
     state: ContractState,
-    msg: TransferFromMsg,
+    from: Address,
+    to: Address,
+    token_id: u128,
 ) -> (ContractState, Vec<EventGroup>) {
     let mut state = state;
-    let events = execute_transfer_from(&ctx, &mut state.mpc721, &msg);
+    let events = execute_transfer_from(
+        &ctx,
+        &mut state.mpc721,
+        &TransferFromMsg { from, to, token_id },
+    );
 
     (state, events)
 }
 
-#[action]
+#[action(shortname = 0x05)]
 pub fn approve(
     ctx: ContractContext,
     state: ContractState,
-    msg: ApproveMsg,
+    spender: Address,
+    token_id: u128,
 ) -> (ContractState, Vec<EventGroup>) {
     let mut state = state;
-    let events = execute_approve(&ctx, &mut state.mpc721, &msg);
+    let events = execute_approve(&ctx, &mut state.mpc721, &ApproveMsg { spender, token_id });
 
     (state, events)
 }
 
-#[action]
+#[action(shortname = 0x07)]
+pub fn set_base_uri(
+    ctx: ContractContext,
+    state: ContractState,
+    new_base_uri: String,
+) -> (ContractState, Vec<EventGroup>) {
+    let mut state = state;
+    let events = execute_set_base_uri(&ctx, &mut state.mpc721, &SetBaseUriMsg { new_base_uri });
+
+    (state, events)
+}
+
+#[action(shortname = 0x09)]
+pub fn mint(
+    ctx: ContractContext,
+    state: ContractState,
+    token_id: u128,
+    to: Address,
+    token_uri: Option<String>,
+) -> (ContractState, Vec<EventGroup>) {
+    let mut state = state;
+    let events = execute_mint(
+        &ctx,
+        &mut state.mpc721,
+        &MintMsg {
+            token_id,
+            to,
+            token_uri,
+        },
+    );
+
+    (state, events)
+}
+
+#[action(shortname = 0x11)]
 pub fn approve_for_all(
     ctx: ContractContext,
     state: ContractState,
-    msg: ApproveForAllMsg,
+    operator: Address,
 ) -> (ContractState, Vec<EventGroup>) {
     let mut state = state;
-    let events = execute_approve_for_all(&ctx, &mut state.mpc721, &msg);
+    let events = execute_approve_for_all(&ctx, &mut state.mpc721, &ApproveForAllMsg { operator });
 
     (state, events)
 }
 
-#[action]
+#[action(shortname = 0x13)]
 pub fn revoke(
     ctx: ContractContext,
     state: ContractState,
-    msg: RevokeMsg,
+    spender: Address,
+    token_id: u128,
 ) -> (ContractState, Vec<EventGroup>) {
     let mut state = state;
-    let events = execute_revoke(&ctx, &mut state.mpc721, &msg);
+    let events = execute_revoke(&ctx, &mut state.mpc721, &RevokeMsg { spender, token_id });
 
     (state, events)
 }
 
-#[action]
+#[action(shortname = 0x15)]
 pub fn revoke_for_all(
     ctx: ContractContext,
     state: ContractState,
-    msg: RevokeForAllMsg,
+    operator: Address,
 ) -> (ContractState, Vec<EventGroup>) {
     let mut state = state;
-    let events = execute_revoke_for_all(&ctx, &mut state.mpc721, &msg);
+    let events = execute_revoke_for_all(&ctx, &mut state.mpc721, &RevokeForAllMsg { operator });
 
     (state, events)
 }
 
-#[action]
+#[action(shortname = 0x17)]
 pub fn burn(
     ctx: ContractContext,
     state: ContractState,
-    msg: BurnMsg,
+    token_id: u128,
 ) -> (ContractState, Vec<EventGroup>) {
     let mut state = state;
-    let events = execute_burn(&ctx, &mut state.mpc721, &msg);
+    let events = execute_burn(&ctx, &mut state.mpc721, &BurnMsg { token_id });
 
     (state, events)
 }

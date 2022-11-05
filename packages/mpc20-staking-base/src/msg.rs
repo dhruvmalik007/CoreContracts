@@ -1,9 +1,9 @@
 use create_type_spec_derive::CreateTypeSpec;
-use pbc_contract_common::address::Address;
+use pbc_contract_common::address::{Address, Shortname};
 use read_write_rpc_derive::ReadWriteRPC;
 
 use mpc20_base::{msg::InitialBalance, state::TokenInfo};
-use utils::events::NamedRPCEvent;
+use utils::events::IntoShortnameRPCEvent;
 
 /// ## Description
 /// This structure describes fields for mpc20-staking initialize msg
@@ -46,9 +46,20 @@ pub struct StakeMsg {
     pub amount: u128,
 }
 
-impl NamedRPCEvent for StakeMsg {
-    fn event_name(&self) -> String {
-        "stake".to_string()
+impl IntoShortnameRPCEvent for StakeMsg {
+    fn action_shortname(&self) -> u32 {
+        0x17
+    }
+
+    fn as_interaction(
+        &self,
+        builder: &mut pbc_contract_common::events::EventGroupBuilder,
+        dest: &Address,
+    ) {
+        builder
+            .call(*dest, Shortname::from_u32(self.action_shortname()))
+            .argument(self.amount)
+            .done();
     }
 }
 
@@ -60,9 +71,20 @@ pub struct UnstakeMsg {
     pub amount: u128,
 }
 
-impl NamedRPCEvent for UnstakeMsg {
-    fn event_name(&self) -> String {
-        "unstake".to_string()
+impl IntoShortnameRPCEvent for UnstakeMsg {
+    fn action_shortname(&self) -> u32 {
+        0x19
+    }
+
+    fn as_interaction(
+        &self,
+        builder: &mut pbc_contract_common::events::EventGroupBuilder,
+        dest: &Address,
+    ) {
+        builder
+            .call(*dest, Shortname::from_u32(self.action_shortname()))
+            .argument(self.amount)
+            .done();
     }
 }
 
@@ -74,9 +96,20 @@ pub struct ClaimMsg {
     pub amount: Option<u128>,
 }
 
-impl NamedRPCEvent for ClaimMsg {
-    fn event_name(&self) -> String {
-        "claim".to_string()
+impl IntoShortnameRPCEvent for ClaimMsg {
+    fn action_shortname(&self) -> u32 {
+        0x21
+    }
+
+    fn as_interaction(
+        &self,
+        builder: &mut pbc_contract_common::events::EventGroupBuilder,
+        dest: &Address,
+    ) {
+        builder
+            .call(*dest, Shortname::from_u32(self.action_shortname()))
+            .argument(self.amount)
+            .done();
     }
 }
 
@@ -88,8 +121,19 @@ pub struct CompoundMsg {
     pub amount: Option<u128>,
 }
 
-impl NamedRPCEvent for CompoundMsg {
-    fn event_name(&self) -> String {
-        "compound".to_string()
+impl IntoShortnameRPCEvent for CompoundMsg {
+    fn action_shortname(&self) -> u32 {
+        0x23
+    }
+
+    fn as_interaction(
+        &self,
+        builder: &mut pbc_contract_common::events::EventGroupBuilder,
+        dest: &Address,
+    ) {
+        builder
+            .call(*dest, Shortname::from_u32(self.action_shortname()))
+            .argument(self.amount)
+            .done();
     }
 }

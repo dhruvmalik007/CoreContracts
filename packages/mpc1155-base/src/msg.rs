@@ -1,8 +1,8 @@
 use create_type_spec_derive::CreateTypeSpec;
-use pbc_contract_common::address::Address;
+use pbc_contract_common::address::{Address, Shortname};
 use read_write_rpc_derive::ReadWriteRPC;
 
-use utils::events::NamedRPCEvent;
+use utils::events::IntoShortnameRPCEvent;
 
 /// ## Description
 /// This structure describes fields for mpc1155 initialize msg
@@ -17,6 +17,93 @@ pub struct InitMsg {
 }
 
 /// ## Description
+/// This structure describes fields for mpc1155 transfer from msg
+#[derive(ReadWriteRPC, CreateTypeSpec, Clone, PartialEq, Eq, Debug)]
+pub struct TransferFromMsg {
+    /// owner address
+    pub from: Address,
+    /// receiver address
+    pub to: Address,
+    /// token info for transfer
+    pub token_info: TokenTransferInfoMsg,
+}
+
+impl IntoShortnameRPCEvent for TransferFromMsg {
+    fn action_shortname(&self) -> u32 {
+        0x01
+    }
+
+    fn as_interaction(
+        &self,
+        builder: &mut pbc_contract_common::events::EventGroupBuilder,
+        dest: &Address,
+    ) {
+        builder
+            .call(*dest, Shortname::from_u32(self.action_shortname()))
+            .argument(self.from)
+            .argument(self.to)
+            .argument(self.token_info.clone())
+            .done();
+    }
+}
+
+/// ## Description
+/// This structure describes fields for mpc1155 batch transfer from msg
+#[derive(ReadWriteRPC, CreateTypeSpec, Clone, PartialEq, Eq, Debug)]
+pub struct BatchTransferFromMsg {
+    /// owner address
+    pub from: Address,
+    /// receiver address
+    pub to: Address,
+    /// list of token infos for transfer
+    pub token_infos: Vec<TokenTransferInfoMsg>,
+}
+
+impl IntoShortnameRPCEvent for BatchTransferFromMsg {
+    fn action_shortname(&self) -> u32 {
+        0x03
+    }
+
+    fn as_interaction(
+        &self,
+        builder: &mut pbc_contract_common::events::EventGroupBuilder,
+        dest: &Address,
+    ) {
+        builder
+            .call(*dest, Shortname::from_u32(self.action_shortname()))
+            .argument(self.from)
+            .argument(self.to)
+            .argument(self.token_infos.clone())
+            .done();
+    }
+}
+
+/// ## Description
+/// This structure describes fields for mpc1155 approve for all msg
+#[derive(ReadWriteRPC, CreateTypeSpec, Clone, PartialEq, Eq, Debug)]
+pub struct ApproveForAllMsg {
+    /// operator address to approve
+    pub operator: Address,
+}
+
+impl IntoShortnameRPCEvent for ApproveForAllMsg {
+    fn action_shortname(&self) -> u32 {
+        0x05
+    }
+
+    fn as_interaction(
+        &self,
+        builder: &mut pbc_contract_common::events::EventGroupBuilder,
+        dest: &Address,
+    ) {
+        builder
+            .call(*dest, Shortname::from_u32(self.action_shortname()))
+            .argument(self.operator)
+            .done();
+    }
+}
+
+/// ## Description
 /// This structure describes fields for mpc1155 set uri msg
 #[derive(ReadWriteRPC, CreateTypeSpec, Clone, PartialEq, Eq, Debug)]
 pub struct SetUriMsg {
@@ -24,9 +111,20 @@ pub struct SetUriMsg {
     pub new_uri: String,
 }
 
-impl NamedRPCEvent for SetUriMsg {
-    fn event_name(&self) -> String {
-        "set_uri".to_string()
+impl IntoShortnameRPCEvent for SetUriMsg {
+    fn action_shortname(&self) -> u32 {
+        0x07
+    }
+
+    fn as_interaction(
+        &self,
+        builder: &mut pbc_contract_common::events::EventGroupBuilder,
+        dest: &Address,
+    ) {
+        builder
+            .call(*dest, Shortname::from_u32(self.action_shortname()))
+            .argument(self.new_uri.clone())
+            .done();
     }
 }
 
@@ -50,9 +148,21 @@ pub struct MintMsg {
     pub token_info: TokenMintInfoMsg,
 }
 
-impl NamedRPCEvent for MintMsg {
-    fn event_name(&self) -> String {
-        "mint".to_string()
+impl IntoShortnameRPCEvent for MintMsg {
+    fn action_shortname(&self) -> u32 {
+        0x09
+    }
+
+    fn as_interaction(
+        &self,
+        builder: &mut pbc_contract_common::events::EventGroupBuilder,
+        dest: &Address,
+    ) {
+        builder
+            .call(*dest, Shortname::from_u32(self.action_shortname()))
+            .argument(self.to)
+            .argument(self.token_info.clone())
+            .done();
     }
 }
 
@@ -66,9 +176,21 @@ pub struct BatchMintMsg {
     pub token_infos: Vec<TokenMintInfoMsg>,
 }
 
-impl NamedRPCEvent for BatchMintMsg {
-    fn event_name(&self) -> String {
-        "batch_mint".to_string()
+impl IntoShortnameRPCEvent for BatchMintMsg {
+    fn action_shortname(&self) -> u32 {
+        0x11
+    }
+
+    fn as_interaction(
+        &self,
+        builder: &mut pbc_contract_common::events::EventGroupBuilder,
+        dest: &Address,
+    ) {
+        builder
+            .call(*dest, Shortname::from_u32(self.action_shortname()))
+            .argument(self.to)
+            .argument(self.token_infos.clone())
+            .done();
     }
 }
 
@@ -83,30 +205,6 @@ pub struct TokenTransferInfoMsg {
 }
 
 /// ## Description
-/// This structure describes fields for mpc1155 transfer from msg
-#[derive(ReadWriteRPC, CreateTypeSpec, Clone, PartialEq, Eq, Debug)]
-pub struct TransferFromMsg {
-    /// owner address
-    pub from: Address,
-    /// receiver address
-    pub to: Address,
-    /// token info for transfer
-    pub token_info: TokenTransferInfoMsg,
-}
-
-/// ## Description
-/// This structure describes fields for mpc1155 batch transfer from msg
-#[derive(ReadWriteRPC, CreateTypeSpec, Clone, PartialEq, Eq, Debug)]
-pub struct BatchTransferFromMsg {
-    /// owner address
-    pub from: Address,
-    /// receiver address
-    pub to: Address,
-    /// list of token infos for transfer
-    pub token_infos: Vec<TokenTransferInfoMsg>,
-}
-
-/// ## Description
 /// This structure describes fields for mpc1155 burn msg
 #[derive(ReadWriteRPC, CreateTypeSpec, Clone, PartialEq, Eq, Debug)]
 pub struct BurnMsg {
@@ -114,6 +212,24 @@ pub struct BurnMsg {
     pub from: Address,
     /// token info for burn
     pub token_info: TokenTransferInfoMsg,
+}
+
+impl IntoShortnameRPCEvent for BurnMsg {
+    fn action_shortname(&self) -> u32 {
+        0x13
+    }
+
+    fn as_interaction(
+        &self,
+        builder: &mut pbc_contract_common::events::EventGroupBuilder,
+        dest: &Address,
+    ) {
+        builder
+            .call(*dest, Shortname::from_u32(self.action_shortname()))
+            .argument(self.from)
+            .argument(self.token_info.clone())
+            .done();
+    }
 }
 
 /// ## Description
@@ -126,12 +242,22 @@ pub struct BatchBurnMsg {
     pub token_infos: Vec<TokenTransferInfoMsg>,
 }
 
-/// ## Description
-/// This structure describes fields for mpc1155 approve for all msg
-#[derive(ReadWriteRPC, CreateTypeSpec, Clone, PartialEq, Eq, Debug)]
-pub struct ApproveForAllMsg {
-    /// operator address to approve
-    pub operator: Address,
+impl IntoShortnameRPCEvent for BatchBurnMsg {
+    fn action_shortname(&self) -> u32 {
+        0x15
+    }
+
+    fn as_interaction(
+        &self,
+        builder: &mut pbc_contract_common::events::EventGroupBuilder,
+        dest: &Address,
+    ) {
+        builder
+            .call(*dest, Shortname::from_u32(self.action_shortname()))
+            .argument(self.from)
+            .argument(self.token_infos.clone())
+            .done();
+    }
 }
 
 /// ## Description
@@ -140,4 +266,21 @@ pub struct ApproveForAllMsg {
 pub struct RevokeForAllMsg {
     /// operator address to revoke
     pub operator: Address,
+}
+
+impl IntoShortnameRPCEvent for RevokeForAllMsg {
+    fn action_shortname(&self) -> u32 {
+        0x17
+    }
+
+    fn as_interaction(
+        &self,
+        builder: &mut pbc_contract_common::events::EventGroupBuilder,
+        dest: &Address,
+    ) {
+        builder
+            .call(*dest, Shortname::from_u32(self.action_shortname()))
+            .argument(self.operator)
+            .done();
+    }
 }

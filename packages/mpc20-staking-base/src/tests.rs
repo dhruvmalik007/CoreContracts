@@ -1,15 +1,15 @@
 use std::collections::BTreeMap;
 
 use mpc20_base::{
-    msg::TransferMsg,
+    msg::{TransferFromMsg, TransferMsg},
     state::{MPC20ContractState, Minter, TokenInfo},
 };
 use pbc_contract_common::{
-    address::{Address, AddressType},
+    address::{Address, AddressType, Shortname},
     context::ContractContext,
     events::EventGroup,
 };
-use utils::{decimal::DecimalRatio, events::get_msg_shortname};
+use utils::{decimal::DecimalRatio, events::IntoShortnameRPCEvent};
 
 use crate::{
     actions::{execute_claim, execute_compound, execute_init, execute_stake, execute_unstake},
@@ -110,18 +110,22 @@ fn test_staking() {
 
     assert_eq!(events.len(), 1);
 
-    let transfer_msg = TransferMsg {
-        to: mock_address(DEPOSIT_TOKEN),
+    let transfer_from_msg = TransferFromMsg {
+        from: mock_address(ALICE),
+        to: mock_address(1u8),
         amount: 100,
     };
+
     let mut eg = EventGroup::builder();
     eg.call(
         mock_address(DEPOSIT_TOKEN),
-        get_msg_shortname(&transfer_msg),
+        Shortname::from_u32(transfer_from_msg.action_shortname()),
     )
-    .from_original_sender()
-    .argument(transfer_msg)
+    .argument(mock_address(ALICE))
+    .argument(mock_address(1u8))
+    .argument(100u128)
     .done();
+
     assert_eq!(events[0], eg.build());
 
     assert_eq!(
@@ -329,11 +333,30 @@ fn test_staking() {
     // BOB unstakes half
     block_production_time = 120;
     let msg = UnstakeMsg { amount: 50 };
-    let _ = execute_unstake(
+    let unstake_events = execute_unstake(
         &mock_contract_context(BOB, block_production_time),
         &mut state,
         &msg,
     );
+
+    assert_eq!(unstake_events.len(), 1);
+
+    let transfer_msg = TransferMsg {
+        to: mock_address(BOB),
+        amount: 50,
+    };
+
+    let mut eg = EventGroup::builder();
+    eg.call(
+        mock_address(DEPOSIT_TOKEN),
+        Shortname::from_u32(transfer_msg.action_shortname()),
+    )
+    .argument(mock_address(BOB))
+    .argument(50u128)
+    .done();
+
+    assert_eq!(unstake_events[0], eg.build());
+
     assert_eq!(
         state,
         MPC20StakingContractState {
