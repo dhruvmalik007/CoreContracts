@@ -196,6 +196,7 @@ pub fn execute_vote(
 /// * **state** is an object of type [`MPC1MultisigContractState`]
 ///
 /// * **msg** is an object of type [`ProposalExecuteMsg`]
+#[allow(deprecated)]
 pub fn execute_execute_proposal(
     ctx: &ContractContext,
     state: &mut MPC1MultisigContractState,

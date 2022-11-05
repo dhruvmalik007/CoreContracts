@@ -4,7 +4,7 @@ use read_write_rpc_derive::ReadWriteRPC;
 
 use crate::state::{Minter, TokenInfo};
 
-use utils::events::{IntoShortnameRPCEvent, NamedRPCEvent};
+use utils::events::IntoShortnameRPCEvent;
 
 /// ## Description
 /// This structure describes fields for mpc20 initial balances
@@ -90,12 +90,6 @@ pub struct TransferMsg {
     pub amount: u128,
 }
 
-impl NamedRPCEvent for TransferMsg {
-    fn event_name(&self) -> String {
-        "transfer".to_string()
-    }
-}
-
 impl IntoShortnameRPCEvent for TransferMsg {
     fn action_shortname(&self) -> u32 {
         0x01
@@ -124,12 +118,6 @@ pub struct TransferFromMsg {
     pub to: Address,
     /// amount to receive
     pub amount: u128,
-}
-
-impl NamedRPCEvent for TransferFromMsg {
-    fn event_name(&self) -> String {
-        "transfer_from".to_string()
-    }
 }
 
 impl IntoShortnameRPCEvent for TransferFromMsg {
@@ -161,12 +149,6 @@ pub struct ApproveMsg {
     pub amount: u128,
 }
 
-impl NamedRPCEvent for ApproveMsg {
-    fn event_name(&self) -> String {
-        "approve".to_string()
-    }
-}
-
 impl IntoShortnameRPCEvent for ApproveMsg {
     fn action_shortname(&self) -> u32 {
         0x05
@@ -195,12 +177,6 @@ pub struct MintMsg {
     pub amount: u128,
 }
 
-impl NamedRPCEvent for MintMsg {
-    fn event_name(&self) -> String {
-        "mint".to_string()
-    }
-}
-
 impl IntoShortnameRPCEvent for MintMsg {
     fn action_shortname(&self) -> u32 {
         0x07
@@ -225,12 +201,6 @@ impl IntoShortnameRPCEvent for MintMsg {
 pub struct BurnMsg {
     /// amount of tokens to burn
     pub amount: u128,
-}
-
-impl NamedRPCEvent for BurnMsg {
-    fn event_name(&self) -> String {
-        "burn".to_string()
-    }
 }
 
 impl IntoShortnameRPCEvent for BurnMsg {
@@ -258,12 +228,6 @@ pub struct BurnFromMsg {
     pub owner: Address,
     /// amount of tokens to burn
     pub amount: u128,
-}
-
-impl NamedRPCEvent for BurnFromMsg {
-    fn event_name(&self) -> String {
-        "burn_from".to_string()
-    }
 }
 
 impl IntoShortnameRPCEvent for BurnFromMsg {
@@ -294,12 +258,6 @@ pub struct IncreaseAllowanceMsg {
     pub amount: u128,
 }
 
-impl NamedRPCEvent for IncreaseAllowanceMsg {
-    fn event_name(&self) -> String {
-        "increase_allowance".to_string()
-    }
-}
-
 impl IntoShortnameRPCEvent for IncreaseAllowanceMsg {
     fn action_shortname(&self) -> u32 {
         0x13
@@ -326,12 +284,6 @@ pub struct DecreaseAllowanceMsg {
     pub spender: Address,
     /// approved amount to decrease
     pub amount: u128,
-}
-
-impl NamedRPCEvent for DecreaseAllowanceMsg {
-    fn event_name(&self) -> String {
-        "decrease_allowance".to_string()
-    }
 }
 
 impl IntoShortnameRPCEvent for DecreaseAllowanceMsg {

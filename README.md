@@ -10,17 +10,29 @@
 | [`MPC20-Staking`](contracts/mpc20-staking) | Implementation of ERC20 Interface with staking mechanism |
 | [`MPC1-Multisig`](contracts/mpc1-multisig) | On-chain multisig contract                               |
 
+## Packages
+
+| Name                                                  | Description                                 |
+| ----------------------------------------------------- | ------------------------------------------- |
+| [`Access Control`](packages/access-control-base/)     | Access Control Smart Contract Extension Lib |
+| [`Contract Version`](packages/contract-version-base/) | Contract Versioning Lib                     |
+| [`Ownable`](packages/ownable-base/)                   | Ownable Smart Contract Extension Lib        |
+| [`Pausable`](packages/pausable-base/)                 | Pausable Smart Contract Extension Lib       |
+| [`Utils`](packages/utils/)                            | Set of tool for Smart Contracts             |
+
 ## Test
 
 Run `cargo test` to run all unit tests
 
 ## How to build contracts
+
 Currently `partisia-contract` sdk doesn't support Rust Workspaces.
 So to build contracts from this repo on your own you will need to:
+
 1. Clone this repo
 2. Create a new contract outside this folder
 3. Import {contract}-base package from `packages/` folder.
 4. Copy all the files from selected contract, for example from `contracts/mpc20`
 5. Run `cargo partisia-contract build --release` command.
 
-Or you can download already compiled artifacts from [`here`](https://github.com/partisiablockchainapplications/CoreContracts/releases)
+Or you can download pre-compiled artifacts from [`here`](https://github.com/partisiablockchainapplications/CoreContracts/releases)

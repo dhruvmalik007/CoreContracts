@@ -2,7 +2,6 @@ use std::collections::BTreeMap;
 
 use pbc_contract_common::{context::ContractContext, events::EventGroup};
 use rust_decimal::prelude::*;
-use utils::events::build_msg_call;
 
 use crate::{
     msg::{ClaimMsg, CompoundMsg, Mpc20StakingInitMsg, StakeMsg, UnstakeMsg},
@@ -12,10 +11,10 @@ use crate::{
 
 use mpc20_base::{
     actions::execute_init as mpc20_execute_init,
-    msg::{Mpc20InitMsg, TransferMsg as Mpc20TransferMsg},
+    msg::{Mpc20InitMsg, TransferFromMsg as Mpc20TransferFromMsg, TransferMsg as Mpc20TransferMsg},
     state::Minter as Mpc20Minter,
 };
-use utils::decimal::DecimalRatio;
+use utils::{decimal::DecimalRatio, events::IntoShortnameRPCEvent};
 
 /// ## Description
 /// Inits contract state.
@@ -89,13 +88,13 @@ pub fn execute_stake(
     staker.compute_reward(state.global_index);
     state.increase_stake_amount(&ctx.sender, &mut staker, msg.amount);
 
-    let transfer_msg = Mpc20TransferMsg {
+    let mut event_group = EventGroup::builder();
+    Mpc20TransferFromMsg {
+        from: ctx.sender,
         to: ctx.contract_address,
         amount: msg.amount,
-    };
-
-    let mut event_group = EventGroup::builder();
-    build_msg_call(&mut event_group, &state.deposit_token, true, &transfer_msg);
+    }
+    .as_interaction(&mut event_group, &state.deposit_token);
 
     vec![event_group.build()]
 }
@@ -127,13 +126,12 @@ pub fn execute_unstake(
     staker.compute_reward(state.global_index);
     state.decrease_stake_amount(&ctx.sender, &mut staker, msg.amount);
 
-    let transfer_msg = Mpc20TransferMsg {
+    let mut event_group = EventGroup::builder();
+    Mpc20TransferMsg {
         to: ctx.sender,
         amount: msg.amount,
-    };
-
-    let mut event_group = EventGroup::builder();
-    build_msg_call(&mut event_group, &state.deposit_token, false, &transfer_msg);
+    }
+    .as_interaction(&mut event_group, &state.deposit_token);
 
     vec![event_group.build()]
 }

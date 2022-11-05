@@ -1,9 +1,9 @@
 use create_type_spec_derive::CreateTypeSpec;
-use pbc_contract_common::address::Address;
+use pbc_contract_common::address::{Address, Shortname};
 use read_write_rpc_derive::ReadWriteRPC;
 
 use crate::state::Vote;
-use utils::events::NamedRPCEvent;
+use utils::events::IntoShortnameRPCEvent;
 
 /// ## Description
 /// This structure describes fields for mpc1-multisig initialize msg
@@ -41,9 +41,23 @@ pub struct CreateProposalMsg {
     pub calls: Vec<ProposalExecuteCallMsg>,
 }
 
-impl NamedRPCEvent for CreateProposalMsg {
-    fn event_name(&self) -> String {
-        "create_proposal".to_string()
+impl IntoShortnameRPCEvent for CreateProposalMsg {
+    fn action_shortname(&self) -> u32 {
+        0x01
+    }
+
+    fn as_interaction(
+        &self,
+        builder: &mut pbc_contract_common::events::EventGroupBuilder,
+        dest: &Address,
+    ) {
+        builder
+            .call(*dest, Shortname::from_u32(self.action_shortname()))
+            .argument(self.title.clone())
+            .argument(self.description.clone())
+            .argument(self.voting_phase_period)
+            .argument(self.calls.clone())
+            .done();
     }
 }
 
@@ -69,9 +83,21 @@ pub struct ProposalVoteMsg {
     pub vote: Vote,
 }
 
-impl NamedRPCEvent for ProposalVoteMsg {
-    fn event_name(&self) -> String {
-        "vote".to_string()
+impl IntoShortnameRPCEvent for ProposalVoteMsg {
+    fn action_shortname(&self) -> u32 {
+        0x03
+    }
+
+    fn as_interaction(
+        &self,
+        builder: &mut pbc_contract_common::events::EventGroupBuilder,
+        dest: &Address,
+    ) {
+        builder
+            .call(*dest, Shortname::from_u32(self.action_shortname()))
+            .argument(self.proposal_id)
+            .argument(self.vote)
+            .done();
     }
 }
 
@@ -83,9 +109,20 @@ pub struct ProposalExecuteMsg {
     pub proposal_id: u64,
 }
 
-impl NamedRPCEvent for ProposalExecuteMsg {
-    fn event_name(&self) -> String {
-        "execute_proposal".to_string()
+impl IntoShortnameRPCEvent for ProposalExecuteMsg {
+    fn action_shortname(&self) -> u32 {
+        0x05
+    }
+
+    fn as_interaction(
+        &self,
+        builder: &mut pbc_contract_common::events::EventGroupBuilder,
+        dest: &Address,
+    ) {
+        builder
+            .call(*dest, Shortname::from_u32(self.action_shortname()))
+            .argument(self.proposal_id)
+            .done();
     }
 }
 
@@ -97,8 +134,19 @@ pub struct ProposalCloseMsg {
     pub proposal_id: u64,
 }
 
-impl NamedRPCEvent for ProposalCloseMsg {
-    fn event_name(&self) -> String {
-        "close_proposal".to_string()
+impl IntoShortnameRPCEvent for ProposalCloseMsg {
+    fn action_shortname(&self) -> u32 {
+        0x07
+    }
+
+    fn as_interaction(
+        &self,
+        builder: &mut pbc_contract_common::events::EventGroupBuilder,
+        dest: &Address,
+    ) {
+        builder
+            .call(*dest, Shortname::from_u32(self.action_shortname()))
+            .argument(self.proposal_id)
+            .done();
     }
 }
