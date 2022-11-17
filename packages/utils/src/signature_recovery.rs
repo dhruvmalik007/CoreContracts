@@ -1,5 +1,6 @@
 use pbc_contract_common::{address::Address, address::AddressType, events::EventGroupBuilder};
 use libsecp256k1::{recover, sign, Message, PublicKeyFormat, RecoveryId, SecretKey, Signature};
+use sha3::{Digest, Sha3_256};
 pub fn address_to_bytes(input: Address) -> [u8; 21] {
     let address_type_value: u8 = match input.address_type {
         AddressType::Account => 0u8,
