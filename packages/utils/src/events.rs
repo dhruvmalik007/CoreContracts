@@ -1,7 +1,6 @@
 use pbc_contract_common::{
     address::{Address, ShortnameCallback},
     events::EventGroupBuilder,
-    to_leb128_bytes, FunctionName,
 };
 use pbc_traits::ReadWriteRPC;
 
@@ -19,13 +18,4 @@ where
         .with_callback(ShortnameCallback::from_u32(callback_byte))
         .argument(msg.clone())
         .done();
-}
-
-#[inline]
-pub fn decode_base64_into_rpc_call(method_name: &str, payload: &str) -> Vec<u8> {
-    let fn_name = FunctionName::create_from_str(method_name, None);
-    let event_name: Vec<u8> = to_leb128_bytes(fn_name.shortname().as_u32());
-    let event_payload = base64::decode(payload).unwrap();
-
-    [event_name, event_payload].concat()
 }

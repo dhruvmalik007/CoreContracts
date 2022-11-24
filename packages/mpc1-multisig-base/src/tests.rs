@@ -49,14 +49,13 @@ fn mock_contract_context(sender: u8) -> ContractContext {
 }
 
 fn mock_transfer_base64_payload() -> String {
-    "AAoAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAD6A==".to_string()
+    "yu3VvwIACQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAABk".to_string()
 }
 
 fn mock_transfer_payload_with_name_bytes() -> Vec<u8> {
     vec![
-        202u8, 237u8, 213u8, 191u8, 2u8, 0u8, 10u8, 0u8, 0u8, 0u8, 0u8, 0u8, 0u8, 0u8, 0u8, 0u8,
-        0u8, 0u8, 0u8, 0u8, 0u8, 0u8, 0u8, 0u8, 0u8, 0u8, 0u8, 0u8, 0u8, 0u8, 0u8, 0u8, 0u8, 0u8,
-        0u8, 0u8, 0u8, 0u8, 0u8, 0u8, 3u8, 232u8,
+        202, 237, 213, 191, 2, 0, 9, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 100,
     ]
 }
 
@@ -241,7 +240,6 @@ fn proper_create_proposal() {
         voting_phase_period: None,
         calls: vec![ProposalExecuteCallMsg {
             contract: mock_address(20),
-            method_name: "transfer".to_string(),
             base64_encoded_payload: mock_transfer_base64_payload(),
         }],
     };
@@ -314,7 +312,6 @@ fn unauthorized_member_on_create_proposal() {
         voting_phase_period: None,
         calls: vec![ProposalExecuteCallMsg {
             contract: mock_address(20),
-            method_name: "transfer".to_string(),
             base64_encoded_payload: mock_transfer_base64_payload(),
         }],
     };
@@ -351,7 +348,6 @@ fn invalid_voting_phase_on_create_proposal() {
         voting_phase_period: Some(100_000),
         calls: vec![ProposalExecuteCallMsg {
             contract: mock_address(20),
-            method_name: "transfer".to_string(),
             base64_encoded_payload: mock_transfer_base64_payload(),
         }],
     };
@@ -420,7 +416,6 @@ fn proper_vote() {
         voting_phase_period: None,
         calls: vec![ProposalExecuteCallMsg {
             contract: mock_address(20),
-            method_name: "transfer".to_string(),
             base64_encoded_payload: mock_transfer_base64_payload(),
         }],
     };
@@ -506,7 +501,6 @@ fn unauthorized_member_on_vote() {
         voting_phase_period: None,
         calls: vec![ProposalExecuteCallMsg {
             contract: mock_address(20),
-            method_name: "transfer".to_string(),
             base64_encoded_payload: mock_transfer_base64_payload(),
         }],
     };
@@ -550,7 +544,6 @@ fn proposal_not_found_on_vote() {
         voting_phase_period: None,
         calls: vec![ProposalExecuteCallMsg {
             contract: mock_address(20),
-            method_name: "transfer".to_string(),
             base64_encoded_payload: mock_transfer_base64_payload(),
         }],
     };
@@ -594,7 +587,6 @@ fn invalid_voting_phase_on_vote() {
         voting_phase_period: None,
         calls: vec![ProposalExecuteCallMsg {
             contract: mock_address(20),
-            method_name: "transfer".to_string(),
             base64_encoded_payload: mock_transfer_base64_payload(),
         }],
     };
@@ -639,7 +631,6 @@ fn proposal_expired_on_vote() {
         voting_phase_period: None,
         calls: vec![ProposalExecuteCallMsg {
             contract: mock_address(20),
-            method_name: "transfer".to_string(),
             base64_encoded_payload: mock_transfer_base64_payload(),
         }],
     };
@@ -686,7 +677,6 @@ fn member_already_voted_on_vote() {
         voting_phase_period: None,
         calls: vec![ProposalExecuteCallMsg {
             contract: mock_address(20),
-            method_name: "transfer".to_string(),
             base64_encoded_payload: mock_transfer_base64_payload(),
         }],
     };
@@ -730,7 +720,6 @@ fn proper_execute_proposal() {
         voting_phase_period: None,
         calls: vec![ProposalExecuteCallMsg {
             contract: mock_address(20),
-            method_name: "transfer".to_string(),
             base64_encoded_payload: mock_transfer_base64_payload(),
         }],
     };
@@ -829,7 +818,6 @@ fn unauthorized_member_on_execute_proposal() {
         voting_phase_period: None,
         calls: vec![ProposalExecuteCallMsg {
             contract: mock_address(20),
-            method_name: "transfer".to_string(),
             base64_encoded_payload: mock_transfer_base64_payload(),
         }],
     };
@@ -877,7 +865,6 @@ fn proposal_not_found_on_execute_proposal() {
         voting_phase_period: None,
         calls: vec![ProposalExecuteCallMsg {
             contract: mock_address(20),
-            method_name: "transfer".to_string(),
             base64_encoded_payload: mock_transfer_base64_payload(),
         }],
     };
@@ -925,7 +912,6 @@ fn proposal_is_not_accepted_on_execute_proposal() {
         voting_phase_period: None,
         calls: vec![ProposalExecuteCallMsg {
             contract: mock_address(20),
-            method_name: "transfer".to_string(),
             base64_encoded_payload: mock_transfer_base64_payload(),
         }],
     };
@@ -966,7 +952,6 @@ fn proper_close_proposal() {
         voting_phase_period: None,
         calls: vec![ProposalExecuteCallMsg {
             contract: mock_address(20),
-            method_name: "transfer".to_string(),
             base64_encoded_payload: mock_transfer_base64_payload(),
         }],
     };
@@ -1044,7 +1029,6 @@ fn unauthorized_member_on_close_proposal() {
         voting_phase_period: None,
         calls: vec![ProposalExecuteCallMsg {
             contract: mock_address(20),
-            method_name: "transfer".to_string(),
             base64_encoded_payload: mock_transfer_base64_payload(),
         }],
     };
@@ -1087,7 +1071,6 @@ fn proposal_not_found_on_close_proposal() {
         voting_phase_period: None,
         calls: vec![ProposalExecuteCallMsg {
             contract: mock_address(20),
-            method_name: "transfer".to_string(),
             base64_encoded_payload: mock_transfer_base64_payload(),
         }],
     };
@@ -1130,7 +1113,6 @@ fn wrong_close_status_on_close_proposal() {
         voting_phase_period: None,
         calls: vec![ProposalExecuteCallMsg {
             contract: mock_address(20),
-            method_name: "transfer".to_string(),
             base64_encoded_payload: mock_transfer_base64_payload(),
         }],
     };
@@ -1179,7 +1161,6 @@ fn proposal_not_expired_on_close_proposal() {
         voting_phase_period: None,
         calls: vec![ProposalExecuteCallMsg {
             contract: mock_address(20),
-            method_name: "transfer".to_string(),
             base64_encoded_payload: mock_transfer_base64_payload(),
         }],
     };

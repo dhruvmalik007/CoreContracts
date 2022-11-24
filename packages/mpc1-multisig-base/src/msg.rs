@@ -67,8 +67,6 @@ impl IntoShortnameRPCEvent for CreateProposalMsg {
 pub struct ProposalExecuteCallMsg {
     /// contract to call
     pub contract: Address,
-    /// method name to execute
-    pub method_name: String,
     /// base64 encoded msg payload
     pub base64_encoded_payload: String,
 }

@@ -1,7 +1,6 @@
 use std::collections::BTreeMap;
 
 use pbc_contract_common::{address::Address, context::ContractContext, events::EventGroup};
-use utils::events::decode_base64_into_rpc_call;
 
 use crate::{
     msg::{CreateProposalMsg, InitMsg, ProposalCloseMsg, ProposalExecuteMsg, ProposalVoteMsg},
@@ -112,7 +111,7 @@ pub fn execute_create_proposal(
         .iter()
         .map(|call| ProposalExecuteCall {
             contract: call.contract,
-            payload: decode_base64_into_rpc_call(&call.method_name, &call.base64_encoded_payload),
+            payload: base64::decode(&call.base64_encoded_payload).unwrap(),
         })
         .collect();
 

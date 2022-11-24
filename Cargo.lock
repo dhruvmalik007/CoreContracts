@@ -176,6 +176,7 @@ dependencies = [
 name = "mpc1-multisig-base"
 version = "1.0.0"
 dependencies = [
+ "base64",
  "create_type_spec_derive",
  "pbc_contract_codegen",
  "pbc_contract_common",
