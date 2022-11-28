@@ -36,7 +36,6 @@ fn proper_create_proposal_action_call() {
         voting_phase_period: Some(1),
         calls: vec![ProposalExecuteCallMsg {
             contract: mock_address(1u8),
-            method_name: "some".to_string(),
             base64_encoded_payload: "payload".to_string(),
         }],
     };
@@ -52,7 +51,6 @@ fn proper_create_proposal_action_call() {
         .argument(Some(1u64))
         .argument(vec![ProposalExecuteCallMsg {
             contract: mock_address(1u8),
-            method_name: "some".to_string(),
             base64_encoded_payload: "payload".to_string(),
         }])
         .done();
