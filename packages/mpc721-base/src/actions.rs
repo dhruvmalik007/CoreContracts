@@ -4,10 +4,10 @@ use pbc_contract_common::{context::ContractContext, events::EventGroup};
 
 use crate::{
     msg::{
-        ApproveForAllMsg, ApproveMsg, BurnMsg, InitMsg, MintMsg, RevokeForAllMsg, RevokeMsg,
-        SetBaseUriMsg, TransferFromMsg, TransferMsg,
+        ApproveForAllMsg, ApproveMsg, BurnMsg, CheckOwnerMsg, InitMsg, MintMsg, RevokeForAllMsg,
+        RevokeMsg, SetBaseUriMsg, TransferFromMsg, TransferMsg,
     },
-    state::MPC721ContractState,
+    state::{MPC721ContractState},
     ContractError,
 };
 
@@ -233,5 +233,31 @@ pub fn execute_burn(
     state.remove_token(&ctx.sender, msg.token_id);
     state.decrease_supply();
 
+    vec![]
+}
+/// ## Description
+/// Check if a user owns a particular token. Will revert otherwise
+/// Returns [`(MPC721ContractState, Vec<EventGroup>)`] if operation was successful,
+/// otherwise panics with error message defined in [`ContractError`]
+/// ## Params
+/// * **ctx** is an object of type [`ContractContext`]
+///
+/// * **state** is an object of type [`MPC721ContractState`]
+///
+/// * **msg** is an object of type [`CheckOwnerMsg`]
+pub fn execute_ownership_check(
+    ctx: &ContractContext,
+    state: &mut MPC721ContractState,
+    msg: &CheckOwnerMsg,
+) -> Vec<EventGroup> {
+    let token_info = state.token_info(msg.token_id);
+    match token_info {
+        Some(_) => assert!(
+            token_info.unwrap().owner == msg.owner,
+            "{}",
+            ContractError::IncorrectOwner
+        ),
+        None => panic!("{}", ContractError::NotFound),
+    };
     vec![]
 }

@@ -7,11 +7,11 @@ use mpc721_base::{
     actions::{
         execute_approve, execute_approve_for_all, execute_burn, execute_init, execute_mint,
         execute_revoke, execute_revoke_for_all, execute_set_base_uri, execute_transfer,
-        execute_transfer_from,
+        execute_transfer_from,execute_ownership_check
     },
     msg::{
         ApproveForAllMsg, ApproveMsg, BurnMsg, InitMsg, MintMsg, RevokeForAllMsg, RevokeMsg,
-        SetBaseUriMsg, TransferFromMsg, TransferMsg,
+        SetBaseUriMsg, TransferFromMsg, TransferMsg,CheckOwnerMsg
     },
 };
 
@@ -153,5 +153,17 @@ pub fn burn(
     let mut state = state;
     let events = execute_burn(&ctx, &mut state.mpc721, &BurnMsg { token_id });
 
+    (state, events)
+}
+
+#[action(shortname = 0x18)]
+pub fn check_ownership(
+    ctx: ContractContext,
+    state: ContractState,
+    owner: Address,
+    token_id: u128,    
+) -> (ContractState, Vec<EventGroup>) {
+    let mut state = state;
+    let events=execute_ownership_check(&ctx, &mut state.mpc721, &CheckOwnerMsg {owner, token_id });
     (state, events)
 }
