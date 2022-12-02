@@ -161,7 +161,7 @@ pub fn check_ownership(
     ctx: ContractContext,
     state: ContractState,
     owner: Address,
-    token_id: u128,    
+    token_id: u128    
 ) -> (ContractState, Vec<EventGroup>) {
     let mut state = state;
     let events=execute_ownership_check(&ctx, &mut state.mpc721, &CheckOwnerMsg {owner, token_id });
