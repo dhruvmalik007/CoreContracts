@@ -7,7 +7,7 @@ use crate::{
         ApproveForAllMsg, ApproveMsg, BurnMsg, CheckOwnerMsg, InitMsg, MintMsg, RevokeForAllMsg,
         RevokeMsg, SetBaseUriMsg, TransferFromMsg, TransferMsg,
     },
-    state::{MPC721ContractState},
+    state::MPC721ContractState,
     ContractError,
 };
 

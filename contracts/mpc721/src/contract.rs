@@ -6,12 +6,12 @@ use pbc_contract_common::{address::Address, context::ContractContext, events::Ev
 use mpc721_base::{
     actions::{
         execute_approve, execute_approve_for_all, execute_burn, execute_init, execute_mint,
-        execute_revoke, execute_revoke_for_all, execute_set_base_uri, execute_transfer,
-        execute_transfer_from,execute_ownership_check
+        execute_ownership_check, execute_revoke, execute_revoke_for_all, execute_set_base_uri,
+        execute_transfer, execute_transfer_from,
     },
     msg::{
-        ApproveForAllMsg, ApproveMsg, BurnMsg, InitMsg, MintMsg, RevokeForAllMsg, RevokeMsg,
-        SetBaseUriMsg, TransferFromMsg, TransferMsg,CheckOwnerMsg
+        ApproveForAllMsg, ApproveMsg, BurnMsg, CheckOwnerMsg, InitMsg, MintMsg, RevokeForAllMsg,
+        RevokeMsg, SetBaseUriMsg, TransferFromMsg, TransferMsg,
     },
 };
 
@@ -161,9 +161,10 @@ pub fn check_ownership(
     ctx: ContractContext,
     state: ContractState,
     owner: Address,
-    token_id: u128,    
+    token_id: u128,
 ) -> (ContractState, Vec<EventGroup>) {
     let mut state = state;
-    let events=execute_ownership_check(&ctx, &mut state.mpc721, &CheckOwnerMsg {owner, token_id });
+    let events =
+        execute_ownership_check(&ctx, &mut state.mpc721, &CheckOwnerMsg { owner, token_id });
     (state, events)
 }
