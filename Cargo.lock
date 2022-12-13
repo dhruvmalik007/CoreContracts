@@ -4,7 +4,7 @@ version = 3
 
 [[package]]
 name = "access-control-base"
-version = "1.0.0"
+version = "1.1.0"
 dependencies = [
  "create_type_spec_derive",
  "pbc_contract_codegen",
@@ -58,7 +58,7 @@ checksum = "baf1de4339761588bc0619e3cbc0120ee582ebb74b53b4efbf79117bd2da40fd"
 
 [[package]]
 name = "contract-version-base"
-version = "1.0.0"
+version = "1.1.0"
 dependencies = [
  "create_type_spec_derive",
  "pbc_contract_codegen",
@@ -204,7 +204,7 @@ checksum = "349d5a591cd28b49e1d1037471617a32ddcda5731b99419008085f72d5a53836"
 
 [[package]]
 name = "mpc1-multisig"
-version = "1.0.0"
+version = "1.1.0"
 dependencies = [
  "contract-version-base",
  "create_type_spec_derive",
@@ -221,7 +221,7 @@ dependencies = [
 
 [[package]]
 name = "mpc1-multisig-base"
-version = "1.0.0"
+version = "1.1.0"
 dependencies = [
  "base64",
  "create_type_spec_derive",
@@ -239,7 +239,7 @@ dependencies = [
 
 [[package]]
 name = "mpc1155"
-version = "1.0.0"
+version = "1.1.0"
 dependencies = [
  "contract-version-base",
  "create_type_spec_derive",
@@ -256,7 +256,7 @@ dependencies = [
 
 [[package]]
 name = "mpc1155-base"
-version = "1.0.0"
+version = "1.1.0"
 dependencies = [
  "create_type_spec_derive",
  "pbc_contract_codegen",
@@ -273,7 +273,7 @@ dependencies = [
 
 [[package]]
 name = "mpc20"
-version = "1.0.0"
+version = "1.1.0"
 dependencies = [
  "contract-version-base",
  "create_type_spec_derive",
@@ -290,7 +290,7 @@ dependencies = [
 
 [[package]]
 name = "mpc20-base"
-version = "1.0.0"
+version = "1.1.0"
 dependencies = [
  "create_type_spec_derive",
  "pbc_contract_codegen",
@@ -307,7 +307,7 @@ dependencies = [
 
 [[package]]
 name = "mpc20-staking"
-version = "1.0.0"
+version = "1.1.0"
 dependencies = [
  "contract-version-base",
  "create_type_spec_derive",
@@ -325,7 +325,7 @@ dependencies = [
 
 [[package]]
 name = "mpc20-staking-base"
-version = "1.0.0"
+version = "1.1.0"
 dependencies = [
  "create_type_spec_derive",
  "mpc20-base",
@@ -344,7 +344,7 @@ dependencies = [
 
 [[package]]
 name = "mpc721"
-version = "1.0.0"
+version = "1.1.0"
 dependencies = [
  "contract-version-base",
  "create_type_spec_derive",
@@ -361,7 +361,7 @@ dependencies = [
 
 [[package]]
 name = "mpc721-base"
-version = "1.0.0"
+version = "1.1.0"
 dependencies = [
  "create_type_spec_derive",
  "pbc_contract_codegen",
@@ -393,7 +393,7 @@ checksum = "624a8340c38c1b80fd549087862da4ba43e08858af025b236e509b6649fc13d5"
 
 [[package]]
 name = "ownable-base"
-version = "1.0.0"
+version = "1.1.0"
 dependencies = [
  "create_type_spec_derive",
  "pbc_contract_codegen",
@@ -407,7 +407,7 @@ dependencies = [
 
 [[package]]
 name = "pausable-base"
-version = "1.0.0"
+version = "1.1.0"
 dependencies = [
  "create_type_spec_derive",
  "pbc_contract_codegen",
@@ -507,7 +507,7 @@ dependencies = [
 
 [[package]]
 name = "rpc-msg-derive"
-version = "1.0.0"
+version = "1.1.0"
 dependencies = [
  "create_type_spec_derive",
  "darling",
@@ -632,7 +632,7 @@ checksum = "5bd2fe26506023ed7b5e1e315add59d6f584c621d037f9368fea9cfb988f368c"
 
 [[package]]
 name = "utils"
-version = "1.0.0"
+version = "1.1.0"
 dependencies = [
  "base64",
  "create_type_spec_derive",
