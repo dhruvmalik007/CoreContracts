@@ -116,8 +116,6 @@ pub struct BurnMsg {
     pub token_id: u128,
 }
 
-
-
 /// ## Description
 /// This structure describes fields for mpc721 check owner msg
 #[derive(ReadWriteRPC, CreateTypeSpec, IntoShortnameRPCEvent, Clone, PartialEq, Eq, Debug)]
@@ -128,6 +126,3 @@ pub struct CheckOwnerMsg {
     /// token id
     pub token_id: u128,
 }
-
-
-
