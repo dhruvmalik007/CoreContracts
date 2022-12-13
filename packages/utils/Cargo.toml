@@ -18,7 +18,7 @@ read_write_state_derive = { git = "https://git@gitlab.com/partisiablockchain/lan
 create_type_spec_derive = { git = "https://git@gitlab.com/partisiablockchain/language/contract-sdk.git", tag = "9.1.1" }
 pbc_contract_codegen = { git = "https://git@gitlab.com/partisiablockchain/language/contract-sdk.git", tag = "9.1.1" }
 
-rust_decimal = "1.21.0"
+rust_decimal = "1.27.0"
 base64 = "0.13.0"
 hex = "0.4"
 sha3 = { version = "0.9.1", default-features = false }
