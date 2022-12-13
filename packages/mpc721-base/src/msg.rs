@@ -274,6 +274,7 @@ pub struct CheckOwnerMsg {
     /// token id
     pub token_id: u128,
 }
+
 impl IntoShortnameRPCEvent for CheckOwnerMsg {
     fn action_shortname(&self) -> u32 {
         0x18

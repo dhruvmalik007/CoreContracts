@@ -235,6 +235,7 @@ pub fn execute_burn(
 
     vec![]
 }
+
 /// ## Description
 /// Check if a user owns a particular token. Will revert otherwise
 /// Returns [`(MPC721ContractState, Vec<EventGroup>)`] if operation was successful,
@@ -252,12 +253,13 @@ pub fn execute_ownership_check(
 ) -> Vec<EventGroup> {
     let token_info = state.token_info(msg.token_id);
     match token_info {
-        Some(_) => assert!(
-            token_info.unwrap().owner == msg.owner,
+        Some(token_info) => assert!(
+            token_info.owner == msg.owner,
             "{}",
             ContractError::IncorrectOwner
         ),
         None => panic!("{}", ContractError::NotFound),
     };
+    
     vec![]
 }
