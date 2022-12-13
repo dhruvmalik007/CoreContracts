@@ -1,6 +1,6 @@
 # Contract Version Base
 
-Crate which provides versioning for smart contracts
+Crate that provides versioning for smart contracts.
 
 ## Base State Actions
 

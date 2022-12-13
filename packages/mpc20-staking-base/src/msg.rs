@@ -3,6 +3,7 @@ use pbc_contract_common::address::{Address, Shortname};
 use read_write_rpc_derive::ReadWriteRPC;
 
 use mpc20_base::{msg::InitialBalance, state::TokenInfo};
+use rpc_msg_derive::IntoShortnameRPCEvent;
 use utils::events::IntoShortnameRPCEvent;
 
 /// ## Description
@@ -40,100 +41,36 @@ impl Mpc20StakingInitMsg {
 
 /// ## Description
 /// This structure describes fields for mpc20-staking stake msg
-#[derive(ReadWriteRPC, CreateTypeSpec, Clone, PartialEq, Eq, Debug)]
+#[derive(ReadWriteRPC, CreateTypeSpec, IntoShortnameRPCEvent, Clone, PartialEq, Eq, Debug)]
+#[rpc_msg(action = 0x17)]
 pub struct StakeMsg {
     /// amount to stake
     pub amount: u128,
 }
 
-impl IntoShortnameRPCEvent for StakeMsg {
-    fn action_shortname(&self) -> u32 {
-        0x17
-    }
-
-    fn as_interaction(
-        &self,
-        builder: &mut pbc_contract_common::events::EventGroupBuilder,
-        dest: &Address,
-    ) {
-        builder
-            .call(*dest, Shortname::from_u32(self.action_shortname()))
-            .argument(self.amount)
-            .done();
-    }
-}
-
 /// ## Description
 /// This structure describes fields for mpc20-staking unstake msg
-#[derive(ReadWriteRPC, CreateTypeSpec, Clone, PartialEq, Eq, Debug)]
+#[derive(ReadWriteRPC, CreateTypeSpec, IntoShortnameRPCEvent, Clone, PartialEq, Eq, Debug)]
+#[rpc_msg(action = 0x19)]
 pub struct UnstakeMsg {
     /// amount to unstake
     pub amount: u128,
 }
 
-impl IntoShortnameRPCEvent for UnstakeMsg {
-    fn action_shortname(&self) -> u32 {
-        0x19
-    }
-
-    fn as_interaction(
-        &self,
-        builder: &mut pbc_contract_common::events::EventGroupBuilder,
-        dest: &Address,
-    ) {
-        builder
-            .call(*dest, Shortname::from_u32(self.action_shortname()))
-            .argument(self.amount)
-            .done();
-    }
-}
-
 /// ## Description
 /// This structure describes fields for mpc20-staking claim msg
-#[derive(ReadWriteRPC, CreateTypeSpec, Clone, PartialEq, Eq, Debug)]
+#[derive(ReadWriteRPC, CreateTypeSpec, IntoShortnameRPCEvent, Clone, PartialEq, Eq, Debug)]
+#[rpc_msg(action = 0x21)]
 pub struct ClaimMsg {
     /// optional amount to claim, if None everything will be claimed
     pub amount: Option<u128>,
 }
 
-impl IntoShortnameRPCEvent for ClaimMsg {
-    fn action_shortname(&self) -> u32 {
-        0x21
-    }
-
-    fn as_interaction(
-        &self,
-        builder: &mut pbc_contract_common::events::EventGroupBuilder,
-        dest: &Address,
-    ) {
-        builder
-            .call(*dest, Shortname::from_u32(self.action_shortname()))
-            .argument(self.amount)
-            .done();
-    }
-}
-
 /// ## Description
 /// This structure describes fields for mpc20-staking compound msg
-#[derive(ReadWriteRPC, CreateTypeSpec, Clone, PartialEq, Eq, Debug)]
+#[derive(ReadWriteRPC, CreateTypeSpec, IntoShortnameRPCEvent, Clone, PartialEq, Eq, Debug)]
+#[rpc_msg(action = 0x23)]
 pub struct CompoundMsg {
     /// optional amount to claim, if None everything will be compounded
     pub amount: Option<u128>,
-}
-
-impl IntoShortnameRPCEvent for CompoundMsg {
-    fn action_shortname(&self) -> u32 {
-        0x23
-    }
-
-    fn as_interaction(
-        &self,
-        builder: &mut pbc_contract_common::events::EventGroupBuilder,
-        dest: &Address,
-    ) {
-        builder
-            .call(*dest, Shortname::from_u32(self.action_shortname()))
-            .argument(self.amount)
-            .done();
-    }
 }

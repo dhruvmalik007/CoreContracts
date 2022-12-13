@@ -1,11 +1,15 @@
 # MPC1-MULTISIG-Base Contract
 
+Base implementation of MPC1-MULTISIG contract.
+
 # Actions
 
 ## execute_create_proposal
+
 Creates a new proposal.
 
-Pararms: 
+Pararms:
+
 ```json
 CreateProposalMsg {
     "title": "Title",
@@ -20,9 +24,11 @@ CreateProposalMsg {
 ```
 
 ## execute_vote
+
 Performes a yes or no vote for specified proposal.
 
-Pararms: 
+Pararms:
+
 ```json
 ProposalVoteMsg {
     "proposal_id": 1,
@@ -31,9 +37,11 @@ ProposalVoteMsg {
 ```
 
 ## execute_execute_proposal
+
 Executes proposal if accepted.
 
-Pararms: 
+Pararms:
+
 ```json
 ProposalExecuteMsg {
     "proposal_id": 1,
@@ -41,9 +49,11 @@ ProposalExecuteMsg {
 ```
 
 ## execute_close_proposal
+
 Closes proposal if expired or threshold was not reached.
 
-Pararms: 
+Pararms:
+
 ```json
 ProposalCloseMsg {
     "proposal_id": 1,
