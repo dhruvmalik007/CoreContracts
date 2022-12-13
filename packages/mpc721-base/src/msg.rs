@@ -116,26 +116,12 @@ pub struct BurnMsg {
     pub token_id: u128,
 }
 
-impl IntoShortnameRPCEvent for BurnMsg {
-    fn action_shortname(&self) -> u32 {
-        0x17
-    }
 
-    fn as_interaction(
-        &self,
-        builder: &mut pbc_contract_common::events::EventGroupBuilder,
-        dest: &Address,
-    ) {
-        builder
-            .call(*dest, Shortname::from_u32(self.action_shortname()))
-            .argument(self.token_id)
-            .done();
-    }
-}
 
 /// ## Description
 /// This structure describes fields for mpc721 check owner msg
-#[derive(ReadWriteRPC, CreateTypeSpec, Clone, PartialEq, Eq, Debug)]
+#[derive(ReadWriteRPC, CreateTypeSpec, IntoShortnameRPCEvent, Clone, PartialEq, Eq, Debug)]
+#[rpc_msg(action = 0x18)]
 pub struct CheckOwnerMsg {
     /// receiver address
     pub owner: Address,
@@ -143,20 +129,5 @@ pub struct CheckOwnerMsg {
     pub token_id: u128,
 }
 
-impl IntoShortnameRPCEvent for CheckOwnerMsg {
-    fn action_shortname(&self) -> u32 {
-        0x18
-    }
 
-    fn as_interaction(
-        &self,
-        builder: &mut pbc_contract_common::events::EventGroupBuilder,
-        dest: &Address,
-    ) {
-        builder
-            .call(*dest, Shortname::from_u32(self.action_shortname()))
-            .argument(self.owner)
-            .argument(self.token_id)
-            .done();
-    }
-}
+
