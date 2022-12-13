@@ -260,6 +260,5 @@ pub fn execute_ownership_check(
         ),
         None => panic!("{}", ContractError::NotFound),
     };
-    
     vec![]
 }
