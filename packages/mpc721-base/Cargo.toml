@@ -1,6 +1,6 @@
 [package]
 name = "mpc721-base"
-version = "1.0.0"
+version = "1.1.0"
 edition = "2021"
 
 [lib]
@@ -19,6 +19,7 @@ create_type_spec_derive = { git = "https://git@gitlab.com/partisiablockchain/lan
 pbc_contract_codegen = { git = "https://git@gitlab.com/partisiablockchain/language/contract-sdk.git", tag = "9.1.1" }
 
 utils = { path = "../utils" }
+rpc-msg-derive = { path = "../rpc-msg-derive" }
 
 serde_json = "1.0"
 thiserror = "1.0.31"

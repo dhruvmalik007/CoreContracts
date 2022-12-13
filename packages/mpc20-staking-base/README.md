@@ -1,11 +1,15 @@
 # MPC20-Staking-Base Contract
 
+Base implementation of MPC20-STAKING contract.
+
 # Actions
 
 ## execute_stake
+
 Stake specified amount of tokens to earn rewards.
 
-Pararms: 
+Pararms:
+
 ```json
 StakeMsg {
     amount: 10,
@@ -13,9 +17,11 @@ StakeMsg {
 ```
 
 ## execute_unstake
+
 Withdraw staked tokens.
 
-Pararms: 
+Pararms:
+
 ```json
 UnstakeMsg {
     amount: 11,
@@ -23,9 +29,11 @@ UnstakeMsg {
 ```
 
 ## execute_claim
+
 Claim earned rewards.
 
-Pararms: 
+Pararms:
+
 ```json
 ClaimMsg {
     amount: 10 | null
@@ -33,10 +41,12 @@ ClaimMsg {
 ```
 
 ## execute_compound
+
 Compound earned rewards(e.g. stake them).
 Only works when deposit token is reward token.
 
-Pararms: 
+Pararms:
+
 ```json
 CompoundMsg {
     amount: 10 | null

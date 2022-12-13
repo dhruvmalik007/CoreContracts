@@ -5,6 +5,7 @@ use pbc_contract_common::{
 };
 use pbc_traits::ReadWriteRPC;
 
+// Contract Deployer address
 pub const CONTRACT_DEPLOYER: Address = Address {
     address_type: AddressType::SystemContract,
     identifier: [
@@ -13,6 +14,19 @@ pub const CONTRACT_DEPLOYER: Address = Address {
     ],
 };
 
+/// ## Description
+/// Creates event that will deploy a new contract.
+/// Returns newly deployed contract address
+/// ## Params
+/// * **ctx** is an object of type [`ContractContext`]
+///
+/// * **event_group** is an object of type [`EventGroupBuilder`]
+///
+/// * **wasm** is an object of type [`&[u8]`]
+///
+/// * **abi** is an object of type [`&[u8]`]
+///
+/// * **init_msg** is an object of type [`T`]
 pub fn add_contract_deploy_event_with_msg<T>(
     ctx: &ContractContext,
     event_group: &mut EventGroupBuilder,
@@ -29,6 +43,19 @@ where
     add_contract_deploy_event(ctx, event_group, wasm, abi, &raw_init_msg)
 }
 
+/// ## Description
+/// Creates event that will deploy a new contract.
+/// Returns newly deployed contract address
+/// ## Params
+/// * **ctx** is an object of type [`ContractContext`]
+///
+/// * **event_group** is an object of type [`EventGroupBuilder`]
+///
+/// * **wasm** is an object of type [`&[u8]`]
+///
+/// * **abi** is an object of type [`&[u8]`]
+///
+/// * **init_msg** is an object of type [`&[u8]`]
 pub fn add_contract_deploy_event(
     ctx: &ContractContext,
     event_group: &mut EventGroupBuilder,
@@ -52,6 +79,7 @@ pub fn add_contract_deploy_event(
     }
 }
 
-fn init_msg_signature() -> Vec<u8> {
+#[inline]
+pub fn init_msg_signature() -> Vec<u8> {
     vec![0xff, 0xff, 0xff, 0xff, 0x0f]
 }
