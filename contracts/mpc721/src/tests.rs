@@ -156,7 +156,7 @@ fn proper_ownership_check_call() {
     test_event_group
         .call(dest.clone(), Shortname::from_u32(CHECKOWNER))
         .argument(mock_address(1u8))
-        .argument(1u128)g        
+        .argument(1u128)        
         .done();
 
     assert_eq!(event_group.build(), test_event_group.build());
