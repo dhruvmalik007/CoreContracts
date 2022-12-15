@@ -1,6 +1,6 @@
 use mpc721_base::msg::{
-    ApproveForAllMsg, ApproveMsg, BurnMsg, MintMsg, RevokeForAllMsg, RevokeMsg, SetBaseUriMsg,
-    TransferFromMsg, TransferMsg,CheckOwnerMsg
+    ApproveForAllMsg, ApproveMsg, BurnMsg, CheckOwnerMsg, MintMsg, RevokeForAllMsg, RevokeMsg,
+    SetBaseUriMsg, TransferFromMsg, TransferMsg,
 };
 use pbc_contract_common::{
     address::{Address, AddressType, Shortname},
@@ -27,7 +27,7 @@ const APPROVE_FOR_ALL: u32 = 0x11;
 const REVOKE: u32 = 0x13;
 const REVOKE_FOR_ALL: u32 = 0x15;
 const BURN: u32 = 0x17;
-const CHECKOWNER:u32= 0x18;
+const CHECKOWNER: u32 = 0x18;
 
 #[test]
 fn proper_transfer_action_call() {
@@ -42,7 +42,7 @@ fn proper_transfer_action_call() {
     msg.as_interaction(&mut event_group, &dest);
 
     test_event_group
-    .call(dest.clone(), Shortname::from_u32(TRANSFER))
+        .call(dest.clone(), Shortname::from_u32(TRANSFER))
         .argument(mock_address(1u8))
         .argument(1u128)
         .done();
@@ -145,8 +145,8 @@ fn proper_ownership_check_call() {
     let dest = mock_address(30u8);
 
     let msg = CheckOwnerMsg {
-        owner: mock_address(1u8), 
-        token_id: 1u128            
+        owner: mock_address(1u8),
+        token_id: 1u128,
     };
 
     let mut event_group = EventGroup::builder();
@@ -156,12 +156,11 @@ fn proper_ownership_check_call() {
     test_event_group
         .call(dest.clone(), Shortname::from_u32(CHECKOWNER))
         .argument(mock_address(1u8))
-        .argument(1u128)        
+        .argument(1u128)
         .done();
 
     assert_eq!(event_group.build(), test_event_group.build());
 }
-
 
 #[test]
 fn proper_approve_for_all_action_call() {
