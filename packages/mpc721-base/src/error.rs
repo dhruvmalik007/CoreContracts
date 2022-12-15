@@ -13,6 +13,6 @@ pub enum ContractError {
     #[error("Not found")]
     NotFound,
 
-    #[error("Token ownership check failed")]
+    #[error("Incorrect Owner")]
     IncorrectOwner,
 }
