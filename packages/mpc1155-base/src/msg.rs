@@ -133,3 +133,15 @@ pub struct RevokeForAllMsg {
     /// operator address to revoke
     pub operator: Address,
 }
+/// ## Description
+/// This structure descibes fields for the mpc1155 balance check function
+#[derive(ReadWriteRPC, CreateTypeSpec, IntoShortnameRPCEvent, Clone, PartialEq, Eq, Debug)]
+#[rpc_msg(action = 0x18)]
+pub struct CheckBalancesMsg {
+    /// operator address to revoke
+    pub owner: Address,
+    //
+    pub token_ids: Vec<u128>,
+    //
+    pub amounts: Vec<u128>,
+}

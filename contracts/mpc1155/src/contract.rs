@@ -6,13 +6,13 @@ use pbc_contract_common::{address::Address, context::ContractContext, events::Ev
 use mpc1155_base::{
     actions::{
         execute_approve_for_all, execute_batch_burn, execute_batch_mint,
-        execute_batch_transfer_from, execute_burn, execute_init, execute_mint,
-        execute_revoke_for_all, execute_set_uri, execute_transfer_from,
+        execute_batch_transfer_from, execute_burn, execute_check_balances, execute_init,
+        execute_mint, execute_revoke_for_all, execute_set_uri, execute_transfer_from,
     },
     msg::{
-        ApproveForAllMsg, BatchBurnMsg, BatchMintMsg, BatchTransferFromMsg, BurnMsg, InitMsg,
-        MintMsg, RevokeForAllMsg, SetUriMsg, TokenMintInfoMsg, TokenTransferInfoMsg,
-        TransferFromMsg,
+        ApproveForAllMsg, BatchBurnMsg, BatchMintMsg, BatchTransferFromMsg, BurnMsg,
+        CheckBalancesMsg, InitMsg, MintMsg, RevokeForAllMsg, SetUriMsg, TokenMintInfoMsg,
+        TokenTransferInfoMsg, TransferFromMsg,
     },
 };
 
@@ -162,6 +162,27 @@ pub fn revoke_for_all(
 ) -> (ContractState, Vec<EventGroup>) {
     let mut state = state;
     let events = execute_revoke_for_all(&ctx, &mut state.mpc1155, &RevokeForAllMsg { operator });
+
+    (state, events)
+}
+#[action(shortname = 0x18)]
+pub fn check_balances(
+    ctx: ContractContext,
+    state: ContractState,
+    owner: Address,
+    token_ids: Vec<u128>,
+    amounts: Vec<u128>,
+) -> (ContractState, Vec<EventGroup>) {
+    let mut state = state;
+    let events = execute_check_balances(
+        &ctx,
+        &mut state.mpc1155,
+        CheckBalancesMsg {
+            owner,
+            token_ids,
+            amounts,
+        },
+    );
 
     (state, events)
 }
