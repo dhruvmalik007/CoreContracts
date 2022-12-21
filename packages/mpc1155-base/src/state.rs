@@ -95,7 +95,8 @@ impl MPC1155ContractState {
         token_ids.into_iter().enumerate().for_each(|(n, id)| {
             assert!(
                 self.balances.get(&id).unwrap().get(&owner).unwrap() >= &amounts[n],
-                "{}",ContractError::InadequateBalance
+                "{}",
+                ContractError::InadequateBalance
             )
         });
     }

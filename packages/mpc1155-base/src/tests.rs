@@ -8,13 +8,13 @@ use pbc_contract_common::{
 use crate::{
     actions::{
         execute_approve_for_all, execute_batch_burn, execute_batch_mint,
-        execute_batch_transfer_from, execute_burn, execute_init, execute_mint,
-        execute_revoke_for_all, execute_set_uri, execute_transfer_from,execute_check_balances
+        execute_batch_transfer_from, execute_burn, execute_check_balances, execute_init,
+        execute_mint, execute_revoke_for_all, execute_set_uri, execute_transfer_from,
     },
     msg::{
-        ApproveForAllMsg, BatchBurnMsg, BatchMintMsg, BatchTransferFromMsg, BurnMsg, InitMsg,
-        MintMsg, RevokeForAllMsg, SetUriMsg, TokenMintInfoMsg, TokenTransferInfoMsg,
-        TransferFromMsg,CheckBalancesMsg
+        ApproveForAllMsg, BatchBurnMsg, BatchMintMsg, BatchTransferFromMsg, BurnMsg,
+        CheckBalancesMsg, InitMsg, MintMsg, RevokeForAllMsg, SetUriMsg, TokenMintInfoMsg,
+        TokenTransferInfoMsg, TransferFromMsg,
     },
     state::{MPC1155ContractState, TokenInfo},
 };
@@ -341,7 +341,7 @@ fn proper_batch_mint() {
 }
 
 #[test]
-fn check_balances(){
+fn check_balances() {
     let owner = 1u8;
     let minter = 2u8;
     let alice = 10u8;
@@ -391,25 +391,24 @@ fn check_balances(){
     {
         let _ = execute_batch_mint(&mock_contract_context(minter), &mut state, &msg);
     }
-    let tokens= vec![1,2];
-    let amounts= vec![10,20];
-    let msg=CheckBalancesMsg{
-        owner:mock_address(alice),
-        token_ids:tokens,
-        amounts:amounts,
+    let tokens = vec![1, 2];
+    let amounts = vec![10, 20];
+    let msg = CheckBalancesMsg {
+        owner: mock_address(alice),
+        token_ids: tokens,
+        amounts: amounts,
     };
-    execute_check_balances(&mock_contract_context(minter),&mut state,msg);
-    let msg2=CheckBalancesMsg{
-        owner:mock_address(bob),
-        token_ids:vec![1,3],
-        amounts:vec![100,30],
+    execute_check_balances(&mock_contract_context(minter), &mut state, msg);
+    let msg2 = CheckBalancesMsg {
+        owner: mock_address(bob),
+        token_ids: vec![1, 3],
+        amounts: vec![100, 30],
     };
-    execute_check_balances(&mock_contract_context(minter),&mut state,msg2);
-
+    execute_check_balances(&mock_contract_context(minter), &mut state, msg2);
 }
 #[test]
-#[should_panic(expected="Balance check has failed")]
-fn check_balances_fail(){
+#[should_panic(expected = "Balance check has failed")]
+fn check_balances_fail() {
     let owner = 1u8;
     let minter = 2u8;
     let alice = 10u8;
@@ -459,14 +458,14 @@ fn check_balances_fail(){
     {
         let _ = execute_batch_mint(&mock_contract_context(minter), &mut state, &msg);
     }
-    let tokens= vec![1,2];
-    let amounts= vec![11,21];
-    let msg=CheckBalancesMsg{
-        owner:mock_address(alice),
-        token_ids:tokens,
-        amounts:amounts,
+    let tokens = vec![1, 2];
+    let amounts = vec![11, 21];
+    let msg = CheckBalancesMsg {
+        owner: mock_address(alice),
+        token_ids: tokens,
+        amounts: amounts,
     };
-    execute_check_balances(&mock_contract_context(minter),&mut state,msg);
+    execute_check_balances(&mock_contract_context(minter), &mut state, msg);
 }
 #[test]
 #[should_panic(expected = "Unauthorized")]
