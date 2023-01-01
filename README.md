@@ -18,6 +18,7 @@
 | ----------------------------------------------------- | ------------------------------------------- |
 | [`Access Control`](packages/access-control-base/)     | Access Control Smart Contract Extension Lib |
 | [`Contract Version`](packages/contract-version-base/) | Contract Versioning Lib                     |
+| [`Counter`](packages/counter-base/)                   | Counters Lib                                |
 | [`Ownable`](packages/ownable-base/)                   | Ownable Smart Contract Extension Lib        |
 | [`Pausable`](packages/pausable-base/)                 | Pausable Smart Contract Extension Lib       |
 | [`Utils`](packages/utils/)                            | Set of tool for Smart Contracts             |
