@@ -1,6 +1,6 @@
 use std::collections::BTreeMap;
 
-use pbc_contract_common::{context::ContractContext, events::EventGroup};
+use pbc_contract_common::{context::ContractContext, events::EventGroup,address::Address};
 
 use crate::{
     msg::{
@@ -87,6 +87,25 @@ pub fn execute_mint(
 
     state.mint(msg.token_id, &msg.to, &msg.token_uri);
     state.increase_supply();
+
+    vec![]
+}
+
+pub fn execute_update_minter(
+    ctx: &ContractContext,
+    state: &mut MPC721ContractState,
+    new_minter: Address,
+) -> Vec<EventGroup> {
+    if state.owner.is_none(){
+        panic!( "{}",ContractError::Unauthorized);
+    }
+    assert!(
+         state.owner.unwrap() == ctx.sender,
+        "{}",
+        ContractError::Unauthorized
+    );
+
+    state.minter=new_minter;
 
     vec![]
 }
