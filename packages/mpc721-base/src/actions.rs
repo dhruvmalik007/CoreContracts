@@ -1,11 +1,11 @@
 use std::collections::BTreeMap;
 
-use pbc_contract_common::{context::ContractContext, events::EventGroup,address::Address};
+use pbc_contract_common::{context::ContractContext, events::EventGroup};
 
 use crate::{
     msg::{
         ApproveForAllMsg, ApproveMsg, BurnMsg, CheckOwnerMsg, InitMsg, MintMsg, RevokeForAllMsg,
-        RevokeMsg, SetBaseUriMsg, TransferFromMsg, TransferMsg,
+        RevokeMsg, SetBaseUriMsg, TransferFromMsg, TransferMsg,UpdateMinterMsg
     },
     state::MPC721ContractState,
     ContractError,
@@ -94,7 +94,7 @@ pub fn execute_mint(
 pub fn execute_update_minter(
     ctx: &ContractContext,
     state: &mut MPC721ContractState,
-    new_minter: Address,
+    msg: UpdateMinterMsg,
 ) -> Vec<EventGroup> {
     if state.owner.is_none(){
         panic!( "{}",ContractError::Unauthorized);
@@ -105,7 +105,7 @@ pub fn execute_update_minter(
         ContractError::Unauthorized
     );
 
-    state.minter=new_minter;
+    state.minter=msg.new_minter;
 
     vec![]
 }

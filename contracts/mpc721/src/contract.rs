@@ -11,7 +11,7 @@ use mpc721_base::{
     },
     msg::{
         ApproveForAllMsg, ApproveMsg, BurnMsg, CheckOwnerMsg, InitMsg, MintMsg, RevokeForAllMsg,
-        RevokeMsg, SetBaseUriMsg, TransferFromMsg, TransferMsg,
+        RevokeMsg, SetBaseUriMsg, TransferFromMsg, TransferMsg,UpdateMinterMsg
     },
 };
 
@@ -176,6 +176,6 @@ pub fn update_minter(
 ) -> (ContractState, Vec<EventGroup>) {
     let mut state = state;
     let events =
-        execute_update_minter(&ctx, &mut state.mpc721, new_minter);
+        execute_update_minter(&ctx, &mut state.mpc721, UpdateMinterMsg{new_minter:new_minter});
     (state, events)
 }

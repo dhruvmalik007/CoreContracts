@@ -13,7 +13,7 @@ use crate::{
     },
     msg::{
         ApproveForAllMsg, ApproveMsg, BurnMsg, CheckOwnerMsg, InitMsg, MintMsg, RevokeForAllMsg,
-        RevokeMsg, SetBaseUriMsg, TransferFromMsg, TransferMsg,
+        RevokeMsg, SetBaseUriMsg, TransferFromMsg, TransferMsg,UpdateMinterMsg
     },
     state::{MPC721ContractState, TokenInfo},
 };
@@ -976,7 +976,7 @@ fn can_update_minter() {
     let (mut state, events) = execute_init(&mock_contract_context(2), &msg);
 
    
-    let _ = execute_update_minter(&mock_contract_context(alice), &mut state, mock_address(new_minter));
+    let _ = execute_update_minter(&mock_contract_context(alice), &mut state, UpdateMinterMsg{new_minter:mock_address(new_minter)});
     assert_eq!(mock_address(new_minter),state.minter);
 }
 #[test]
@@ -997,7 +997,7 @@ fn update_minter_fails_not_owner() {
     let (mut state, events) = execute_init(&mock_contract_context(2), &msg);
 
    
-    let _ = execute_update_minter(&mock_contract_context(minter), &mut state, mock_address(new_minter));
+    let _ = execute_update_minter(&mock_contract_context(minter), &mut state,UpdateMinterMsg{new_minter:mock_address(new_minter)});
     
 }
 #[test]
@@ -1018,6 +1018,6 @@ fn update_minter_fails_no_owner() {
     let (mut state, events) = execute_init(&mock_contract_context(2), &msg);
 
    
-    let _ = execute_update_minter(&mock_contract_context(minter), &mut state, mock_address(new_minter));
+    let _ = execute_update_minter(&mock_contract_context(minter), &mut state,UpdateMinterMsg{new_minter:mock_address(new_minter)});
    
 }

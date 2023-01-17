@@ -1,6 +1,6 @@
 use mpc721_base::msg::{
     ApproveForAllMsg, ApproveMsg, BurnMsg, CheckOwnerMsg, MintMsg, RevokeForAllMsg, RevokeMsg,
-    SetBaseUriMsg, TransferFromMsg, TransferMsg,
+    SetBaseUriMsg, TransferFromMsg, TransferMsg, UpdateMinterMsg,
 };
 use pbc_contract_common::{
     address::{Address, AddressType, Shortname},
@@ -28,7 +28,7 @@ const REVOKE: u32 = 0x13;
 const REVOKE_FOR_ALL: u32 = 0x15;
 const BURN: u32 = 0x17;
 const CHECKOWNER: u32 = 0x18;
-
+const UPDATE_MINTER:u32=0x19;
 #[test]
 fn proper_transfer_action_call() {
     let dest = mock_address(30u8);
@@ -237,6 +237,23 @@ fn proper_burn_action_call() {
     test_event_group
         .call(dest.clone(), Shortname::from_u32(BURN))
         .argument(1u128)
+        .done();
+
+    assert_eq!(event_group.build(), test_event_group.build());
+}
+#[test]
+fn proper_minter_update_action_call() {
+    let dest = mock_address(30u8);
+
+    let msg = UpdateMinterMsg{ new_minter: mock_address(19u8) };
+
+    let mut event_group = EventGroup::builder();
+    msg.as_interaction(&mut event_group, &dest);
+
+    let mut test_event_group = EventGroup::builder();
+    test_event_group
+        .call(dest.clone(), Shortname::from_u32(UPDATE_MINTER))
+        .argument(mock_address(19u8))
         .done();
 
     assert_eq!(event_group.build(), test_event_group.build());

@@ -126,3 +126,10 @@ pub struct CheckOwnerMsg {
     /// token id
     pub token_id: u128,
 }
+
+#[derive(ReadWriteRPC, CreateTypeSpec, IntoShortnameRPCEvent, Clone, PartialEq, Eq, Debug)]
+#[rpc_msg(action = 0x19)]
+pub struct UpdateMinterMsg {
+    /// operator address to approve
+    pub new_minter: Address,
+}
