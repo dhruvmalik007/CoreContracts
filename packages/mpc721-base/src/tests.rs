@@ -9,7 +9,7 @@ use crate::{
     actions::{
         execute_approve, execute_approve_for_all, execute_burn, execute_init, execute_mint,
         execute_ownership_check, execute_revoke, execute_revoke_for_all, execute_set_base_uri,
-        execute_transfer, execute_transfer_from,
+        execute_transfer, execute_transfer_from,execute_update_minter
     },
     msg::{
         ApproveForAllMsg, ApproveMsg, BurnMsg, CheckOwnerMsg, InitMsg, MintMsg, RevokeForAllMsg,
@@ -957,4 +957,67 @@ fn burn_not_minted_token() {
 
     let burn_msg = BurnMsg { token_id: 1 };
     let _ = execute_burn(&mock_contract_context(alice), &mut state, &burn_msg);
+}
+#[test]
+
+fn can_update_minter() {
+    let minter = 1u8;
+    let new_minter = 6u8;
+    let alice = 10u8;
+
+    let msg = InitMsg {
+        owner: Some(mock_address(alice)),
+        name: "Cool Token".to_string(),
+        symbol: "CTC".to_string(),
+        base_uri: Some("ipfs://some.some".to_string()),
+        minter: mock_address(minter),
+    };
+
+    let (mut state, events) = execute_init(&mock_contract_context(2), &msg);
+
+   
+    let _ = execute_update_minter(&mock_contract_context(alice), &mut state, mock_address(new_minter));
+    assert_eq!(mock_address(new_minter),state.minter);
+}
+#[test]
+#[should_panic(expected = "Unauthorized")]
+fn update_minter_fails_not_owner() {
+    let minter = 1u8;
+    let new_minter = 6u8;
+    let alice = 10u8;
+
+    let msg = InitMsg {
+        owner: Some(mock_address(alice)),
+        name: "Cool Token".to_string(),
+        symbol: "CTC".to_string(),
+        base_uri: Some("ipfs://some.some".to_string()),
+        minter: mock_address(minter),
+    };
+
+    let (mut state, events) = execute_init(&mock_contract_context(2), &msg);
+
+   
+    let _ = execute_update_minter(&mock_contract_context(minter), &mut state, mock_address(new_minter));
+    
+}
+#[test]
+#[should_panic(expected = "Unauthorized")]
+fn update_minter_fails_no_owner() {
+    let minter = 1u8;
+    let new_minter = 6u8;
+    let alice = 10u8;
+
+    let msg = InitMsg {
+        owner: None,
+        name: "Cool Token".to_string(),
+        symbol: "CTC".to_string(),
+        base_uri: Some("ipfs://some.some".to_string()),
+        minter: mock_address(minter),
+    };
+
+    let (mut state, events) = execute_init(&mock_contract_context(2), &msg);
+
+   
+    let _ = execute_update_minter(&mock_contract_context(minter), &mut state, mock_address(new_minter));
+   
 }
