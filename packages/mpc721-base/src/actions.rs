@@ -5,7 +5,7 @@ use pbc_contract_common::{context::ContractContext, events::EventGroup};
 use crate::{
     msg::{
         ApproveForAllMsg, ApproveMsg, BurnMsg, CheckOwnerMsg, InitMsg, MintMsg, RevokeForAllMsg,
-        RevokeMsg, SetBaseUriMsg, TransferFromMsg, TransferMsg,UpdateMinterMsg
+        RevokeMsg, SetBaseUriMsg, TransferFromMsg, TransferMsg, UpdateMinterMsg,
     },
     state::MPC721ContractState,
     ContractError,
@@ -96,16 +96,16 @@ pub fn execute_update_minter(
     state: &mut MPC721ContractState,
     msg: UpdateMinterMsg,
 ) -> Vec<EventGroup> {
-    if state.owner.is_none(){
-        panic!( "{}",ContractError::Unauthorized);
+    if state.owner.is_none() {
+        panic!("{}", ContractError::Unauthorized);
     }
     assert!(
-         state.owner.unwrap() == ctx.sender,
+        state.owner.unwrap() == ctx.sender,
         "{}",
         ContractError::Unauthorized
     );
 
-    state.minter=msg.new_minter;
+    state.minter = msg.new_minter;
 
     vec![]
 }

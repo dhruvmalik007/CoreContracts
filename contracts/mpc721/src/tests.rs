@@ -28,7 +28,7 @@ const REVOKE: u32 = 0x13;
 const REVOKE_FOR_ALL: u32 = 0x15;
 const BURN: u32 = 0x17;
 const CHECKOWNER: u32 = 0x18;
-const UPDATE_MINTER:u32=0x19;
+const UPDATE_MINTER: u32 = 0x19;
 #[test]
 fn proper_transfer_action_call() {
     let dest = mock_address(30u8);
@@ -245,7 +245,9 @@ fn proper_burn_action_call() {
 fn proper_minter_update_action_call() {
     let dest = mock_address(30u8);
 
-    let msg = UpdateMinterMsg{ new_minter: mock_address(19u8) };
+    let msg = UpdateMinterMsg {
+        new_minter: mock_address(19u8),
+    };
 
     let mut event_group = EventGroup::builder();
     msg.as_interaction(&mut event_group, &dest);
