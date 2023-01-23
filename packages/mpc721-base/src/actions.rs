@@ -90,17 +90,21 @@ pub fn execute_mint(
 
     vec![]
 }
-
+/// ## Description
+/// Updates the minter address checking that the sender is the contract owner address
+/// ## Params
+/// * **ctx** is an object of type [`ContractContext`]
+///
+/// * **state** is an object of type [`MPC721ContractState`]
+///
+/// * **msg** is an object of type [`UpdateMinterMsg`]
 pub fn execute_update_minter(
     ctx: &ContractContext,
     state: &mut MPC721ContractState,
     msg: UpdateMinterMsg,
 ) -> Vec<EventGroup> {
-    if state.owner.is_none() {
-        panic!("{}", ContractError::Unauthorized);
-    }
     assert!(
-        state.owner.unwrap() == ctx.sender,
+        state.owner.is_some() && state.owner.unwrap() != ctx.sender,
         "{}",
         ContractError::Unauthorized
     );
