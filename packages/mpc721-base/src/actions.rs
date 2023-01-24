@@ -104,7 +104,7 @@ pub fn execute_update_minter(
     msg: UpdateMinterMsg,
 ) -> Vec<EventGroup> {
     assert!(
-        state.owner.is_some() && state.owner.unwrap() != ctx.sender,
+        state.owner.is_some() && state.owner.unwrap() == ctx.sender,
         "{}",
         ContractError::Unauthorized
     );
