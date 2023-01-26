@@ -13,7 +13,7 @@ use crate::{
     },
     msg::{
         ApproveForAllMsg, ApproveMsg, BurnMsg, InitMsg, MintMsg, RevokeForAllMsg, RevokeMsg,
-        SetBaseUriMsg, TransferFromMsg, TransferMsg,
+        SetBaseUriMsg, TransferFromMsg, TransferMsg,MultiMintMsg
     },
     state::{MPC721ContractState, TokenInfo},
 };
@@ -933,17 +933,18 @@ fn test_multi_mint(){
         token_uri: Some(String::from("Token5"))
     });
     test_state.supply=5;
+    let mut state= state;
     let mint=vec![MintMsg{token_id:1,to:mock_address(4),token_uri:Some(String::from("Token1"))},
     MintMsg{token_id:2,to:mock_address(4),token_uri:Some(String::from("Token2"))},
     MintMsg{token_id:3,to:mock_address(5),token_uri:Some(String::from("Token3"))},
     MintMsg{token_id:4,to:mock_address(5),token_uri:Some(String::from("Token4"))},
     MintMsg{token_id:5,to:mock_address(6),token_uri:Some(String::from("Token5"))}];
-    let (state, _ )=execute_multi_mint(
-        mock_contract_context(1),
+    execute_multi_mint(
+        &mock_contract_context(1),
         &mut state,
-        mint,
+        &MultiMintMsg{mints:mint},
     );
     
-    assert_eq!(state.mpc721,test_state);
+    assert_eq!(state,test_state);
     
 }

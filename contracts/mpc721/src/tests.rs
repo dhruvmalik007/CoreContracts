@@ -31,8 +31,7 @@ const APPROVE_FOR_ALL: u32 = 0x11;
 const REVOKE: u32 = 0x13;
 const REVOKE_FOR_ALL: u32 = 0x15;
 const BURN: u32 = 0x17;
-const CHECKOWNER: u32 = 0x18;
-const UPDATE_MINTER: u32 = 0x19;
+
 const MULTI_MINT: u32 = 0x20;
 #[test]
 fn proper_transfer_action_call() {
