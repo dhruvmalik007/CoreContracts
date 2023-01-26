@@ -6,12 +6,12 @@ use pbc_contract_common::{address::Address, context::ContractContext, events::Ev
 use mpc721_base::{
     actions::{
         execute_approve, execute_approve_for_all, execute_burn, execute_init, execute_mint,
-        execute_revoke, execute_revoke_for_all, execute_set_base_uri, execute_transfer,
-        execute_transfer_from,
+        execute_multi_mint, execute_revoke, execute_revoke_for_all, execute_set_base_uri,
+        execute_transfer, execute_transfer_from,
     },
     msg::{
-        ApproveForAllMsg, ApproveMsg, BurnMsg, InitMsg, MintMsg, RevokeForAllMsg, RevokeMsg,
-        SetBaseUriMsg, TransferFromMsg, TransferMsg,
+        ApproveForAllMsg, ApproveMsg, BurnMsg, InitMsg, MintMsg, MultiMintMsg, RevokeForAllMsg,
+        RevokeMsg, SetBaseUriMsg, TransferFromMsg, TransferMsg,
     },
 };
 
@@ -154,4 +154,16 @@ pub fn burn(
     let events = execute_burn(&ctx, &mut state.mpc721, &BurnMsg { token_id });
 
     (state, events)
+}
+
+#[action(shortname = 0x19)]
+pub fn multi_mint(
+    ctx: ContractContext,
+    state: ContractState,
+    mints: Vec<MintMsg>,
+) -> (ContractState, Vec<EventGroup>) {
+    let mut state = state;
+
+    execute_multi_mint(&ctx, &mut state.mpc721, &MultiMintMsg { mints });
+    (state, vec![])
 }

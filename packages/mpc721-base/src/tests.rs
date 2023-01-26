@@ -9,7 +9,7 @@ use crate::{
     actions::{
         execute_approve, execute_approve_for_all, execute_burn, execute_init, execute_mint,
         execute_revoke, execute_revoke_for_all, execute_set_base_uri, execute_transfer,
-        execute_transfer_from,
+        execute_transfer_from,execute_multi_mint
     },
     msg::{
         ApproveForAllMsg, ApproveMsg, BurnMsg, InitMsg, MintMsg, RevokeForAllMsg, RevokeMsg,
@@ -870,4 +870,80 @@ fn burn_not_minted_token() {
 
     let burn_msg = BurnMsg { token_id: 1 };
     let _ = execute_burn(&mock_contract_context(alice), &mut state, &burn_msg);
+}
+#[test]
+fn test_multi_mint(){
+    let msg = InitMsg {
+        owner: None,
+        name: "Cool Token".to_string(),
+        symbol: "CTC".to_string(),
+        base_uri: Some("ipfs://some.some".to_string()),
+        minter: mock_address(1),
+    };
+
+    let (state, events) = execute_init(&mock_contract_context(2), &msg);
+    let mut test_state= MPC721ContractState {
+        owner: None,
+        name: "Cool Token".to_string(),
+        symbol: "CTC".to_string(),
+        base_uri: Some("ipfs://some.some".to_string()),
+        minter: mock_address(1),
+        supply: 0,
+        tokens: BTreeMap::new(),
+        operator_approvals: BTreeMap::new(),
+    };
+    test_state.tokens.insert(1,TokenInfo {
+        /// token owner
+        owner: mock_address(4),
+        /// token approvals
+        approvals:vec![],
+        /// optional token uri
+        token_uri: Some(String::from("Token1"))
+    });
+    test_state.tokens.insert(2,TokenInfo {
+        /// token owner
+        owner: mock_address(4),
+        /// token approvals
+        approvals:vec![],
+        /// optional token uri
+        token_uri: Some(String::from("Token2"))
+    });
+    test_state.tokens.insert(3,TokenInfo {
+        /// token owner
+        owner: mock_address(5),
+        /// token approvals
+        approvals:vec![],
+        /// optional token uri
+        token_uri: Some(String::from("Token3"))
+    });
+    test_state.tokens.insert(4,TokenInfo {
+        /// token owner
+        owner: mock_address(5),
+        /// token approvals
+        approvals:vec![],
+        /// optional token uri
+        token_uri: Some(String::from("Token4"))
+    });
+    test_state.tokens.insert(5,TokenInfo {
+        /// token owner
+        owner: mock_address(6),
+        /// token approvals
+        approvals:vec![],
+        /// optional token uri
+        token_uri: Some(String::from("Token5"))
+    });
+    test_state.supply=5;
+    let mint=vec![MintMsg{token_id:1,to:mock_address(4),token_uri:Some(String::from("Token1"))},
+    MintMsg{token_id:2,to:mock_address(4),token_uri:Some(String::from("Token2"))},
+    MintMsg{token_id:3,to:mock_address(5),token_uri:Some(String::from("Token3"))},
+    MintMsg{token_id:4,to:mock_address(5),token_uri:Some(String::from("Token4"))},
+    MintMsg{token_id:5,to:mock_address(6),token_uri:Some(String::from("Token5"))}];
+    let (state, _ )=execute_multi_mint(
+        mock_contract_context(1),
+        &mut state,
+        mint,
+    );
+    
+    assert_eq!(state.mpc721,test_state);
+    
 }

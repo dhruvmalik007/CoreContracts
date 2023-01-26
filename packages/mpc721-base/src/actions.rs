@@ -5,7 +5,7 @@ use pbc_contract_common::{context::ContractContext, events::EventGroup};
 use crate::{
     msg::{
         ApproveForAllMsg, ApproveMsg, BurnMsg, InitMsg, MintMsg, RevokeForAllMsg, RevokeMsg,
-        SetBaseUriMsg, TransferFromMsg, TransferMsg,
+        SetBaseUriMsg, TransferFromMsg, TransferMsg,MultiMintMsg
     },
     state::MPC721ContractState,
     ContractError,
@@ -232,6 +232,33 @@ pub fn execute_burn(
 
     state.remove_token(&ctx.sender, msg.token_id);
     state.decrease_supply();
+
+    vec![]
+}
+
+/// ## Description
+/// Destroy your token forever.
+/// Returns [`(MPC721ContractState, Vec<EventGroup>)`] if operation was successful,
+/// otherwise panics with error message defined in [`ContractError`]
+/// ## Params
+/// * **ctx** is an object of type [`ContractContext`]
+///
+/// * **state** is an object of type [`MPC721ContractState`]
+///
+/// * **msg** is an object of type [`MultiMintMsg`]
+pub fn execute_multi_mint(
+    ctx: &ContractContext,
+    state: &mut MPC721ContractState,
+    msg: &MultiMintMsg,
+) -> Vec<EventGroup> {
+
+    for i in 0..msg.mints.len(){
+        execute_mint(
+            ctx,
+            state,
+            &msg.mints[i]
+        );        
+    }
 
     vec![]
 }

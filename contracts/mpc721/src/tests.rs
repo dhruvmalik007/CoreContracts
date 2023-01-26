@@ -1,11 +1,15 @@
+use crate::contract::{initialize, multi_mint};
 use mpc721_base::msg::{
-    ApproveForAllMsg, ApproveMsg, BurnMsg, MintMsg, RevokeForAllMsg, RevokeMsg, SetBaseUriMsg,
-    TransferFromMsg, TransferMsg,
+    ApproveForAllMsg, ApproveMsg, BurnMsg, InitMsg, MintMsg, MultiMintMsg, RevokeForAllMsg,
+    RevokeMsg, SetBaseUriMsg, TransferFromMsg, TransferMsg,
 };
+use mpc721_base::state::{MPC721ContractState, TokenInfo};
+use pbc_contract_common::context::{CallbackContext, ContractContext};
 use pbc_contract_common::{
     address::{Address, AddressType, Shortname},
     events::EventGroup,
 };
+use std::collections::BTreeMap;
 use utils::events::IntoShortnameRPCEvent;
 
 fn mock_address(le: u8) -> Address {
@@ -27,7 +31,9 @@ const APPROVE_FOR_ALL: u32 = 0x11;
 const REVOKE: u32 = 0x13;
 const REVOKE_FOR_ALL: u32 = 0x15;
 const BURN: u32 = 0x17;
-
+const CHECKOWNER: u32 = 0x18;
+const UPDATE_MINTER: u32 = 0x19;
+const MULTI_MINT: u32 = 0x20;
 #[test]
 fn proper_transfer_action_call() {
     let dest = mock_address(30u8);
@@ -36,11 +42,10 @@ fn proper_transfer_action_call() {
         to: mock_address(1u8),
         token_id: 1,
     };
-
     let mut event_group = EventGroup::builder();
+    let mut test_event_group = EventGroup::builder();
     msg.as_interaction(&mut event_group, &dest);
 
-    let mut test_event_group = EventGroup::builder();
     test_event_group
         .call(dest.clone(), Shortname::from_u32(TRANSFER))
         .argument(mock_address(1u8))
@@ -141,6 +146,7 @@ fn proper_mint_action_call() {
 }
 
 #[test]
+#[test]
 fn proper_approve_for_all_action_call() {
     let dest = mock_address(30u8);
 
@@ -218,4 +224,74 @@ fn proper_burn_action_call() {
         .done();
 
     assert_eq!(event_group.build(), test_event_group.build());
+}
+
+#[test]
+fn proper_multi_mint_action_call() {
+    let dest = mock_address(30u8);
+
+    let mints = vec![
+        MintMsg {
+            token_id: 1,
+            to: mock_address(4),
+            token_uri: Some(String::from("Token1")),
+        },
+        MintMsg {
+            token_id: 2,
+            to: mock_address(4),
+            token_uri: Some(String::from("Token2")),
+        },
+        MintMsg {
+            token_id: 3,
+            to: mock_address(5),
+            token_uri: Some(String::from("Token3")),
+        },
+        MintMsg {
+            token_id: 4,
+            to: mock_address(5),
+            token_uri: Some(String::from("Token4")),
+        },
+        MintMsg {
+            token_id: 5,
+            to: mock_address(6),
+            token_uri: Some(String::from("Token5")),
+        },
+    ];
+    let msg = MultiMintMsg {
+        mints: mints.clone(),
+    };
+    let mut event_group = EventGroup::builder();
+    msg.as_interaction(&mut event_group, &dest);
+
+    let mut test_event_group = EventGroup::builder();
+    test_event_group
+        .call(dest.clone(), Shortname::from_u32(MULTI_MINT))
+        .argument(mints)
+        .done();
+
+    assert_eq!(event_group.build(), test_event_group.build());
+}
+
+fn mock_contract_context(sender: u8) -> ContractContext {
+    ContractContext {
+        contract_address: mock_address(1u8),
+        sender: mock_address(sender),
+        block_time: 100,
+        block_production_time: 100,
+        current_transaction: [
+            0u8, 0u8, 0u8, 0u8, 0u8, 0u8, 0u8, 0u8, 0u8, 0u8, 0u8, 0u8, 0u8, 0u8, 0u8, 0u8, 0u8,
+            0u8, 0u8, 0u8, 0u8, 0u8, 0u8, 0u8, 0u8, 0u8, 0u8, 0u8, 0u8, 0u8, 0u8, 0u8,
+        ],
+        original_transaction: [
+            0u8, 0u8, 0u8, 0u8, 0u8, 0u8, 0u8, 0u8, 0u8, 0u8, 0u8, 0u8, 0u8, 0u8, 0u8, 0u8, 0u8,
+            0u8, 0u8, 0u8, 0u8, 0u8, 0u8, 0u8, 0u8, 0u8, 0u8, 0u8, 0u8, 0u8, 0u8, 0u8,
+        ],
+    }
+}
+
+fn mock_contract_callback_context(success: bool) -> CallbackContext {
+    CallbackContext {
+        success,
+        results: vec![],
+    }
 }
