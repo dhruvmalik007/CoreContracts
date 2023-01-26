@@ -133,3 +133,11 @@ pub struct UpdateMinterMsg {
     /// operator address to approve
     pub new_minter: Address,
 }
+
+#[derive(ReadWriteRPC, CreateTypeSpec, IntoShortnameRPCEvent, Clone, PartialEq, Eq, Debug)]
+#[rpc_msg(action = 0x21)]
+pub struct UpdateUriMsg {
+    /// operator address to approve
+    pub token_id: u128,
+    pub new_uri:Option<String>
+}
