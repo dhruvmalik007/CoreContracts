@@ -21,14 +21,25 @@ pub trait IntoShortnameRPCEvent {
 ///
 /// * **msg** is an object of type [`T`]
 #[inline]
-pub fn build_msg_callback<T>(builder: &mut EventGroupBuilder, callback_byte: u32, msg: &T)
-where
+pub fn build_msg_callback<T>(
+    builder: &mut EventGroupBuilder,
+    callback_byte: u32,
+    msg: &T,
+    cost: Option<u64>,
+) where
     T: ReadWriteRPC + Clone,
 {
-    builder
-        .with_callback(ShortnameCallback::from_u32(callback_byte))
-        .argument(msg.clone())
-        .done();
+    match cost {
+        Some(cost) => builder
+            .with_callback(ShortnameCallback::from_u32(callback_byte))
+            .argument(msg.clone())
+            .with_cost(cost)
+            .done(),
+        None => builder
+            .with_callback(ShortnameCallback::from_u32(callback_byte))
+            .argument(msg.clone())
+            .done(),
+    }
 }
 
 #[cfg(test)]
