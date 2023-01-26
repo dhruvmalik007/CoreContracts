@@ -67,7 +67,7 @@ impl MPC721ContractState {
 
         self.tokens.insert(token_id, token);
     }
-    
+
     /// ## Description
     /// Increases total supply
     pub fn increase_supply(&mut self) {
