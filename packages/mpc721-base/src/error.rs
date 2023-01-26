@@ -15,4 +15,6 @@ pub enum ContractError {
 
     #[error("Incorrect Owner")]
     IncorrectOwner,
+    #[error("Incorrect Input Length")]
+    IncorrectInput,
 }

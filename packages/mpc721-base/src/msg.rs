@@ -138,6 +138,6 @@ pub struct UpdateMinterMsg {
 #[rpc_msg(action = 0x21)]
 pub struct UpdateUriMsg {
     /// operator address to approve
-    pub token_id: u128,
-    pub new_uri:Option<String>
+    pub token_ids: Vec<u128>,
+    pub new_uris: Vec<Option<String>>,
 }

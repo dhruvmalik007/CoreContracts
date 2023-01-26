@@ -5,7 +5,7 @@ use pbc_contract_common::{context::ContractContext, events::EventGroup};
 use crate::{
     msg::{
         ApproveForAllMsg, ApproveMsg, BurnMsg, CheckOwnerMsg, InitMsg, MintMsg, RevokeForAllMsg,
-        RevokeMsg, SetBaseUriMsg, TransferFromMsg, TransferMsg, UpdateMinterMsg,UpdateUriMsg
+        RevokeMsg, SetBaseUriMsg, TransferFromMsg, TransferMsg, UpdateMinterMsg, UpdateUriMsg,
     },
     state::MPC721ContractState,
     ContractError,
@@ -63,16 +63,16 @@ pub fn execute_set_base_uri(
 }
 
 /// ## Description
-/// Set base uri for the tokens.
-/// Returns [`(MPC721ContractState, Vec<EventGroup>)`] if operation was successful,
+/// Update base uri for the multiple tokens.
+/// Returns [`Vec<EventGroup>)`] if operation was successful,
 /// otherwise panics with error message defined in [`ContractError`]
 /// ## Params
 /// * **ctx** is an object of type [`ContractContext`]
 ///
 /// * **state** is an object of type [`MPC721ContractState`]
 ///
-/// * **msg** is an object of type [`SetBaseUriMsg`]
-pub fn execute_update_uri(
+/// * **msg** is an object of type [`UpdateUriMsg`]
+pub fn execute_update_uris(
     ctx: &ContractContext,
     state: &mut MPC721ContractState,
     msg: &UpdateUriMsg,
@@ -82,10 +82,18 @@ pub fn execute_update_uri(
         "{}",
         ContractError::Unauthorized
     );
-    state.update_uri(msg.token_id, msg.clone().new_uri);
+    assert_eq!(
+        msg.token_ids.len(),
+        msg.new_uris.len(),
+        "{}",
+        ContractError::IncorrectInput
+    );
+    for i in 0..msg.token_ids.len() {
+        state.update_uri(msg.token_ids[i], &msg.new_uris[i]);
+    }
+
     vec![]
 }
-
 
 /// ## Description
 /// Mint a new token. Can only be executed by minter account.

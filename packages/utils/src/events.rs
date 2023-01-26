@@ -20,8 +20,8 @@ pub trait IntoShortnameRPCEvent {
 /// * **callback_byte** is an object of type [`u32`]
 ///
 /// * **msg** is an object of type [`T`]
-/// 
-/// "* **cost** is an object of type [Option<u64>] 
+///
+/// "* **cost** is an object of type [Option<u64>]
 #[inline]
 pub fn build_msg_callback<T>(
     builder: &mut EventGroupBuilder,

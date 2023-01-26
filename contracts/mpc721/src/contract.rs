@@ -7,11 +7,11 @@ use mpc721_base::{
     actions::{
         execute_approve, execute_approve_for_all, execute_burn, execute_init, execute_mint,
         execute_ownership_check, execute_revoke, execute_revoke_for_all, execute_set_base_uri,
-        execute_transfer, execute_transfer_from, execute_update_minter,
+        execute_transfer, execute_transfer_from, execute_update_minter, execute_update_uris,
     },
     msg::{
         ApproveForAllMsg, ApproveMsg, BurnMsg, CheckOwnerMsg, InitMsg, MintMsg, RevokeForAllMsg,
-        RevokeMsg, SetBaseUriMsg, TransferFromMsg, TransferMsg, UpdateMinterMsg,
+        RevokeMsg, SetBaseUriMsg, TransferFromMsg, TransferMsg, UpdateMinterMsg, UpdateUriMsg,
     },
 };
 
@@ -176,5 +176,24 @@ pub fn update_minter(
 ) -> (ContractState, Vec<EventGroup>) {
     let mut state = state;
     let events = execute_update_minter(&ctx, &mut state.mpc721, UpdateMinterMsg { new_minter });
+    (state, events)
+}
+
+#[action(shortname = 0x21)]
+pub fn update_token_uri(
+    ctx: ContractContext,
+    state: ContractState,
+    token_ids: Vec<u128>,
+    new_uris: Vec<Option<String>>,
+) -> (ContractState, Vec<EventGroup>) {
+    let mut state = state;
+    let events = execute_update_uris(
+        &ctx,
+        &mut state.mpc721,
+        &UpdateUriMsg {
+            token_ids,
+            new_uris,
+        },
+    );
     (state, events)
 }
