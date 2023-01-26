@@ -118,6 +118,6 @@ pub struct BurnMsg {
 
 #[derive(ReadWriteRPC, CreateTypeSpec, IntoShortnameRPCEvent, Clone, PartialEq, Eq, Debug)]
 #[rpc_msg(action = 0x20)]
-pub struct MultiMintMsg{
-   pub mints:Vec<MintMsg>
+pub struct MultiMintMsg {
+    pub mints: Vec<MintMsg>,
 }

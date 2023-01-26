@@ -4,8 +4,8 @@ use pbc_contract_common::{context::ContractContext, events::EventGroup};
 
 use crate::{
     msg::{
-        ApproveForAllMsg, ApproveMsg, BurnMsg, InitMsg, MintMsg, RevokeForAllMsg, RevokeMsg,
-        SetBaseUriMsg, TransferFromMsg, TransferMsg,MultiMintMsg
+        ApproveForAllMsg, ApproveMsg, BurnMsg, InitMsg, MintMsg, MultiMintMsg, RevokeForAllMsg,
+        RevokeMsg, SetBaseUriMsg, TransferFromMsg, TransferMsg,
     },
     state::MPC721ContractState,
     ContractError,
@@ -251,13 +251,8 @@ pub fn execute_multi_mint(
     state: &mut MPC721ContractState,
     msg: &MultiMintMsg,
 ) -> Vec<EventGroup> {
-
-    for i in 0..msg.mints.len(){
-        execute_mint(
-            ctx,
-            state,
-            &msg.mints[i]
-        );        
+    for i in 0..msg.mints.len() {
+        execute_mint(ctx, state, &msg.mints[i]);
     }
 
     vec![]

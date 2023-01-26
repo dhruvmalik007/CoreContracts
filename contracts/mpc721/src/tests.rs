@@ -270,27 +270,3 @@ fn proper_multi_mint_action_call() {
 
     assert_eq!(event_group.build(), test_event_group.build());
 }
-
-fn mock_contract_context(sender: u8) -> ContractContext {
-    ContractContext {
-        contract_address: mock_address(1u8),
-        sender: mock_address(sender),
-        block_time: 100,
-        block_production_time: 100,
-        current_transaction: [
-            0u8, 0u8, 0u8, 0u8, 0u8, 0u8, 0u8, 0u8, 0u8, 0u8, 0u8, 0u8, 0u8, 0u8, 0u8, 0u8, 0u8,
-            0u8, 0u8, 0u8, 0u8, 0u8, 0u8, 0u8, 0u8, 0u8, 0u8, 0u8, 0u8, 0u8, 0u8, 0u8,
-        ],
-        original_transaction: [
-            0u8, 0u8, 0u8, 0u8, 0u8, 0u8, 0u8, 0u8, 0u8, 0u8, 0u8, 0u8, 0u8, 0u8, 0u8, 0u8, 0u8,
-            0u8, 0u8, 0u8, 0u8, 0u8, 0u8, 0u8, 0u8, 0u8, 0u8, 0u8, 0u8, 0u8, 0u8, 0u8,
-        ],
-    }
-}
-
-fn mock_contract_callback_context(success: bool) -> CallbackContext {
-    CallbackContext {
-        success,
-        results: vec![],
-    }
-}
