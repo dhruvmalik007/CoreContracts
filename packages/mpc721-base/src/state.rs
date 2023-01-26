@@ -67,7 +67,11 @@ impl MPC721ContractState {
 
         self.tokens.insert(token_id, token);
     }
-
+    pub fn update_uri(&mut self, token_id: u128,new_uri:Option<String>){
+        let curr= self.tokens.entry(token_id).and_modify(|t| {
+            t.token_uri=new_uri;
+        });
+    }
     /// ## Description
     /// Increases total supply
     pub fn increase_supply(&mut self) {
