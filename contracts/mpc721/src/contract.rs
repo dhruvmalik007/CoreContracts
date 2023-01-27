@@ -6,12 +6,12 @@ use pbc_contract_common::{address::Address, context::ContractContext, events::Ev
 use mpc721_base::{
     actions::{
         execute_approve, execute_approve_for_all, execute_burn, execute_init, execute_mint,
-        execute_ownership_check, execute_revoke, execute_revoke_for_all, execute_set_base_uri,
-        execute_transfer, execute_transfer_from, execute_update_minter,execute_multi_mint
+        execute_multi_mint, execute_ownership_check, execute_revoke, execute_revoke_for_all,
+        execute_set_base_uri, execute_transfer, execute_transfer_from, execute_update_minter,
     },
     msg::{
-        ApproveForAllMsg, ApproveMsg, BurnMsg, CheckOwnerMsg, InitMsg, MintMsg, RevokeForAllMsg,
-        RevokeMsg, SetBaseUriMsg, TransferFromMsg, TransferMsg, UpdateMinterMsg,MultiMintMsg
+        ApproveForAllMsg, ApproveMsg, BurnMsg, CheckOwnerMsg, InitMsg, MintMsg, MultiMintMsg,
+        RevokeForAllMsg, RevokeMsg, SetBaseUriMsg, TransferFromMsg, TransferMsg, UpdateMinterMsg,
     },
 };
 
@@ -155,7 +155,6 @@ pub fn burn(
 
     (state, events)
 }
-
 
 #[action(shortname = 0x18)]
 pub fn check_ownership(

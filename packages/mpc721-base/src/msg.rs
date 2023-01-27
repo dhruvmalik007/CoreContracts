@@ -140,5 +140,5 @@ pub struct UpdateMinterMsg {
 #[rpc_msg(action = 0x20)]
 pub struct MultiMintMsg {
     /// array of MintMsgs to mint multiple nfts
-    pub mints: Vec<MintMsg>
+    pub mints: Vec<MintMsg>,
 }

@@ -8,12 +8,12 @@ use pbc_contract_common::{
 use crate::{
     actions::{
         execute_approve, execute_approve_for_all, execute_burn, execute_init, execute_mint,
-        execute_multi_mint, execute_revoke, execute_revoke_for_all, execute_set_base_uri,
-        execute_transfer, execute_transfer_from,execute_ownership_check,execute_update_minter
+        execute_multi_mint, execute_ownership_check, execute_revoke, execute_revoke_for_all,
+        execute_set_base_uri, execute_transfer, execute_transfer_from, execute_update_minter,
     },
     msg::{
-        ApproveForAllMsg, ApproveMsg, BurnMsg, InitMsg, MintMsg, MultiMintMsg, RevokeForAllMsg,
-        RevokeMsg, SetBaseUriMsg, TransferFromMsg, TransferMsg,CheckOwnerMsg,UpdateMinterMsg
+        ApproveForAllMsg, ApproveMsg, BurnMsg, CheckOwnerMsg, InitMsg, MintMsg, MultiMintMsg,
+        RevokeForAllMsg, RevokeMsg, SetBaseUriMsg, TransferFromMsg, TransferMsg, UpdateMinterMsg,
     },
     state::{MPC721ContractState, TokenInfo},
 };

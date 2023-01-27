@@ -1,15 +1,13 @@
-use crate::contract::{initialize, multi_mint};
 use mpc721_base::msg::{
-    ApproveForAllMsg, ApproveMsg, BurnMsg, CheckOwnerMsg, MintMsg, RevokeForAllMsg, RevokeMsg,
-    SetBaseUriMsg, TransferFromMsg, TransferMsg, UpdateMinterMsg,MultiMintMsg
+    ApproveForAllMsg, ApproveMsg, BurnMsg, CheckOwnerMsg, MintMsg, MultiMintMsg, RevokeForAllMsg,
+    RevokeMsg, SetBaseUriMsg, TransferFromMsg, TransferMsg, UpdateMinterMsg,
 };
-use mpc721_base::state::{MPC721ContractState, TokenInfo};
-use pbc_contract_common::context::{CallbackContext, ContractContext};
+
 use pbc_contract_common::{
     address::{Address, AddressType, Shortname},
     events::EventGroup,
 };
-use std::collections::BTreeMap;
+
 use utils::events::IntoShortnameRPCEvent;
 
 fn mock_address(le: u8) -> Address {
@@ -247,7 +245,25 @@ fn proper_burn_action_call() {
 
     assert_eq!(event_group.build(), test_event_group.build());
 }
+#[test]
+fn proper_minter_update_action_call() {
+    let dest = mock_address(30u8);
 
+    let msg = UpdateMinterMsg {
+        new_minter: mock_address(19u8),
+    };
+
+    let mut event_group = EventGroup::builder();
+    msg.as_interaction(&mut event_group, &dest);
+
+    let mut test_event_group = EventGroup::builder();
+    test_event_group
+        .call(dest.clone(), Shortname::from_u32(UPDATE_MINTER))
+        .argument(mock_address(19u8))
+        .done();
+
+    assert_eq!(event_group.build(), test_event_group.build());
+}
 #[test]
 fn proper_multi_mint_action_call() {
     let dest = mock_address(30u8);
