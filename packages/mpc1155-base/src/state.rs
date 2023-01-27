@@ -89,7 +89,17 @@ impl MPC1155ContractState {
                 .or_insert_with(|| BTreeMap::from([(*to, amount)]));
         }
     }
-
+    /// ## Description
+    /// checks if an address possesses at least a given balance of tokens
+    pub fn check_balances(&mut self, owner: Address, token_ids: Vec<u128>, amounts: Vec<u128>) {
+        token_ids.into_iter().enumerate().for_each(|(n, id)| {
+            assert!(
+                self.balances.get(&id).unwrap().get(&owner).unwrap() >= &amounts[n],
+                "{}",
+                ContractError::InadequateBalance
+            )
+        });
+    }
     /// ## Description
     /// Adds new operator approval
     /// ## Params
