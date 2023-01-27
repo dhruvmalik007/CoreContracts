@@ -1,6 +1,6 @@
 use mpc1155_base::msg::{
-    ApproveForAllMsg, BatchBurnMsg, BatchMintMsg, BatchTransferFromMsg, BurnMsg, MintMsg,
-    RevokeForAllMsg, SetUriMsg, TokenMintInfoMsg, TokenTransferInfoMsg, TransferFromMsg,
+    ApproveForAllMsg, BatchBurnMsg, BatchMintMsg, BatchTransferFromMsg, BurnMsg, CheckBalancesMsg,
+    MintMsg, RevokeForAllMsg, SetUriMsg, TokenMintInfoMsg, TokenTransferInfoMsg, TransferFromMsg,
 };
 use pbc_contract_common::{
     address::{Address, AddressType, Shortname},
@@ -27,6 +27,7 @@ const BATCH_MINT: u32 = 0x11;
 const BURN: u32 = 0x13;
 const BATCH_BURN: u32 = 0x15;
 const REVOKE_FOR_ALL: u32 = 0x17;
+const CHECK_BALANCES: u32 = 0x18;
 
 #[test]
 fn proper_transfer_from_action_call() {
@@ -259,6 +260,27 @@ fn proper_revoke_for_all_action_call() {
     test_event_group
         .call(dest.clone(), Shortname::from_u32(REVOKE_FOR_ALL))
         .argument(mock_address(1u8))
+        .done();
+
+    assert_eq!(event_group.build(), test_event_group.build());
+}
+#[test]
+fn proper_check_balances_call() {
+    let dest = mock_address(30u8);
+
+    let msg = CheckBalancesMsg {
+        owner: mock_address(1u8),
+        token_ids: vec![1, 3],
+        amounts: vec![100, 30],
+    };
+
+    let mut event_group = EventGroup::builder();
+    msg.as_interaction(&mut event_group, &dest);
+
+    let mut test_event_group = EventGroup::builder();
+    test_event_group
+        .call(dest.clone(), Shortname::from_u32(CHECK_BALANCES))
+        .argument(msg)
         .done();
 
     assert_eq!(event_group.build(), test_event_group.build());

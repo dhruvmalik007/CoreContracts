@@ -12,4 +12,7 @@ pub enum ContractError {
 
     #[error("Not found")]
     NotFound,
+
+    #[error("Incorrect Owner")]
+    IncorrectOwner,
 }

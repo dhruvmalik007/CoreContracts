@@ -116,8 +116,29 @@ pub struct BurnMsg {
     pub token_id: u128,
 }
 
+/// ## Description
+/// This structure describes fields for mpc721 check owner msg
+#[derive(ReadWriteRPC, CreateTypeSpec, IntoShortnameRPCEvent, Clone, PartialEq, Eq, Debug)]
+#[rpc_msg(action = 0x18)]
+pub struct CheckOwnerMsg {
+    /// receiver address
+    pub owner: Address,
+    /// token id
+    pub token_id: u128,
+}
+/// ## Description
+/// This structure describes fields for the Update Minter Msg
+#[derive(ReadWriteRPC, CreateTypeSpec, IntoShortnameRPCEvent, Clone, PartialEq, Eq, Debug)]
+#[rpc_msg(action = 0x19)]
+pub struct UpdateMinterMsg {
+    /// operator address to approve
+    pub new_minter: Address,
+}
+/// ## Description
+/// This structure describes fields for the Multi Mint Msg
 #[derive(ReadWriteRPC, CreateTypeSpec, IntoShortnameRPCEvent, Clone, PartialEq, Eq, Debug)]
 #[rpc_msg(action = 0x20)]
 pub struct MultiMintMsg {
-    pub mints: Vec<MintMsg>,
+    /// array of MintMsgs to mint multiple nfts
+    pub mints: Vec<MintMsg>
 }

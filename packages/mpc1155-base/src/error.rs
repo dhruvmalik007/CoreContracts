@@ -9,4 +9,7 @@ pub enum ContractError {
 
     #[error("Not found")]
     NotFound,
+
+    #[error("Balance check has failed")]
+    InadequateBalance,
 }

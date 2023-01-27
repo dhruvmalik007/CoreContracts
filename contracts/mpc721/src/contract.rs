@@ -6,12 +6,12 @@ use pbc_contract_common::{address::Address, context::ContractContext, events::Ev
 use mpc721_base::{
     actions::{
         execute_approve, execute_approve_for_all, execute_burn, execute_init, execute_mint,
-        execute_multi_mint, execute_revoke, execute_revoke_for_all, execute_set_base_uri,
-        execute_transfer, execute_transfer_from,
+        execute_ownership_check, execute_revoke, execute_revoke_for_all, execute_set_base_uri,
+        execute_transfer, execute_transfer_from, execute_update_minter,execute_multi_mint
     },
     msg::{
-        ApproveForAllMsg, ApproveMsg, BurnMsg, InitMsg, MintMsg, MultiMintMsg, RevokeForAllMsg,
-        RevokeMsg, SetBaseUriMsg, TransferFromMsg, TransferMsg,
+        ApproveForAllMsg, ApproveMsg, BurnMsg, CheckOwnerMsg, InitMsg, MintMsg, RevokeForAllMsg,
+        RevokeMsg, SetBaseUriMsg, TransferFromMsg, TransferMsg, UpdateMinterMsg,MultiMintMsg
     },
 };
 
@@ -156,7 +156,30 @@ pub fn burn(
     (state, events)
 }
 
+
+#[action(shortname = 0x18)]
+pub fn check_ownership(
+    ctx: ContractContext,
+    state: ContractState,
+    owner: Address,
+    token_id: u128,
+) -> (ContractState, Vec<EventGroup>) {
+    let mut state = state;
+    let events =
+        execute_ownership_check(&ctx, &mut state.mpc721, &CheckOwnerMsg { owner, token_id });
+    (state, events)
+}
 #[action(shortname = 0x19)]
+pub fn update_minter(
+    ctx: ContractContext,
+    state: ContractState,
+    new_minter: Address,
+) -> (ContractState, Vec<EventGroup>) {
+    let mut state = state;
+    let events = execute_update_minter(&ctx, &mut state.mpc721, UpdateMinterMsg { new_minter });
+    (state, events)
+}
+#[action(shortname = 0x20)]
 pub fn multi_mint(
     ctx: ContractContext,
     state: ContractState,

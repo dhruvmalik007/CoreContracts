@@ -4,8 +4,8 @@ use pbc_contract_common::{context::ContractContext, events::EventGroup};
 
 use crate::{
     msg::{
-        ApproveForAllMsg, ApproveMsg, BurnMsg, InitMsg, MintMsg, MultiMintMsg, RevokeForAllMsg,
-        RevokeMsg, SetBaseUriMsg, TransferFromMsg, TransferMsg,
+        ApproveForAllMsg, ApproveMsg, BurnMsg, CheckOwnerMsg, InitMsg, MintMsg, RevokeForAllMsg,
+        RevokeMsg, SetBaseUriMsg, TransferFromMsg, TransferMsg, UpdateMinterMsg,MultiMintMsg
     },
     state::MPC721ContractState,
     ContractError,
@@ -87,6 +87,29 @@ pub fn execute_mint(
 
     state.mint(msg.token_id, &msg.to, &msg.token_uri);
     state.increase_supply();
+
+    vec![]
+}
+/// ## Description
+/// Updates the minter address checking that the sender is the contract owner address
+/// ## Params
+/// * **ctx** is an object of type [`ContractContext`]
+///
+/// * **state** is an object of type [`MPC721ContractState`]
+///
+/// * **msg** is an object of type [`UpdateMinterMsg`]
+pub fn execute_update_minter(
+    ctx: &ContractContext,
+    state: &mut MPC721ContractState,
+    msg: UpdateMinterMsg,
+) -> Vec<EventGroup> {
+    assert!(
+        state.owner.is_some() && state.owner.unwrap() == ctx.sender,
+        "{}",
+        ContractError::Unauthorized
+    );
+
+    state.minter = msg.new_minter;
 
     vec![]
 }
@@ -237,8 +260,35 @@ pub fn execute_burn(
 }
 
 /// ## Description
-/// Destroy your token forever.
+/// Check if a user owns a particular token. Will revert otherwise
 /// Returns [`(MPC721ContractState, Vec<EventGroup>)`] if operation was successful,
+/// otherwise panics with error message defined in [`ContractError`]
+/// ## Params
+/// * **ctx** is an object of type [`ContractContext`]
+///
+/// * **state** is an object of type [`MPC721ContractState`]
+///
+/// * **msg** is an object of type [`CheckOwnerMsg`]
+pub fn execute_ownership_check(
+    ctx: &ContractContext,
+    state: &mut MPC721ContractState,
+    msg: &CheckOwnerMsg,
+) -> Vec<EventGroup> {
+    let token_info = state.token_info(msg.token_id);
+    match token_info {
+        Some(token_info) => assert!(
+            token_info.owner == msg.owner,
+            "{}",
+            ContractError::IncorrectOwner
+        ),
+        None => panic!("{}", ContractError::NotFound),
+    };
+    vec![]
+}
+
+/// ## Description
+/// Mint Multiple NFTs in a single function call
+/// Returns [` Vec<EventGroup>)`] if operation was successful,
 /// otherwise panics with error message defined in [`ContractError`]
 /// ## Params
 /// * **ctx** is an object of type [`ContractContext`]

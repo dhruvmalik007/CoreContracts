@@ -1,7 +1,7 @@
 use crate::contract::{initialize, multi_mint};
 use mpc721_base::msg::{
-    ApproveForAllMsg, ApproveMsg, BurnMsg, InitMsg, MintMsg, MultiMintMsg, RevokeForAllMsg,
-    RevokeMsg, SetBaseUriMsg, TransferFromMsg, TransferMsg,
+    ApproveForAllMsg, ApproveMsg, BurnMsg, CheckOwnerMsg, MintMsg, RevokeForAllMsg, RevokeMsg,
+    SetBaseUriMsg, TransferFromMsg, TransferMsg, UpdateMinterMsg,MultiMintMsg
 };
 use mpc721_base::state::{MPC721ContractState, TokenInfo};
 use pbc_contract_common::context::{CallbackContext, ContractContext};
@@ -33,6 +33,8 @@ const REVOKE_FOR_ALL: u32 = 0x15;
 const BURN: u32 = 0x17;
 
 const MULTI_MINT: u32 = 0x20;
+const CHECKOWNER: u32 = 0x18;
+const UPDATE_MINTER: u32 = 0x19;
 #[test]
 fn proper_transfer_action_call() {
     let dest = mock_address(30u8);
@@ -145,6 +147,27 @@ fn proper_mint_action_call() {
 }
 
 #[test]
+fn proper_ownership_check_call() {
+    let dest = mock_address(30u8);
+
+    let msg = CheckOwnerMsg {
+        owner: mock_address(1u8),
+        token_id: 1u128,
+    };
+
+    let mut event_group = EventGroup::builder();
+    msg.as_interaction(&mut event_group, &dest);
+
+    let mut test_event_group = EventGroup::builder();
+    test_event_group
+        .call(dest.clone(), Shortname::from_u32(CHECKOWNER))
+        .argument(mock_address(1u8))
+        .argument(1u128)
+        .done();
+
+    assert_eq!(event_group.build(), test_event_group.build());
+}
+
 #[test]
 fn proper_approve_for_all_action_call() {
     let dest = mock_address(30u8);

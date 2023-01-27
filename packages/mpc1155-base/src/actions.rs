@@ -4,8 +4,8 @@ use pbc_contract_common::{context::ContractContext, events::EventGroup};
 
 use crate::{
     msg::{
-        ApproveForAllMsg, BatchBurnMsg, BatchMintMsg, BatchTransferFromMsg, BurnMsg, InitMsg,
-        MintMsg, RevokeForAllMsg, SetUriMsg, TransferFromMsg,
+        ApproveForAllMsg, BatchBurnMsg, BatchMintMsg, BatchTransferFromMsg, BurnMsg,
+        CheckBalancesMsg, InitMsg, MintMsg, RevokeForAllMsg, SetUriMsg, TransferFromMsg,
     },
     state::{MPC1155ContractState, TokenInfo},
     ContractError,
@@ -294,5 +294,23 @@ pub fn execute_revoke_for_all(
     msg: &RevokeForAllMsg,
 ) -> Vec<EventGroup> {
     state.remove_operator(&ctx.sender, &msg.operator);
+    vec![]
+}
+/// ## Description
+/// Assert that a user owns a given amount of nfts of a different id.
+/// Returns [ Vec<EventGroup>)`] if operation was successful,
+/// otherwise panics with error message defined in [`InadequateBalance`]
+/// ## Params
+/// * **ctx** is an object of type [`ContractContext`]
+///
+/// * **state** is an object of type [`MPC1155ContractState`]
+///
+/// * **msg** is an object of type [`CheckBalancesMsg`]
+pub fn execute_check_balances(
+    ctx: &ContractContext,
+    state: &mut MPC1155ContractState,
+    msg: CheckBalancesMsg,
+) -> Vec<EventGroup> {
+    state.check_balances(msg.owner, msg.token_ids, msg.amounts);
     vec![]
 }
