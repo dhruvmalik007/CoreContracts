@@ -18,13 +18,13 @@ read_write_state_derive = { git = "https://git@gitlab.com/partisiablockchain/lan
 create_type_spec_derive = { git = "https://git@gitlab.com/partisiablockchain/language/contract-sdk.git", tag = "9.1.1" }
 pbc_contract_codegen = { git = "https://git@gitlab.com/partisiablockchain/language/contract-sdk.git", tag = "9.1.1" }
 
-mpc721-base = { path = "../../packages/mpc721-base", features = ["abi"] }
-contract-version-base = { path = "../../packages/contract-version-base", features = ["abi"] }
+mpc721-base = { path = "../../packages/mpc721-base" }
+contract-version-base = { path = "../../packages/contract-version-base"}
 
 serde_json = "1.0"
 
 [dev-dependencies]
-utils = { path = "../../packages/utils", features = ["abi"] }
+utils = { path = "../../packages/utils" }
 
 [features]
-abi = ["pbc_contract_common/abi", "pbc_contract_codegen/abi", "pbc_traits/abi", "create_type_spec_derive/abi"]
+abi = ["pbc_contract_common/abi", "pbc_contract_codegen/abi", "pbc_traits/abi", "create_type_spec_derive/abi", "mpc721-base/abi", "contract-version-base/abi", "utils/abi"]
