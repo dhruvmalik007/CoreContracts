@@ -301,8 +301,8 @@ pub fn execute_multi_mint(
     state: &mut MPC721ContractState,
     msg: &MultiMintMsg,
 ) -> Vec<EventGroup> {
-    for mint in msg.mints.iter(){
-        execute_mint(ctx, state,mint);
+    for mint in msg.mints.iter() {
+        execute_mint(ctx, state, mint);
     }
 
     vec![]
