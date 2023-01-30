@@ -140,8 +140,8 @@ pub struct RevokeForAllMsg {
 pub struct CheckBalancesMsg {
     /// operator address to revoke
     pub owner: Address,
-    //
+    // vector of ids being checked
     pub token_ids: Vec<u128>,
-    //
+    // vectore of token amounts being checked
     pub amounts: Vec<u128>,
 }

@@ -4,8 +4,8 @@ use pbc_contract_common::{context::ContractContext, events::EventGroup};
 
 use crate::{
     msg::{
-        ApproveForAllMsg, ApproveMsg, BurnMsg, CheckOwnerMsg, InitMsg, MintMsg, RevokeForAllMsg,
-        RevokeMsg, SetBaseUriMsg, TransferFromMsg, TransferMsg, UpdateMinterMsg,
+        ApproveForAllMsg, ApproveMsg, BurnMsg, CheckOwnerMsg, InitMsg, MintMsg, MultiMintMsg,
+        RevokeForAllMsg, RevokeMsg, SetBaseUriMsg, TransferFromMsg, TransferMsg, UpdateMinterMsg,
     },
     state::MPC721ContractState,
     ContractError,
@@ -283,5 +283,27 @@ pub fn execute_ownership_check(
         ),
         None => panic!("{}", ContractError::NotFound),
     };
+    vec![]
+}
+
+/// ## Description
+/// Mint Multiple NFTs in a single function call
+/// Returns [` Vec<EventGroup>)`] if operation was successful,
+/// otherwise panics with error message defined in [`ContractError`]
+/// ## Params
+/// * **ctx** is an object of type [`ContractContext`]
+///
+/// * **state** is an object of type [`MPC721ContractState`]
+///
+/// * **msg** is an object of type [`MultiMintMsg`]
+pub fn execute_multi_mint(
+    ctx: &ContractContext,
+    state: &mut MPC721ContractState,
+    msg: &MultiMintMsg,
+) -> Vec<EventGroup> {
+    for mint in msg.mints.iter() {
+        execute_mint(ctx, state, mint);
+    }
+
     vec![]
 }

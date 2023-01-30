@@ -6,12 +6,12 @@ use pbc_contract_common::{address::Address, context::ContractContext, events::Ev
 use mpc721_base::{
     actions::{
         execute_approve, execute_approve_for_all, execute_burn, execute_init, execute_mint,
-        execute_ownership_check, execute_revoke, execute_revoke_for_all, execute_set_base_uri,
-        execute_transfer, execute_transfer_from, execute_update_minter,
+        execute_multi_mint, execute_ownership_check, execute_revoke, execute_revoke_for_all,
+        execute_set_base_uri, execute_transfer, execute_transfer_from, execute_update_minter,
     },
     msg::{
-        ApproveForAllMsg, ApproveMsg, BurnMsg, CheckOwnerMsg, InitMsg, MintMsg, RevokeForAllMsg,
-        RevokeMsg, SetBaseUriMsg, TransferFromMsg, TransferMsg, UpdateMinterMsg,
+        ApproveForAllMsg, ApproveMsg, BurnMsg, CheckOwnerMsg, InitMsg, MintMsg, MultiMintMsg,
+        RevokeForAllMsg, RevokeMsg, SetBaseUriMsg, TransferFromMsg, TransferMsg, UpdateMinterMsg,
     },
 };
 
@@ -177,4 +177,15 @@ pub fn update_minter(
     let mut state = state;
     let events = execute_update_minter(&ctx, &mut state.mpc721, UpdateMinterMsg { new_minter });
     (state, events)
+}
+#[action(shortname = 0x20)]
+pub fn multi_mint(
+    ctx: ContractContext,
+    state: ContractState,
+    mints: Vec<MintMsg>,
+) -> (ContractState, Vec<EventGroup>) {
+    let mut state = state;
+
+    execute_multi_mint(&ctx, &mut state.mpc721, &MultiMintMsg { mints });
+    (state, vec![])
 }
