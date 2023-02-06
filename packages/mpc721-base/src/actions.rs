@@ -30,7 +30,7 @@ pub fn execute_init(
         base_uri: msg.base_uri.clone(),
         minter: msg.minter,
         supply: 0,
-        tokens: BTreeMap::new(),
+        tokens: Vec::new(),
         operator_approvals: BTreeMap::new(),
     };
 

@@ -66,7 +66,7 @@ fn proper_execute_init() {
             base_uri: Some("ipfs://some.some".to_string()),
             minter: mock_address(1),
             supply: 0,
-            tokens: BTreeMap::new(),
+            tokens: Vec::new(),
             operator_approvals: BTreeMap::new(),
         }
     );
@@ -165,8 +165,9 @@ fn proper_mint() {
 
     let token = state.token_info(1).unwrap();
     assert_eq!(
-        *token,
+        token,
         TokenInfo {
+            token_id:1,
             owner: mock_address(alice),
             approvals: vec![],
             token_uri: None,
@@ -465,8 +466,9 @@ fn proper_token_owner_approve() {
 
     let _ = execute_approve(&mock_contract_context(alice), &mut state, &approve_msg);
     assert_eq!(
-        *state.token_info(1).unwrap(),
+        state.token_info(1).unwrap(),
         TokenInfo {
+            token_id:1,
             owner: mock_address(alice),
             approvals: vec![mock_address(bob)],
             token_uri: None,
@@ -511,8 +513,9 @@ fn proper_token_operator_approve() {
 
     let _ = execute_approve(&mock_contract_context(bob), &mut state, &approve_msg);
     assert_eq!(
-        *state.token_info(1).unwrap(),
+        state.token_info(1).unwrap(),
         TokenInfo {
+            token_id:1,
             owner: mock_address(alice),
             approvals: vec![mock_address(jack)],
             token_uri: None,
@@ -617,8 +620,9 @@ fn proper_revoke() {
 
     let _ = execute_revoke(&mock_contract_context(alice), &mut state, &revoke_msg);
     assert_eq!(
-        *state.token_info(1).unwrap(),
+        state.token_info(1).unwrap(),
         TokenInfo {
+            token_id:1,
             owner: mock_address(alice),
             approvals: vec![],
             token_uri: None,
@@ -682,8 +686,9 @@ fn proper_owner_transfer() {
 
     let _ = execute_transfer(&mock_contract_context(alice), &mut state, &transfer_msg);
     assert_eq!(
-        *state.token_info(1).unwrap(),
+        state.token_info(1).unwrap(),
         TokenInfo {
+            token_id:1,
             owner: mock_address(bob),
             approvals: vec![],
             token_uri: None,
@@ -729,8 +734,9 @@ fn proper_approved_transfer() {
 
     let _ = execute_transfer(&mock_contract_context(bob), &mut state, &transfer_msg);
     assert_eq!(
-        *state.token_info(1).unwrap(),
+        state.token_info(1).unwrap(),
         TokenInfo {
+            token_id:1,
             owner: mock_address(bob),
             approvals: vec![],
             token_uri: None,
@@ -774,8 +780,9 @@ fn proper_operator_transfer() {
 
     let _ = execute_transfer(&mock_contract_context(bob), &mut state, &transfer_msg);
     assert_eq!(
-        *state.token_info(1).unwrap(),
+        state.token_info(1).unwrap(),
         TokenInfo {
+            token_id:1,
             owner: mock_address(bob),
             approvals: vec![],
             token_uri: None,
@@ -874,8 +881,9 @@ fn proper_transfer_from() {
 
     let _ = execute_transfer_from(&mock_contract_context(alice), &mut state, &transfer_msg);
     assert_eq!(
-        *state.token_info(1).unwrap(),
+        state.token_info(1).unwrap(),
         TokenInfo {
+            token_id:1,
             owner: mock_address(bob),
             approvals: vec![],
             token_uri: None,
@@ -976,12 +984,12 @@ fn test_multi_mint() {
         base_uri: Some("ipfs://some.some".to_string()),
         minter: mock_address(1),
         supply: 0,
-        tokens: BTreeMap::new(),
+        tokens: Vec::new(),
         operator_approvals: BTreeMap::new(),
     };
-    test_state.tokens.insert(
-        1,
+    test_state.tokens.push(
         TokenInfo {
+            token_id:1,
             /// token owner
             owner: mock_address(4),
             /// token approvals
@@ -990,9 +998,10 @@ fn test_multi_mint() {
             token_uri: Some(String::from("Token1")),
         },
     );
-    test_state.tokens.insert(
-        2,
+    test_state.tokens.push(
+       
         TokenInfo {
+            token_id:2,
             /// token owner
             owner: mock_address(4),
             /// token approvals
@@ -1001,9 +1010,10 @@ fn test_multi_mint() {
             token_uri: Some(String::from("Token2")),
         },
     );
-    test_state.tokens.insert(
-        3,
+    test_state.tokens.push(
+       
         TokenInfo {
+            token_id:3,
             /// token owner
             owner: mock_address(5),
             /// token approvals
@@ -1012,9 +1022,10 @@ fn test_multi_mint() {
             token_uri: Some(String::from("Token3")),
         },
     );
-    test_state.tokens.insert(
-        4,
+    test_state.tokens.push(
+        
         TokenInfo {
+            token_id:4,
             /// token owner
             owner: mock_address(5),
             /// token approvals
@@ -1023,9 +1034,10 @@ fn test_multi_mint() {
             token_uri: Some(String::from("Token4")),
         },
     );
-    test_state.tokens.insert(
-        5,
+    test_state.tokens.push(
+        
         TokenInfo {
+            token_id:5,
             /// token owner
             owner: mock_address(6),
             /// token approvals
