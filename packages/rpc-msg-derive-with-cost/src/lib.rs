@@ -12,7 +12,7 @@ struct RpcMsgOpts {
     action: u32,   
 }
 
-#[proc_macro_derive(IntoShortnameRPCEvent, attributes(rpc_msg))]
+#[proc_macro_derive(IntoShortnameRPCEventWithCost, attributes(rpc_msg))]
 pub fn derive(input: TokenStream) -> TokenStream {
     let input = parse_macro_input!(input);
     let action = RpcMsgOpts::from_derive_input(&input)
@@ -41,7 +41,7 @@ pub fn derive(input: TokenStream) -> TokenStream {
     };
 
     quote! {
-        impl IntoShortnameRPCEvent for #ident {
+        impl IntoShortnameRPCEventWithCost for #ident {
             fn action_shortname(&self) -> u32 {
                 #action
             }
@@ -49,9 +49,10 @@ pub fn derive(input: TokenStream) -> TokenStream {
             fn as_interaction(
                 &self,
                 builder: &mut pbc_contract_common::events::EventGroupBuilder,
-                dest: &Address                
+                dest: &Address,
+                cost:u64
             ) {
-                let mut interaction = builder.call(*dest, Shortname::from_u32(self.action_shortname()));
+                let mut interaction = builder.call(*dest, Shortname::from_u32(self.action_shortname())).with_cost(cost);
                 #arguments_stream 
               
                 interaction.done();
