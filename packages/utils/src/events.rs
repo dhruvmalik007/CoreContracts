@@ -11,9 +11,9 @@ pub trait IntoShortnameRPCEvent {
     fn action_shortname(&self) -> u32;
     fn as_interaction(&self, builder: &mut EventGroupBuilder, dest: &Address);
 }
-pub trait IntoShortnameRPCEventWithCost{
+pub trait IntoShortnameRPCEventWithCost {
     fn action_shortname(&self) -> u32;
-    fn as_interaction(&self, builder: &mut EventGroupBuilder, dest: &Address,cost:u64);
+    fn as_interaction(&self, builder: &mut EventGroupBuilder, dest: &Address, cost: u64);
 }
 
 /// ## Description
@@ -70,7 +70,7 @@ mod tests {
             &self,
             builder: &mut pbc_contract_common::events::EventGroupBuilder,
             dest: &Address,
-            cost:u64
+            cost: u64,
         ) {
             builder
                 .call(*dest, Shortname::from_u32(self.action_shortname()))
@@ -89,18 +89,20 @@ mod tests {
         fn as_interaction(
             &self,
             builder: &mut pbc_contract_common::events::EventGroupBuilder,
-            dest: &Address,            
+            dest: &Address,
         ) {
             builder
                 .call(*dest, Shortname::from_u32(self.action_shortname()))
                 .argument(self.to.clone())
                 .argument(self.amount.clone())
                 .argument(self.memo.clone())
-                .argument(self.amounts.clone())                
+                .argument(self.amounts.clone())
                 .done();
         }
     }
-    #[derive(ReadWriteRPC, CreateTypeSpec, IntoShortnameRPCEventWithCost, Clone, PartialEq, Eq, Debug)]
+    #[derive(
+        ReadWriteRPC, CreateTypeSpec, IntoShortnameRPCEventWithCost, Clone, PartialEq, Eq, Debug,
+    )]
     #[rpc_msg(action = 0x01)]
     pub struct TestTransferMsgDeriveWithCost {
         pub to: Address,
@@ -147,10 +149,10 @@ mod tests {
 
         let dest = mock_address(10u8);
         let mut eg = EventGroup::builder();
-        msg.as_interaction(&mut eg, &dest,12000);
+        msg.as_interaction(&mut eg, &dest, 12000);
 
         let mut derive_eg = EventGroup::builder();
-        derive_msg.as_interaction(&mut derive_eg, &dest,12000);
+        derive_msg.as_interaction(&mut derive_eg, &dest, 12000);
 
         assert_eq!(eg.build(), derive_eg.build());
     }
