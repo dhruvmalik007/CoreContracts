@@ -1,3 +1,3 @@
-# RPC Msg Derive Crate
+# RPC Msg With Cost Derive Crate
 
-Provides a derive macro that implements `IntoShortnameRPCEvent` trait from `../utils` crate.
+Provides a derive macro that implements `IntoShortnameRPCEventWithCost trait from `../utils` crate.
