@@ -1,5 +1,3 @@
-use std::option;
-
 use darling::FromDeriveInput;
 use proc_macro::{self, TokenStream};
 use proc_macro2::TokenStream as TokenStream2;
@@ -9,7 +7,7 @@ use syn::{parse_macro_input, DeriveInput, FieldsNamed};
 #[derive(FromDeriveInput, Default)]
 #[darling(attributes(rpc_msg), forward_attrs(allow, doc, cfg))]
 struct RpcMsgOpts {
-    action: u32,   
+    action: u32,
 }
 
 #[proc_macro_derive(IntoShortnameRPCEvent, attributes(rpc_msg))]
@@ -18,8 +16,7 @@ pub fn derive(input: TokenStream) -> TokenStream {
     let action = RpcMsgOpts::from_derive_input(&input)
         .expect("Options must be provided")
         .action;
-    
-    
+
     let DeriveInput { ident, data, .. } = input;
 
     let mut arguments_stream = TokenStream2::default();
@@ -48,12 +45,11 @@ pub fn derive(input: TokenStream) -> TokenStream {
 
             fn as_interaction(
                 &self,
-                builder: &mut pbc_contract_common::events::EventGroupBuilder,
-                dest: &Address                
+                builder:&mut pbc_contract_common::events::EventGroupBuilder,
+                dest:&Address
             ) {
                 let mut interaction = builder.call(*dest, Shortname::from_u32(self.action_shortname()));
-                #arguments_stream 
-              
+                #arguments_stream
                 interaction.done();
             }
         }
