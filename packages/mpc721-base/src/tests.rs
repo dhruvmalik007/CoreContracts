@@ -66,7 +66,7 @@ fn proper_execute_init() {
             base_uri: Some("ipfs://some.some".to_string()),
             minter: mock_address(1),
             supply: 0,
-            tokens: Vec::new(),
+            tokens: vec![None;10000],
             operator_approvals: BTreeMap::new(),
         }
     );
@@ -984,11 +984,11 @@ fn test_multi_mint() {
         base_uri: Some("ipfs://some.some".to_string()),
         minter: mock_address(1),
         supply: 0,
-        tokens: Vec::new(),
+        tokens: vec![None;10000],
         operator_approvals: BTreeMap::new(),
     };
-    test_state.tokens.push(
-        TokenInfo {
+    test_state.tokens[1]=
+        Some(TokenInfo {
             token_id:1,
             /// token owner
             owner: mock_address(4),
@@ -996,11 +996,11 @@ fn test_multi_mint() {
             approvals: vec![],
             /// optional token uri
             token_uri: Some(String::from("Token1")),
-        },
-    );
-    test_state.tokens.push(
+        });
+    
+    test_state.tokens[2]=
        
-        TokenInfo {
+        Some(TokenInfo {
             token_id:2,
             /// token owner
             owner: mock_address(4),
@@ -1008,11 +1008,11 @@ fn test_multi_mint() {
             approvals: vec![],
             /// optional token uri
             token_uri: Some(String::from("Token2")),
-        },
-    );
-    test_state.tokens.push(
+        });
+    
+    test_state.tokens[3]=
        
-        TokenInfo {
+        Some(TokenInfo {
             token_id:3,
             /// token owner
             owner: mock_address(5),
@@ -1020,11 +1020,11 @@ fn test_multi_mint() {
             approvals: vec![],
             /// optional token uri
             token_uri: Some(String::from("Token3")),
-        },
-    );
-    test_state.tokens.push(
+        });
+    
+        test_state.tokens[4]=
         
-        TokenInfo {
+        Some(TokenInfo {
             token_id:4,
             /// token owner
             owner: mock_address(5),
@@ -1032,11 +1032,11 @@ fn test_multi_mint() {
             approvals: vec![],
             /// optional token uri
             token_uri: Some(String::from("Token4")),
-        },
-    );
-    test_state.tokens.push(
+        });
+    
+        test_state.tokens[5]=
         
-        TokenInfo {
+        Some(TokenInfo {
             token_id:5,
             /// token owner
             owner: mock_address(6),
@@ -1044,8 +1044,8 @@ fn test_multi_mint() {
             approvals: vec![],
             /// optional token uri
             token_uri: Some(String::from("Token5")),
-        },
-    );
+        });
+    
     test_state.supply = 5;
     let mut state = state;
     let mint = vec![

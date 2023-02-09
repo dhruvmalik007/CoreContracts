@@ -1,4 +1,4 @@
-use std::collections::BTreeMap;
+use std::{collections::BTreeMap, panic::panic_any};
 
 use create_type_spec_derive::CreateTypeSpec;
 use pbc_contract_common::address::Address;
@@ -24,7 +24,7 @@ pub struct MPC721ContractState {
     /// current supply
     pub supply: u128,
     /// token info by token id
-    pub tokens: Vec<TokenInfo>,
+    pub tokens: Vec<Option<TokenInfo>>,
     /// token approvals
     pub operator_approvals: BTreeMap<Address, BTreeMap<Address, bool>>,
 }
@@ -43,27 +43,33 @@ pub struct TokenInfo {
 }
 
 impl MPC721ContractState {
-    pub fn get_tokens(&self,owner:Address)-> Vec<TokenInfo>{
+    /*pub fn get_tokens(&self,owner:Address)-> Vec<TokenInfo>{
         self.tokens.clone().into_iter().filter(|t| t.owner==owner).collect()
     }
+    */
     pub fn get_token_by_id(&self,token_id: u128)-> TokenInfo{
-        let token:Vec<TokenInfo>=self.tokens.clone().into_iter().filter(|t| t.token_id==token_id).collect();
-        assert_eq!(&token.len(),&1,"{}",ContractError::NotFound);
-        TokenInfo { token_id:token_id, owner:token[0].owner, approvals:token[0].approvals.clone(), token_uri:token[0].token_uri.clone() }
+        let index= token_id as usize;
+        assert!(self.tokens[index].is_some(),"{}",ContractError::NotFound);
+        let token=self.tokens.get(index).unwrap();
+        let data=token.as_ref().unwrap();
+        TokenInfo { token_id:token_id, owner:data.owner, approvals:data.approvals.clone(), token_uri:data.token_uri.clone() }
 
     }
     
     pub fn update_token_for_transfer(&mut self,token_id: u128,new_owner:Address){
-        let index = self.tokens.iter().position(|t| t.token_id == token_id).unwrap();
-        let token=self.tokens.get_mut(index).unwrap();
-        token.owner=new_owner;
-        token.approvals=vec![];
+        let index = token_id as usize;
+        let  token=self.tokens.get(index).unwrap();
+        let  data= token.as_ref().unwrap();
+        let update=TokenInfo { token_id:token_id, owner:new_owner, approvals:vec![], token_uri:data.token_uri.clone() };
+        self.tokens[index]=Some(update);
     }
     pub fn insert_approvals(&mut self,token_id: u128,new_approvals:Vec<Address>){
-        let index = self.tokens.iter().position(|t| t.token_id == token_id).unwrap();
-        let token=self.tokens.get_mut(index).unwrap();
+        let index = token_id as usize;
+        let token=self.tokens.get(index).unwrap();
+        let data= token.as_ref().unwrap();
+        let update=TokenInfo { token_id:token_id, owner:data.owner, approvals:new_approvals, token_uri:data.token_uri.clone() };
+        self.tokens[index]=Some(update);      
        
-        token.approvals=new_approvals;
     }
     /// ## Description
     /// Sets new base uri
@@ -88,8 +94,8 @@ impl MPC721ContractState {
             approvals: vec![],
             token_uri: token_uri.clone(),
         };
-
-        self.tokens.push(token);
+        let index = token_id as usize;
+        self.tokens[index]=Some(token);
     }
     
     /// ## Description
@@ -207,8 +213,8 @@ impl MPC721ContractState {
             "{}",
             ContractError::Unauthorized
         );
-
-        self.tokens.retain(|t| t.token_id!=token_id);
+        let index =token_id as usize;
+        self.tokens[index]=None;
     }
 
     /// ## Description
@@ -216,8 +222,8 @@ impl MPC721ContractState {
     /// ## Params
     /// * **token_id** is an object of type [`u128`]
     pub fn is_minted(&self, token_id: u128) -> bool {
-        let token:Vec<TokenInfo>=self.tokens.clone().into_iter().filter(|t| t.token_id==token_id).collect();
-        token.len()==1
+        let index =token_id as usize;
+        self.tokens[index].is_some()
     }
 
     /// ## Description
@@ -245,11 +251,11 @@ impl MPC721ContractState {
     /// Returns address token balance
     /// ## Params
     /// * **owner** is an object of type [`Address`]
-    pub fn balance_of(&self, owner: &Address) -> u128 {
-        self.tokens.clone().into_iter()            
-            .filter(|ti| ti.owner == *owner)
-            .count() as u128
-    }
+    // pub fn balance_of(&self, owner: &Address) -> u128 {
+    //     self.tokens.clone().into_iter()            
+    //         .filter(|ti| ti.owner == *owner)
+    //         .count() as u128
+    // }
 
     /// ## Description
     /// Returns owner of specified token id
