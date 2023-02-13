@@ -1,4 +1,4 @@
-use std::{collections::BTreeMap, panic::panic_any};
+use std::{collections::BTreeMap};
 
 use create_type_spec_derive::CreateTypeSpec;
 use pbc_contract_common::address::Address;
@@ -33,7 +33,7 @@ pub struct MPC721ContractState {
 /// This structure describes minted mpc721 token information
 #[derive(ReadWriteRPC, ReadWriteState, CreateTypeSpec, Clone, PartialEq, Eq, Debug)]
 pub struct TokenInfo {
-    pub token_id:u128,
+    pub token_id: u128,
     /// token owner
     pub owner: Address,
     /// token approvals
@@ -47,29 +47,44 @@ impl MPC721ContractState {
         self.tokens.clone().into_iter().filter(|t| t.owner==owner).collect()
     }
     */
-    pub fn get_token_by_id(&self,token_id: u128)-> TokenInfo{
-        let index= token_id as usize;
-        assert!(self.tokens[index].is_some(),"{}",ContractError::NotFound);
-        let token=self.tokens.get(index).unwrap();
-        let data=token.as_ref().unwrap();
-        TokenInfo { token_id:token_id, owner:data.owner, approvals:data.approvals.clone(), token_uri:data.token_uri.clone() }
+    pub fn get_token_by_id(&self, token_id: u128) -> TokenInfo {
+        let index = token_id.checked_sub(1).unwrap() as usize;
+        assert!(self.tokens[index].is_some(), "{}", ContractError::NotFound);
+        let token = self.tokens.get(index).unwrap();
+        let data = token.as_ref().unwrap();
+        TokenInfo {
+            token_id,
+            owner: data.owner,
+            approvals: data.approvals.clone(),
+            token_uri: data.token_uri.clone(),
+        }
+    }
 
+    pub fn update_token_for_transfer(&mut self, token_id: u128, new_owner: Address) {
+        let index = token_id.checked_sub(1).unwrap() as usize;
+        
+        let token = self.tokens.get(index).unwrap();
+        let data = token.as_ref().unwrap();
+        let update = TokenInfo {
+            token_id,
+            owner: new_owner,
+            approvals: vec![],
+            token_uri: data.token_uri.clone(),
+        };
+        self.tokens[index] = Some(update);
     }
-    
-    pub fn update_token_for_transfer(&mut self,token_id: u128,new_owner:Address){
-        let index = token_id as usize;
-        let  token=self.tokens.get(index).unwrap();
-        let  data= token.as_ref().unwrap();
-        let update=TokenInfo { token_id:token_id, owner:new_owner, approvals:vec![], token_uri:data.token_uri.clone() };
-        self.tokens[index]=Some(update);
-    }
-    pub fn insert_approvals(&mut self,token_id: u128,new_approvals:Vec<Address>){
-        let index = token_id as usize;
-        let token=self.tokens.get(index).unwrap();
-        let data= token.as_ref().unwrap();
-        let update=TokenInfo { token_id:token_id, owner:data.owner, approvals:new_approvals, token_uri:data.token_uri.clone() };
-        self.tokens[index]=Some(update);      
-       
+    pub fn insert_approvals(&mut self, token_id: u128, new_approvals: Vec<Address>) {
+        let index = token_id.checked_sub(1).unwrap() as usize;
+        
+        let token = self.tokens.get(index).unwrap();
+        let data = token.as_ref().unwrap();
+        let update = TokenInfo {
+            token_id,
+            owner: data.owner,
+            approvals: new_approvals,
+            token_uri: data.token_uri.clone(),
+        };
+        self.tokens[index] = Some(update);
     }
     /// ## Description
     /// Sets new base uri
@@ -88,16 +103,17 @@ impl MPC721ContractState {
     ///
     /// * **token_uri** is an object of type [`Option<String>`]
     pub fn mint(&mut self, token_id: u128, to: &Address, token_uri: &Option<String>) {
+        
         let token = TokenInfo {
             token_id,
             owner: *to,
             approvals: vec![],
             token_uri: token_uri.clone(),
         };
-        let index = token_id as usize;
-        self.tokens[index]=Some(token);
+        let index = token_id.checked_sub(1).unwrap() as usize;
+        self.tokens[index] = Some(token);
     }
-    
+
     /// ## Description
     /// Increases total supply
     pub fn increase_supply(&mut self) {
@@ -125,8 +141,7 @@ impl MPC721ContractState {
             "{}",
             ContractError::Unauthorized
         );
-        self.update_token_for_transfer(token_id,*to);
-        
+        self.update_token_for_transfer(token_id, *to);
     }
 
     /// ## Description
@@ -162,8 +177,7 @@ impl MPC721ContractState {
         if approved {
             approvals.push(*spender);
         }
-        self.insert_approvals(token_id,approvals);
-       
+        self.insert_approvals(token_id, approvals);
     }
 
     /// ## Description
@@ -213,8 +227,8 @@ impl MPC721ContractState {
             "{}",
             ContractError::Unauthorized
         );
-        let index =token_id as usize;
-        self.tokens[index]=None;
+        let index =token_id.checked_sub(1).unwrap() as usize;
+        self.tokens[index] = None;
     }
 
     /// ## Description
@@ -222,7 +236,7 @@ impl MPC721ContractState {
     /// ## Params
     /// * **token_id** is an object of type [`u128`]
     pub fn is_minted(&self, token_id: u128) -> bool {
-        let index =token_id as usize;
+        let index = token_id.checked_sub(1).unwrap() as usize;
         self.tokens[index].is_some()
     }
 
@@ -252,7 +266,7 @@ impl MPC721ContractState {
     /// ## Params
     /// * **owner** is an object of type [`Address`]
     // pub fn balance_of(&self, owner: &Address) -> u128 {
-    //     self.tokens.clone().into_iter()            
+    //     self.tokens.clone().into_iter()
     //         .filter(|ti| ti.owner == *owner)
     //         .count() as u128
     // }

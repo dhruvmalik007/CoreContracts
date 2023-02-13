@@ -19,6 +19,8 @@ pub struct InitMsg {
     pub base_uri: Option<String>,
     /// token minter address
     pub minter: Address,
+    ///
+    pub mint_limit: u128,
 }
 
 /// ## Description

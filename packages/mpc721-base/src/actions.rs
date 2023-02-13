@@ -30,7 +30,7 @@ pub fn execute_init(
         base_uri: msg.base_uri.clone(),
         minter: msg.minter,
         supply: 0,
-        tokens: vec![None;10000],
+        tokens: vec![None; msg.mint_limit as usize],
         operator_approvals: BTreeMap::new(),
     };
 
@@ -82,9 +82,9 @@ pub fn execute_mint(
         "{}",
         ContractError::Unauthorized
     );
-
+    assert!((msg.token_id as usize) <state.tokens.len(),"{}",ContractError::MintLimitExceeded);
     assert!(!state.is_minted(msg.token_id), "{}", ContractError::Minted);
-
+    
     state.mint(msg.token_id, &msg.to, &msg.token_uri);
     state.increase_supply();
 

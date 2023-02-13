@@ -6,7 +6,8 @@ use thiserror::Error;
 pub enum ContractError {
     #[error("Unauthorized")]
     Unauthorized,
-
+    #[error("Token id is above max mint")]
+    MintLimitExceeded,
     #[error("Token with specified id is already minted")]
     Minted,
 

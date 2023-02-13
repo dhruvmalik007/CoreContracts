@@ -53,6 +53,7 @@ fn proper_execute_init() {
         symbol: "CTC".to_string(),
         base_uri: Some("ipfs://some.some".to_string()),
         minter: mock_address(1),
+        mint_limit: 10000,
     };
 
     let (state, events) = execute_init(&mock_contract_context(2), &msg);
@@ -66,7 +67,7 @@ fn proper_execute_init() {
             base_uri: Some("ipfs://some.some".to_string()),
             minter: mock_address(1),
             supply: 0,
-            tokens: vec![None;10000],
+            tokens: vec![None; 10000],
             operator_approvals: BTreeMap::new(),
         }
     );
@@ -82,6 +83,7 @@ fn proper_set_base_uri() {
         symbol: "CTC".to_string(),
         base_uri: Some("ipfs://some.some".to_string()),
         minter: mock_address(1),
+        mint_limit: 10000,
     };
 
     let (mut state, _) = execute_init(&mock_contract_context(2), &msg);
@@ -105,6 +107,7 @@ fn owner_is_not_set_on_set_base_uri() {
         symbol: "CTC".to_string(),
         base_uri: Some("ipfs://some.some".to_string()),
         minter: mock_address(1),
+        mint_limit: 10000,
     };
 
     let (mut state, _) = execute_init(&mock_contract_context(2), &msg);
@@ -128,6 +131,7 @@ fn sender_is_not_owner_on_set_base_uri() {
         symbol: "CTC".to_string(),
         base_uri: Some("ipfs://some.some".to_string()),
         minter: mock_address(1),
+        mint_limit: 10000,
     };
 
     let (mut state, _) = execute_init(&mock_contract_context(2), &msg);
@@ -150,6 +154,7 @@ fn proper_mint() {
         symbol: "CTC".to_string(),
         base_uri: Some("ipfs://some.some".to_string()),
         minter: mock_address(minter),
+        mint_limit: 10000,
     };
 
     let (mut state, events) = execute_init(&mock_contract_context(2), &msg);
@@ -167,7 +172,7 @@ fn proper_mint() {
     assert_eq!(
         token,
         TokenInfo {
-            token_id:1,
+            token_id: 1,
             owner: mock_address(alice),
             approvals: vec![],
             token_uri: None,
@@ -185,6 +190,7 @@ fn proper_ownership_check() {
         symbol: "CTC".to_string(),
         base_uri: Some("ipfs://some.some".to_string()),
         minter: mock_address(1),
+        mint_limit: 10000,
     };
 
     let (mut state, events) = execute_init(&mock_contract_context(2), &msg);
@@ -214,6 +220,7 @@ fn proper_ownership_check_fail() {
         symbol: "CTC".to_string(),
         base_uri: Some("ipfs://some.some".to_string()),
         minter: mock_address(1),
+        mint_limit: 10000,
     };
 
     let (mut state, events) = execute_init(&mock_contract_context(2), &msg);
@@ -244,6 +251,7 @@ fn proper_ownership_check_fail_not_found() {
         symbol: "CTC".to_string(),
         base_uri: Some("ipfs://some.some".to_string()),
         minter: mock_address(1),
+        mint_limit: 10000,
     };
 
     let (mut state, events) = execute_init(&mock_contract_context(2), &msg);
@@ -274,6 +282,7 @@ fn sender_is_not_minter_on_mint() {
         symbol: "CTC".to_string(),
         base_uri: Some("ipfs://some.some".to_string()),
         minter: mock_address(minter),
+        mint_limit: 10000,
     };
 
     let (mut state, events) = execute_init(&mock_contract_context(2), &msg);
@@ -299,6 +308,7 @@ fn token_already_minted_on_mint() {
         symbol: "CTC".to_string(),
         base_uri: Some("ipfs://some.some".to_string()),
         minter: mock_address(minter),
+        mint_limit: 10000,
     };
 
     let (mut state, events) = execute_init(&mock_contract_context(2), &msg);
@@ -332,6 +342,7 @@ fn proper_approve_for_all() {
         symbol: "CTC".to_string(),
         base_uri: Some("ipfs://some.some".to_string()),
         minter: mock_address(1),
+        mint_limit: 10000,
     };
 
     let (mut state, _) = execute_init(&mock_contract_context(2), &msg);
@@ -380,6 +391,7 @@ fn proper_revoke_for_all() {
         symbol: "CTC".to_string(),
         base_uri: Some("ipfs://some.some".to_string()),
         minter: mock_address(1),
+        mint_limit: 10000,
     };
 
     let (mut state, _) = execute_init(&mock_contract_context(2), &msg);
@@ -425,6 +437,7 @@ fn revoke_not_existing_operator() {
         symbol: "CTC".to_string(),
         base_uri: Some("ipfs://some.some".to_string()),
         minter: mock_address(1),
+        mint_limit: 10000,
     };
 
     let (mut state, _) = execute_init(&mock_contract_context(2), &msg);
@@ -447,6 +460,7 @@ fn proper_token_owner_approve() {
         symbol: "CTC".to_string(),
         base_uri: Some("ipfs://some.some".to_string()),
         minter: mock_address(minter),
+        mint_limit: 10000,
     };
 
     let (mut state, events) = execute_init(&mock_contract_context(2), &msg);
@@ -468,7 +482,7 @@ fn proper_token_owner_approve() {
     assert_eq!(
         state.token_info(1).unwrap(),
         TokenInfo {
-            token_id:1,
+            token_id: 1,
             owner: mock_address(alice),
             approvals: vec![mock_address(bob)],
             token_uri: None,
@@ -489,6 +503,7 @@ fn proper_token_operator_approve() {
         symbol: "CTC".to_string(),
         base_uri: Some("ipfs://some.some".to_string()),
         minter: mock_address(minter),
+        mint_limit: 10000,
     };
 
     let (mut state, events) = execute_init(&mock_contract_context(2), &msg);
@@ -515,7 +530,7 @@ fn proper_token_operator_approve() {
     assert_eq!(
         state.token_info(1).unwrap(),
         TokenInfo {
-            token_id:1,
+            token_id: 1,
             owner: mock_address(alice),
             approvals: vec![mock_address(jack)],
             token_uri: None,
@@ -537,6 +552,7 @@ fn approve_not_minted_token() {
         symbol: "CTC".to_string(),
         base_uri: Some("ipfs://some.some".to_string()),
         minter: mock_address(minter),
+        mint_limit: 10000,
     };
 
     let (mut state, events) = execute_init(&mock_contract_context(2), &msg);
@@ -562,6 +578,7 @@ fn not_owner_or_operator_approve() {
         symbol: "CTC".to_string(),
         base_uri: Some("ipfs://some.some".to_string()),
         minter: mock_address(minter),
+        mint_limit: 10000,
     };
 
     let (mut state, events) = execute_init(&mock_contract_context(2), &msg);
@@ -594,6 +611,7 @@ fn proper_revoke() {
         symbol: "CTC".to_string(),
         base_uri: Some("ipfs://some.some".to_string()),
         minter: mock_address(minter),
+        mint_limit: 10000,
     };
 
     let (mut state, events) = execute_init(&mock_contract_context(2), &msg);
@@ -622,7 +640,7 @@ fn proper_revoke() {
     assert_eq!(
         state.token_info(1).unwrap(),
         TokenInfo {
-            token_id:1,
+            token_id: 1,
             owner: mock_address(alice),
             approvals: vec![],
             token_uri: None,
@@ -643,6 +661,7 @@ fn revoke_not_minted_token() {
         symbol: "CTC".to_string(),
         base_uri: Some("ipfs://some.some".to_string()),
         minter: mock_address(minter),
+        mint_limit: 10000,
     };
 
     let (mut state, events) = execute_init(&mock_contract_context(2), &msg);
@@ -667,6 +686,7 @@ fn proper_owner_transfer() {
         symbol: "CTC".to_string(),
         base_uri: Some("ipfs://some.some".to_string()),
         minter: mock_address(minter),
+        mint_limit: 10000,
     };
 
     let (mut state, events) = execute_init(&mock_contract_context(2), &msg);
@@ -688,7 +708,7 @@ fn proper_owner_transfer() {
     assert_eq!(
         state.token_info(1).unwrap(),
         TokenInfo {
-            token_id:1,
+            token_id: 1,
             owner: mock_address(bob),
             approvals: vec![],
             token_uri: None,
@@ -708,6 +728,7 @@ fn proper_approved_transfer() {
         symbol: "CTC".to_string(),
         base_uri: Some("ipfs://some.some".to_string()),
         minter: mock_address(minter),
+        mint_limit: 10000,
     };
 
     let (mut state, events) = execute_init(&mock_contract_context(2), &msg);
@@ -736,7 +757,7 @@ fn proper_approved_transfer() {
     assert_eq!(
         state.token_info(1).unwrap(),
         TokenInfo {
-            token_id:1,
+            token_id: 1,
             owner: mock_address(bob),
             approvals: vec![],
             token_uri: None,
@@ -756,6 +777,7 @@ fn proper_operator_transfer() {
         symbol: "CTC".to_string(),
         base_uri: Some("ipfs://some.some".to_string()),
         minter: mock_address(minter),
+        mint_limit: 10000,
     };
 
     let (mut state, events) = execute_init(&mock_contract_context(2), &msg);
@@ -782,7 +804,7 @@ fn proper_operator_transfer() {
     assert_eq!(
         state.token_info(1).unwrap(),
         TokenInfo {
-            token_id:1,
+            token_id: 1,
             owner: mock_address(bob),
             approvals: vec![],
             token_uri: None,
@@ -803,6 +825,7 @@ fn transfer_not_minted_token() {
         symbol: "CTC".to_string(),
         base_uri: Some("ipfs://some.some".to_string()),
         minter: mock_address(minter),
+        mint_limit: 10000,
     };
 
     let (mut state, events) = execute_init(&mock_contract_context(2), &msg);
@@ -829,6 +852,7 @@ fn transfer_not_owner_or_approved_token() {
         symbol: "CTC".to_string(),
         base_uri: Some("ipfs://some.some".to_string()),
         minter: mock_address(minter),
+        mint_limit: 10000,
     };
 
     let (mut state, events) = execute_init(&mock_contract_context(2), &msg);
@@ -861,6 +885,7 @@ fn proper_transfer_from() {
         symbol: "CTC".to_string(),
         base_uri: Some("ipfs://some.some".to_string()),
         minter: mock_address(minter),
+        mint_limit: 10000,
     };
 
     let (mut state, events) = execute_init(&mock_contract_context(2), &msg);
@@ -883,7 +908,7 @@ fn proper_transfer_from() {
     assert_eq!(
         state.token_info(1).unwrap(),
         TokenInfo {
-            token_id:1,
+            token_id: 1,
             owner: mock_address(bob),
             approvals: vec![],
             token_uri: None,
@@ -904,6 +929,7 @@ fn transfer_from_not_minted_token() {
         symbol: "CTC".to_string(),
         base_uri: Some("ipfs://some.some".to_string()),
         minter: mock_address(minter),
+        mint_limit: 10000,
     };
 
     let (mut state, events) = execute_init(&mock_contract_context(2), &msg);
@@ -928,6 +954,7 @@ fn proper_burn() {
         symbol: "CTC".to_string(),
         base_uri: Some("ipfs://some.some".to_string()),
         minter: mock_address(minter),
+        mint_limit: 10000,
     };
 
     let (mut state, events) = execute_init(&mock_contract_context(2), &msg);
@@ -959,6 +986,7 @@ fn burn_not_minted_token() {
         symbol: "CTC".to_string(),
         base_uri: Some("ipfs://some.some".to_string()),
         minter: mock_address(minter),
+        mint_limit: 10000,
     };
 
     let (mut state, events) = execute_init(&mock_contract_context(2), &msg);
@@ -974,6 +1002,7 @@ fn test_multi_mint() {
         symbol: "CTC".to_string(),
         base_uri: Some("ipfs://some.some".to_string()),
         minter: mock_address(1),
+        mint_limit: 10000,
     };
 
     let (state, events) = execute_init(&mock_contract_context(2), &msg);
@@ -984,68 +1013,59 @@ fn test_multi_mint() {
         base_uri: Some("ipfs://some.some".to_string()),
         minter: mock_address(1),
         supply: 0,
-        tokens: vec![None;10000],
+        tokens: vec![None; 10000],
         operator_approvals: BTreeMap::new(),
     };
-    test_state.tokens[1]=
-        Some(TokenInfo {
-            token_id:1,
-            /// token owner
-            owner: mock_address(4),
-            /// token approvals
-            approvals: vec![],
-            /// optional token uri
-            token_uri: Some(String::from("Token1")),
-        });
-    
-    test_state.tokens[2]=
-       
-        Some(TokenInfo {
-            token_id:2,
-            /// token owner
-            owner: mock_address(4),
-            /// token approvals
-            approvals: vec![],
-            /// optional token uri
-            token_uri: Some(String::from("Token2")),
-        });
-    
-    test_state.tokens[3]=
-       
-        Some(TokenInfo {
-            token_id:3,
-            /// token owner
-            owner: mock_address(5),
-            /// token approvals
-            approvals: vec![],
-            /// optional token uri
-            token_uri: Some(String::from("Token3")),
-        });
-    
-        test_state.tokens[4]=
-        
-        Some(TokenInfo {
-            token_id:4,
-            /// token owner
-            owner: mock_address(5),
-            /// token approvals
-            approvals: vec![],
-            /// optional token uri
-            token_uri: Some(String::from("Token4")),
-        });
-    
-        test_state.tokens[5]=
-        
-        Some(TokenInfo {
-            token_id:5,
-            /// token owner
-            owner: mock_address(6),
-            /// token approvals
-            approvals: vec![],
-            /// optional token uri
-            token_uri: Some(String::from("Token5")),
-        });
-    
+    test_state.tokens[0] = Some(TokenInfo {
+        token_id: 1,
+        /// token owner
+        owner: mock_address(4),
+        /// token approvals
+        approvals: vec![],
+        /// optional token uri
+        token_uri: Some(String::from("Token1")),
+    });
+
+    test_state.tokens[1] = Some(TokenInfo {
+        token_id: 2,
+        /// token owner
+        owner: mock_address(4),
+        /// token approvals
+        approvals: vec![],
+        /// optional token uri
+        token_uri: Some(String::from("Token2")),
+    });
+
+    test_state.tokens[2] = Some(TokenInfo {
+        token_id: 3,
+        /// token owner
+        owner: mock_address(5),
+        /// token approvals
+        approvals: vec![],
+        /// optional token uri
+        token_uri: Some(String::from("Token3")),
+    });
+
+    test_state.tokens[3] = Some(TokenInfo {
+        token_id: 4,
+        /// token owner
+        owner: mock_address(5),
+        /// token approvals
+        approvals: vec![],
+        /// optional token uri
+        token_uri: Some(String::from("Token4")),
+    });
+
+    test_state.tokens[4] = Some(TokenInfo {
+        token_id: 5,
+        /// token owner
+        owner: mock_address(6),
+        /// token approvals
+        approvals: vec![],
+        /// optional token uri
+        token_uri: Some(String::from("Token5")),
+    });
+
     test_state.supply = 5;
     let mut state = state;
     let mint = vec![
@@ -1095,6 +1115,7 @@ fn can_update_minter() {
         symbol: "CTC".to_string(),
         base_uri: Some("ipfs://some.some".to_string()),
         minter: mock_address(minter),
+        mint_limit: 10000,
     };
 
     let (mut state, events) = execute_init(&mock_contract_context(2), &msg);
@@ -1121,6 +1142,7 @@ fn update_minter_fails_not_owner() {
         symbol: "CTC".to_string(),
         base_uri: Some("ipfs://some.some".to_string()),
         minter: mock_address(minter),
+        mint_limit: 10000,
     };
 
     let (mut state, events) = execute_init(&mock_contract_context(2), &msg);
@@ -1146,6 +1168,7 @@ fn update_minter_fails_no_owner() {
         symbol: "CTC".to_string(),
         base_uri: Some("ipfs://some.some".to_string()),
         minter: mock_address(minter),
+        mint_limit: 10000,
     };
 
     let (mut state, events) = execute_init(&mock_contract_context(2), &msg);
