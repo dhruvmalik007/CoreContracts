@@ -1,4 +1,4 @@
-use std::{collections::BTreeMap};
+use std::collections::BTreeMap;
 
 use create_type_spec_derive::CreateTypeSpec;
 use pbc_contract_common::address::Address;
@@ -62,7 +62,7 @@ impl MPC721ContractState {
 
     pub fn update_token_for_transfer(&mut self, token_id: u128, new_owner: Address) {
         let index = token_id.checked_sub(1).unwrap() as usize;
-        
+
         let token = self.tokens.get(index).unwrap();
         let data = token.as_ref().unwrap();
         let update = TokenInfo {
@@ -75,7 +75,7 @@ impl MPC721ContractState {
     }
     pub fn insert_approvals(&mut self, token_id: u128, new_approvals: Vec<Address>) {
         let index = token_id.checked_sub(1).unwrap() as usize;
-        
+
         let token = self.tokens.get(index).unwrap();
         let data = token.as_ref().unwrap();
         let update = TokenInfo {
@@ -103,7 +103,6 @@ impl MPC721ContractState {
     ///
     /// * **token_uri** is an object of type [`Option<String>`]
     pub fn mint(&mut self, token_id: u128, to: &Address, token_uri: &Option<String>) {
-        
         let token = TokenInfo {
             token_id,
             owner: *to,
@@ -227,7 +226,7 @@ impl MPC721ContractState {
             "{}",
             ContractError::Unauthorized
         );
-        let index =token_id.checked_sub(1).unwrap() as usize;
+        let index = token_id.checked_sub(1).unwrap() as usize;
         self.tokens[index] = None;
     }
 

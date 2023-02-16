@@ -1181,3 +1181,28 @@ fn update_minter_fails_no_owner() {
         },
     );
 }
+#[test]
+#[should_panic(expected = "Token id is above max mint")]
+fn token_limits_are_enforced() {
+    let minter = 1u8;
+    let new_minter = 6u8;
+    let alice = 10u8;
+
+    let msg = InitMsg {
+        owner: None,
+        name: "Cool Token".to_string(),
+        symbol: "CTC".to_string(),
+        base_uri: Some("ipfs://some.some".to_string()),
+        minter: mock_address(minter),
+        mint_limit: 10,
+    };
+
+    let (mut state, events) = execute_init(&mock_contract_context(2), &msg);
+    let mint_msg = MintMsg {
+        token_id: 11_u128,
+        to: mock_address(alice),
+        token_uri: None,
+    };
+
+    let _ = execute_mint(&mock_contract_context(minter), &mut state, &mint_msg);
+}
