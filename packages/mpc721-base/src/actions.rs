@@ -83,7 +83,7 @@ pub fn execute_mint(
         ContractError::Unauthorized
     );
     assert!(
-        (msg.token_id as usize) < state.tokens.len(),
+        (msg.token_id as usize) <= state.tokens.len(),
         "{}",
         ContractError::MintLimitExceeded
     );
